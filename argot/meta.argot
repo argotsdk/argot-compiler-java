@@ -1,0 +1,168 @@
+/*
+ * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ *
+ * This software is licensed under the Argot Public License 
+ * which may be found in the file LICENSE distributed 
+ * with this software.
+ *
+ * More information about this license can be found at
+ * http://www.einet.com.au/License
+ * 
+ * The Developer of this software is Live Media Pty Ltd,
+ * PO Box 4591, Melbourne 3001, Australia.  The license is subject 
+ * to the law of Victoria, Australia, and subject to exclusive 
+ * jurisdiction of the Victorian courts.
+ */
+ 
+ /*
+ * The meta dictionary.
+ *
+ * This is the core dictionary used to describe data types.
+ *
+ */
+
+
+/*
+ * The empty type is used for tagging information.  It is a 
+ * basic type that is empty.
+ */
+empty: meta.basic( 0, 0 );
+
+/*
+ * The u8 type is unsigned 8bit big endian.
+ */
+u8: meta.basic( 8, 0 );
+
+/*
+ * The u16 type is unsigned 16bit big endian.
+ */
+u16: meta.basic( 16, 0 );
+
+
+
+/*
+ * Basic types are defined by a width and set of flags.
+ * 
+ */
+meta.basic: {
+		@u8["size"], 
+		@u8["flags"]
+	};
+
+/*
+ * A name is a simple ASCII encoded string of maxiumum length 255
+ * characters.
+ *
+ */
+meta.name: 
+	{
+		meta.encoding(
+			meta.array(
+				@u8["size"],
+				@u8["data"]
+			),
+			"ISO646-US"
+		)
+	};
+
+/*
+ *  A type defined as abstract has an empty definition.
+ */
+meta.abstract: 
+	{
+		@empty["abstract"]
+	};
+				
+/*
+ *  A map is used to map an abstract data type to a
+ * concrete data type.  Two U16 values are used to specify
+ * the data types in the dictionary being defined.
+ */
+meta.map: 
+	{
+		@u16["abstract"],
+		@u16["concrete"]
+	};				
+
+
+/*
+ *  An expression is an abstract type. It allows different
+ *  expressions to be used to define data types.  New expressions
+ *  can be added to expand specification language.
+ */
+meta.expression: meta.abstract();
+
+/*
+ *  Encoding specifies the data encoding used on a character
+ *  string.  The data expression must return an array that
+ *  can have encoding applied.
+ */
+meta.encoding: 
+	{
+		@meta.expression["data"],
+		@meta.name["encoding"]
+	};
+		
+/*
+ *  A reference delcares a usage of another data tpye
+ *  in the system.  The name data type is used to define
+ *  a description of usage of that data type.
+ */
+meta.reference: 
+	{
+		@u16["type"],
+		@meta.name["name"]
+	};		
+		
+/*
+ *  A sequence defines a set of expressions which
+ *  are executed in order.  In the most normal case,
+ *  it defines an ordered set of types in a data buffer.
+ */
+meta.sequence: 
+	{
+		meta.array(
+			@u8["size"],
+			@meta.expression["type"]
+		)
+	};
+		
+/*
+ *  An Array is used to define any collection of data with
+ *  a size and a type. 
+ */
+meta.array:
+	{
+		@meta.expression["size"],
+		@meta.expression["type"]
+	};
+		
+
+/*
+ *  Mappings from abstract expressions to concrete expressions.
+ */
+ 
+meta.expression#reference: meta.map( #meta.expression, #meta.reference );
+
+meta.expression#sequence: meta.map( #meta.expression, #meta.sequence );
+
+meta.expression#array: meta.map( #meta.expression, #meta.array );
+
+meta.expression#encoding: meta.map( #meta.expression, #meta.encoding );
+
+
+/*
+ *  The definition of a type is abstract.  Specific concrete types
+ *  are mapped to the abstract type.
+ */
+ 
+meta.definition: meta.abstract();
+
+meta.definition#basic: meta.map( #meta.definition, #meta.basic );
+
+meta.definition#map: meta.map( #meta.definition, #meta.map );
+
+meta.definition#sequence: meta.map( #meta.definition, #meta.sequence );
+
+meta.definition#abstract: meta.map( #meta.definition, #meta.abstract );
+

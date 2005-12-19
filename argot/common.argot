@@ -1,0 +1,120 @@
+/*
+ * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ *
+ * This software is licensed under the Argot Public License 
+ * which may be found in the file LICENSE distributed 
+ * with this software.
+ *
+ * More information about this license can be found at
+ * http://www.einet.com.au/License
+ * 
+ * The Developer of this software is Live Media Pty Ltd,
+ * PO Box 4591, Melbourne 3001, Australia.  The license is subject 
+ * to the law of Victoria, Australia, and subject to exclusive 
+ * jurisdiction of the Victorian courts.
+ */
+ 
+import meta.basic;
+import meta.expression;
+import meta.sequence;
+import meta.reference;
+import meta.name;
+
+/*
+ *  The empty data type does not read any data. Like a NOP for Argot.
+ */
+empty: meta.basic( 0, 0 );
+
+/*
+ *  Unsigned data types (big endian network order).
+ */
+u8:  meta.basic( 8, 0 );
+u16: meta.basic( 16, 0 );
+u32: meta.basic( 32, 0 );
+u64: meta.basic( 64, 0 );
+
+/*
+ *  Signed data types (big endian network order).
+ */
+s8:  meta.basic( 8, 1 );
+s16: meta.basic( 16, 1 );
+s32: meta.basic( 32, 1 );
+s64: meta.basic( 64, 1 );
+
+/*
+ *  Boolean value is a byte that can be 0 false..  !0 true.
+ */
+ 
+bool: { 
+			@u8[ "bool" ] 
+	};
+
+
+/*
+ *  A UTF8 encoded string.  Maximum size 255 bytes.
+ */
+u8ascii: {
+			meta.encoding(
+				meta.array(
+					@u8[ "size" ],
+					@u8[ "data" ]
+				),
+				"ISO646-US"
+			) 
+		};
+		
+/*
+ *  A UTF8 encoded string.  Maximum size u32.max bytes.
+ */		
+u32utf8: { 
+			meta.encoding(
+				meta.array(
+					@u32[ "size" ],
+					@u8[ "data"]
+				),
+				"UTF8"
+			) 
+		};
+
+
+/*
+ *  A binary data block.  Maximum size u32.max.
+ */
+u32binary: { 
+			meta.array(
+				@u32["size"],
+				@u8[ "data" ]
+			)
+		};
+
+/*
+ * A binary data block.  Maximum size u16.max
+ */ 
+u16binary: { 
+			meta.array(
+				@u16["size"],
+				@u8[ "data" ]
+			)
+		};
+		
+/*
+ * Allows any data to be loaded.
+ */
+meta.identified: {
+			@meta.name["description"]
+		};
+		
+meta.expression#identified: meta.map( #meta.expression, #meta.identified );
+
+date: meta.abstract();
+
+/*
+ *  A Java data is the number of milliseconds (or is it seconds) from 1st of Janurary 1970.
+ */
+date.java: {  
+	@s64["date"] 
+};
+
+date#java: meta.map( #date, #date.java );
+
+

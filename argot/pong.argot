@@ -1,0 +1,8 @@
+
+
+pong.shape : abstract();
+
+pong.shape.circle:
+	{
+		meta.reference( #u8, "diameter" );
+	};

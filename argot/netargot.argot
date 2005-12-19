@@ -1,0 +1,38 @@
+/*
+ * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ *
+ * This software is licensed under the Argot Public License 
+ * which may be found in the file LICENSE distributed 
+ * with this software.
+ *
+ * More information about this license can be found at
+ * http://www.einet.com.au/License
+ * 
+ * The Developer of this software is Live Media Pty Ltd,
+ * PO Box 4591, Melbourne 3001, Australia.  The license is subject 
+ * to the law of Victoria, Australia, and subject to exclusive 
+ * jurisdiction of the Victorian courts.
+ */
+
+import u8;
+
+import u32;
+import u32binary;
+
+/*
+ * net argot uses a particular reader which creates an expandable
+ * data buffer.
+ */
+netargot.u32binary: {
+			@u32binary["data"]
+		};
+
+/*
+ * This is the format of all type requests.  It should in future be
+ * changed to enumerated( 1, 2, 3, 4 ) contained( identified( sometype | othertype ) )
+ */
+netargot.request: {
+			@u32["type"],
+			@netargot.u32binary["data"]
+		};
+

@@ -1,0 +1,70 @@
+/*
+ * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ *
+ * This software is licensed under the Argot Public License 
+ * which may be found in the file LICENSE distributed 
+ * with this software.
+ *
+ * More information about this license can be found at
+ * http://www.einet.com.au/License
+ * 
+ * The Developer of this software is Live Media Pty Ltd,
+ * PO Box 4591, Melbourne 3001, Australia.  The license is subject 
+ * to the law of Victoria, Australia, and subject to exclusive 
+ * jurisdiction of the Victorian courts.
+ */
+
+import empty;
+import u8ascii;
+import u8;
+import u16;
+import meta.definition;
+
+
+/* Remote Interfaces and Object definitions */
+remote.parameter:
+   meta.sequence([
+       meta.reference( #u16, "type" ),
+       meta.reference( #u8ascii, "name" )
+   ]);
+
+remote.method:
+   {
+       meta.reference( #u16, "interface" ),
+       meta.reference( #u8ascii, "name" ),
+       meta.array(
+           meta.reference( #u8, "size" ),
+           meta.reference( #remote.parameter, "request" )
+       ),
+       meta.array(
+           meta.reference( #u8, "size" ),
+           meta.reference( #remote.parameter, "reply" )
+       ),
+       meta.array(
+           meta.reference( #u8, "size" ),
+           meta.reference( #u16, "error" )
+       )
+   };
+   
+   
+remote.interface:
+	meta.sequence([
+	   meta.array(
+	       meta.reference( #u8, "size" ),
+	       meta.reference( #u16, "interface" )
+	   )
+   ]);
+   
+   
+meta.definition#interface: meta.map( #meta.definition, #remote.interface );
+meta.definition#method: meta.map( #meta.definition, #remote.method );
+
+remote.location: meta.abstract();
+
+remote.object:
+	meta.sequence([
+		meta.reference( #remote.location, "location" ),
+		meta.reference( #u16, "class" )
+	]);
+
+ 

@@ -1,0 +1,49 @@
+/*
+ * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ *
+ * This software is licensed under the Argot Public License 
+ * which may be found in the file LICENSE distributed 
+ * with this software.
+ *
+ * More information about this license can be found at
+ * http://www.einet.com.au/License
+ * 
+ * The Developer of this software is Live Media Pty Ltd,
+ * PO Box 4591, Melbourne 3001, Australia.  The license is subject 
+ * to the law of Victoria, Australia, and subject to exclusive 
+ * jurisdiction of the Victorian courts.
+ */
+
+load "argot/remote.dictionary";
+
+
+import remote.parameter;
+import remote.interface;
+import remote.method;
+import remote.location;
+
+import meta.definition;
+import meta.definition#interface;
+
+
+import u16;
+import u8ascii;
+import empty;
+import u8;
+
+
+
+test: remote.interface();
+
+test.doSomething: remote.method( #test, "doSomething",
+	[ remote.parameter( #s32, "param" ) ],
+	[ remote.parameter( #s32, "ret" ) ],
+	[ #s32 ]
+	);
+	
+
+index: meta.sequence([
+		meta.reference( #u16, "index" )
+	]);
+	
+remote.location#index: meta.map( #remote.location, #index );

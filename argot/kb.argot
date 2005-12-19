@@ -1,0 +1,212 @@
+/*
+ * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ *
+ * This software is licensed under the Argot Public License 
+ * which may be found in the file LICENSE distributed 
+ * with this software.
+ *
+ * More information about this license can be found at
+ * http://www.einet.com.au/License
+ * 
+ * The Developer of this software is Live Media Pty Ltd,
+ * PO Box 4591, Melbourne 3001, Australia.  The license is subject 
+ * to the law of Victoria, Australia, and subject to exclusive 
+ * jurisdiction of the Victorian courts.
+ */
+ 
+/*  
+ * This is the Knowledge Base type dictionary.
+ *
+ */
+
+load "common.dictionary";
+
+import u8;
+import u16;
+import u32;
+
+import s16;
+import s32;
+import s64;
+
+import bool;
+import u8Ascii;
+import u32utf8;
+
+import date;
+
+import meta.array;
+import meta.identified;
+import meta.expression;
+import meta.name;
+
+load "networkvm.dictionary";
+
+import nvm.exception;
+import nvm.exception.remote;
+import nvm.exception.trace;
+
+/*
+ *  This is a hashmap that can contain keys of any type and values of any type.
+ *  Its used to transfer tree structures from the server.
+ */
+hashmap: {
+		meta.array(
+			@u16["size"], 
+			meta.sequence([
+				meta.identified( "key" ), 
+				meta.identified( "value" ) 
+			])
+		)
+	};
+	
+topic: meta.abstract();
+
+topiclist:{
+	meta.array( 
+		@u16["size"],
+		@topic["topic"]
+	)
+};	
+
+topicinfo: {
+	@u32["id"], 
+	@u32["parentId"], 
+	@u8["type"], 
+	@u8Ascii["ownerId"], 
+	@bool["locked"], 
+	@bool["leaf"], 
+	@s16["order"], 
+	@u32["visits"], 
+	@u8["version"],
+	@u8Ascii["path"], 
+	@u8Ascii["title"], 
+	@u32utf8["content"], 
+	@u8ascii["comment"], 
+	@u8ascii["author"], 
+	@date["date"]
+	};
+	
+topic#info: meta.map( #topic, #topicinfo );
+
+
+/*
+ *  Would be nice to have an "extends" type to allow this to be extended from topicinfo
+ */
+topicfile: {
+	@u32["id"], 
+	@u32["parentId"], 
+	@u8["type"], 
+	@u8Ascii["ownerId"], 
+	@bool["locked"], 
+	@bool["leaf"], 
+	@s16["order"], 
+	@u32["visits"], 
+	@u8["version"],
+	@u8Ascii["path"],
+	@u8Ascii["title"], 
+	@u32utf8["content"], 
+	@u8ascii["comment"], 
+	@u8ascii["author"], 
+	@date["date"],
+	@u8Ascii["filename"]
+};
+
+topic#file: meta.map( #topic, #topicfile );
+
+topicgraft: {
+	@u32["id"], 
+	@u32["parentId"], 
+	@u8["type"], 
+	@u8Ascii["ownerId"], 
+	@bool["locked"], 
+	@bool["leaf"], 
+	@s16["order"], 
+	@u32["visits"], 
+	@u8["version"], 
+	@u8Ascii["path"],
+	@u8Ascii["title"], 
+	@u32utf8["content"], 
+	@u8ascii["comment"], 
+	@u8ascii["author"], 
+	@date["date"],
+	@u32["graftId"]
+};
+
+topic#graft: meta.map( #topic, #topicgraft );
+
+topicimage: {
+	@u32["id"], 
+	@u32["parentId"], 
+	@u8["type"], 
+	@u8Ascii["ownerId"], 
+	@bool["locked"], 
+	@bool["leaf"], 
+	@s16["order"], 
+	@u32["visits"], 
+	@u8["version"], 
+	@u8Ascii["path"],	
+	@u8Ascii["title"], 
+	@u32utf8["content"], 
+	@u8ascii["comment"], 
+	@u8ascii["author"], 
+	@date["date"],
+	@u8Ascii["URL"]
+};
+
+topic#image: meta.map( #topic, #topicimage );
+
+topiclink: {
+	@u32["id"], 
+	@u32["parentId"], 
+	@u8["type"], 
+	@u8Ascii["ownerId"], 
+	@bool["locked"], 
+	@bool["leaf"], 
+	@s16["order"], 
+	@u32["visits"], 
+	@u8["version"], 
+	@u8Ascii["path"],	
+	@u8Ascii["title"], 
+	@u32utf8["content"], 
+	@u8ascii["comment"], 
+	@u8ascii["author"], 
+	@date["date"],
+	@u8Ascii["URL"]
+};
+
+topic#link: meta.map( #topic, #topiclink );
+
+userinfo: { 
+	@u32["id"], 
+	@u8Ascii["userId"],
+	@u8Ascii["email"],
+	@u8Ascii["country"], 
+	@u8Ascii["AIM"], 
+	@u8Ascii["Yahoo"], 
+	@u8Ascii["ICQ"], 
+	@u8Ascii["MSN"], 
+	@u32UTF8["bio"], 
+	@u8Ascii["firstName"], 
+	@u8Ascii["lastName"]
+};
+
+
+knowledgeexception: { @nvm.exception.remote["exception"] };
+
+nvm.exception#knowledge: meta.map( #nvm.exception, #knowledgeexception );
+
+userexception: { @nvm.exception.remote["exception"] };
+
+nvm.exception#user: meta.map( #nvm.exception, #userexception );
+
+blog.exception: { @nvm.exception.remote["exception"] };
+
+nvm.exception#blog: meta.map( #nvm.exception, #blog.exception );
+
+blog.entry: {
+	@u32[""],
+	@u8Ascii["userid"],
+	@u8Ascii["subject"],
+	@u32utf8["text"]
+};
