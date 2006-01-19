@@ -1,0 +1,106 @@
+<!--
+ Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ 
+ This software is licensed under the Argot Public License 
+ which may be found in the file LICENSE distributed 
+ with this software.
+ 
+ More information about this license can be found at
+ http://www.einet.com.au/License
+  
+ The Developer of this software is Live Media Pty Ltd,
+ PO Box 4591, Melbourne 3001, Australia.  The license is subject 
+ to the law of Victoria, Australia, and subject to exclusive 
+ jurisdiction of the Victorian courts.
+-->
+
+<project name="argot-compiler" default="release" basedir=".">
+
+  <description>Argot build</description>
+  
+  <!-- set global properties for this build -->
+  <property name="src" location="src"/>
+  <property name="dist"  location="dist"/>
+  <property name="lib" location="lib"/>
+  <property name="build" location="build"/>
+  <property name="release" location="release"/>
+
+  <target name="init">
+    <tstamp/>
+    <mkdir dir="${build}"/>
+  	<mkdir dir="${lib}"/>
+  </target>
+
+  <target name="compile" depends="init"
+        description="compile the source">
+                
+	<path id="classpath">
+		<fileset dir="${lib}">
+			<include name="**/*.jar" />
+		</fileset>
+    </path>    
+    <javac srcdir="${src}" destdir="${build}" 
+    	classpathref="classpath" includes="**/*.java" 
+    	debug="on" optimize="true" deprecation="true" > 
+    	<classpath>
+			<fileset dir="lib">
+				<include name="**/*.jar"/>
+			</fileset>    		
+    	</classpath>
+    </javac>
+  </target>
+
+  <target name="release" depends="compile"
+        description="generate the distribution release" >
+
+    <!-- Put everything in ${build} into the jar file -->
+    <copy file="LICENSE.TXT" tofile="${build}/LICENSE"/>
+  	<mkdir dir="${build}/argot"/>
+    <copy file="argot/meta.argot" tofile="${build}/argot/meta.argot"/>
+    <copy file="argot/meta.dictionary" tofile="${build}/argot/meta.dictionary"/>
+    <copy file="argot/common.argot" tofile="${build}/argot/common.argot"/>
+    <copy file="argot/common.dictionary" tofile="${build}/argot/common.dictionary"/>
+    <copy file="argot/remote.argot" tofile="${build}/argot/remote.argot"/>
+    <copy file="argot/remote.dictionary" tofile="${build}/argot/remote.dictionary"/>
+  	
+    <mkdir dir="${release}/lib"/>
+    <jar jarfile="${release}/lib/argot-compiler-1.2.0.jar" basedir="${build}" manifest="bin/manifest.txt"/>
+    <copy file="LICENSE.TXT" tofile="${release}/LICENSE.TXT"/>
+    <copy file="README.TXT" tofile="${release}/README.TXT"/>
+    <copy file="BUILD.TXT" tofile="${release}/BUILD.TXT"/>
+    <copy file="build.xml" tofile="${release}/build.xml"/>
+  	<copy file="lib/antlr272.jar" tofile="${release}/lib/antlr272.jar"/>
+  	<copy file="lib/argot-1.2.0.jar" tofile="${release}/lib/argot-1.2.0.jar"/>
+  	
+    <mkdir dir="${release}/argot"/>
+    <copy file="argot/README.TXT" tofile="${release}/argot/README"/>
+    <copy file="argot/meta.argot" tofile="${release}/argot/meta.argot"/>
+    <copy file="argot/meta.dictionary" tofile="${release}/argot/meta.dictionary"/>
+    <copy file="argot/common.argot" tofile="${release}/argot/common.argot"/>
+    <copy file="argot/common.dictionary" tofile="${release}/argot/common.dictionary"/>
+    <copy file="argot/remote.argot" tofile="${release}/argot/remote.argot"/>
+    <copy file="argot/remote.dictionary" tofile="${release}/argot/remote.dictionary"/>
+
+  	<mkdir dir="${release}/bin"/>
+  	<copy file="bin/ac.bat" tofile="${release}/bin/ac.bat"/>
+  	<copy file="bin/manifest.txt" tofile="${release}/bin/manifest.txt"/>
+
+  	<mkdir dir="${release}/src"/>
+  	<copy todir="${release}/src">
+  		<fileset dir="src"/>
+  	</copy>
+  	
+  	<mkdir dir="${release}/test"/>
+  	<copy todir="${release}/test">
+  		<fileset dir="test"/>
+  	</copy>
+
+    <!-- zip up the release -->
+    <zip basedir="${release}" destfile="../../ArgotCompiler-1.2.0.zip"/>
+  </target>
+
+  <target name="clean" description="clean up" >
+    <delete dir="${bin}"/>
+    <delete dir="${release}"/>
+  </target>
+</project>

@@ -1,0 +1,63 @@
+
+Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+
+This software is licensed under the Argot Public License 
+which may be found in the file LICENSE distributed 
+with this software.
+
+More information about this license can be found at
+http://www.einet.com.au/License
+
+The Developer of this software is Live Media Pty Ltd,
+PO Box 4591, Melbourne 3001, Australia.  The license is subject 
+to the law of Victoria, Australia, and subject to exclusive 
+jurisdiction of the Victorian courts.
+
+---------------------------------------------------------------------
+
+
+Argot C#
+--------
+
+This is the C# version of the Argot runtime library.
+
+
+
+Requirements
+------------
+
+The Argot library itself has no dependencies on external libraries
+other than those supplied with C# itself.
+
+To build and run the test cases you require Nunit. Nunit is available
+at http://www.nunit.org/
+
+The project includes a Nant script for command line building of the
+source package.  Nant is available from http://nant.sourceforge.net/
+
+
+Building Argot C# on Windows.
+-----------------------------
+
+To build the C# version of Argot, please use the Argot.sln solution
+file with Microsoft visual Studio.  
+
+To build and test the package from the command line you can NAnt:
+
+nant test
+
+
+To build directly on the command line with only csc you can enter from the 
+csharp directory:
+
+csc /target:library /out:argot.dll /unsafe src\*.cs src\argot\*.cs src\argot\common\*.cs src\argot\meta\*.cs src\argot\util\*.cs src\argot\dictionary\*.cs
+
+
+
+Building Argot C# using Mono.
+-----------------------------
+
+We haven't used mono yet.  Please let us know if you have successfully
+compiled and used Argot with mono.
+
+

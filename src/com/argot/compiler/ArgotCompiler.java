@@ -78,11 +78,37 @@ public class ArgotCompiler
 		
 	}
 	
-	public static void argotCompile( String[] args ) 
+	public InputStream getDictionaryStream( String argotHomeString, String location )
+	{
+		File dictionaryFile = new File( argotHomeString, location );
+		if ( dictionaryFile.exists())
+		{
+			try
+			{
+				return new FileInputStream( dictionaryFile );
+			}
+			catch (FileNotFoundException e)
+			{
+				// ignore and drop through.
+			}
+		}
+
+		ClassLoader cl = this.getClass().getClassLoader();
+		InputStream is = cl.getResourceAsStream( location );
+		if ( is == null )
+		{
+			System.out.println("Argot " + location + " file not found");
+			System.out.println("File must be located at ARGOT_HOME/" + location );
+			System.exit(-1);
+		}		
+		return is;
+	}
+	
+	public void argotCompile( String[] args ) 
 	throws FileNotFoundException, TypeException, IOException
 	{
-		System.out.println("Argot Compiler Version 1.0.1 - Early Access Evaluation");
-		System.out.println("Copyright 2004 (C) Einet Pty Ltd.");
+		System.out.println("Argot Compiler Version 1.2.0");
+		System.out.println("Copyright 2004-2005 (C) Live Media Pty Ltd.");
 		System.out.println("www.einet.com.au\n");
 		
 		if ( args.length == 0 )
@@ -97,33 +123,13 @@ public class ArgotCompiler
 		String argotHomeString = System.getProperty("ARGOT_HOME");
 		if ( argotHomeString == null )
 		{
-			System.out.println("ARGOT_HOME system property not defined");
-			System.out.println("Use: -DARGOT_HOME=<home directory> on java startup");
-			System.exit(-1);
-		}
-		
-		// Load the common data types.
-		File commonDictionary = new File( argotHomeString, "argot/common.dictionary" );
-		if ( !commonDictionary.exists())
-		{
-			System.out.println("Argot common.dictionary file not found");
-			System.out.println("File must be located at ARGOT_HOME/argot/common.dictionary");
-			System.exit(-1);
+			argotHomeString = ".";
 		}
 
-		Dictionary.readDictionary( library, new FileInputStream(commonDictionary));
+		Dictionary.readDictionary( library, getDictionaryStream( argotHomeString, "argot/common.dictionary"));
 		TypeBindCommon.bindCommon(library);
-		
-		// Load the remote data types.
-		File remoteDictionary = new File( argotHomeString, "argot/remote.dictionary" );
-		if ( !commonDictionary.exists())
-		{
-			System.out.println("Argot remote.dictionary file not found");
-			System.out.println("File must be located at ARGOT_HOME/argot/remote.dictionary");
-			System.exit(-1);
-		}
 
-		Dictionary.readDictionary( library, new FileInputStream(remoteDictionary));
+		Dictionary.readDictionary( library, getDictionaryStream( argotHomeString, "argot/remote.dictionary"));
 		RemoteTypes.bindTypes(library);
 		
 		
@@ -162,7 +168,8 @@ public class ArgotCompiler
 	{
 		try 
 		{
-			argotCompile( args );
+			ArgotCompiler compiler = new ArgotCompiler();
+			compiler.argotCompile( args );
 		} 
 		catch (FileNotFoundException e) 
 		{
