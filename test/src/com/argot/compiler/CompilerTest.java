@@ -36,7 +36,8 @@ extends TestCase
 		String[] args = new String[1];
 		args[0] = "argot/common.argot";
 		
-		ArgotCompiler.argotCompile( args );		
+		ArgotCompiler compiler = new ArgotCompiler();
+		compiler.argotCompile( args );		
 	}
 
 	public void txestCompileNetworkVMArgot()
@@ -45,7 +46,8 @@ extends TestCase
 		String[] args = new String[1];
 		args[0] = "argot/networkvm.argot";
 		
-		ArgotCompiler.argotCompile( args );		
+		ArgotCompiler compiler = new ArgotCompiler();
+		compiler.argotCompile( args );		
 	}
 	
 	public void tstCompileRemoteArgot()
@@ -54,7 +56,8 @@ extends TestCase
 		String[] args = new String[1];
 		args[0] = "argot/remote.argot";
 		
-		ArgotCompiler.argotCompile( args );
+		ArgotCompiler compiler = new ArgotCompiler();
+		compiler.argotCompile( args );		
 	}
 
 	public void testCompileRemoteArgot()
@@ -63,7 +66,8 @@ extends TestCase
 		String[] args = new String[1];
 		args[0] = "argot/remoterpc.argot";
 		
-		ArgotCompiler.argotCompile( args );
+		ArgotCompiler compiler = new ArgotCompiler();
+		compiler.argotCompile( args );		
 	}
 	
 	public void tsstCompileNetArgot()
@@ -72,7 +76,8 @@ extends TestCase
 		String[] args = new String[1];
 		args[0] = "argot/netargot.argot";
 		
-		ArgotCompiler.argotCompile( args );
+		ArgotCompiler compiler = new ArgotCompiler();
+		compiler.argotCompile( args );		
 	}
 
 	public void testCompileTestInterfaceArgot()
@@ -81,7 +86,8 @@ extends TestCase
 		String[] args = new String[1];
 		args[0] = "argot/nettest.argot";
 		
-		ArgotCompiler.argotCompile( args );
+		ArgotCompiler compiler = new ArgotCompiler();
+		compiler.argotCompile( args );		
 	}
 	
 	
