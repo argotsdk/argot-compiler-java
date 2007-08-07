@@ -2,7 +2,7 @@
 rem The Argot Compiler.  Converts .argot files into .dictionary files.
 rem Usage ac.bat <file.argot> [-o <file.dictionary>]
 
-set DEFAULT_ANT_HOME=%~dp0..
+set ARGOT_HOME=%~dp0..
 
 if exist "%ARGOT_HOME%\bin\ac.bat" goto gotArgotHome
 echo The ARGOT_HOME environment variable is not defined correctly
