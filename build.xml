@@ -89,7 +89,7 @@
   	</copy>
 
     <!-- zip up the release -->
-    <zip basedir="${release}" destfile="../../ArgotCompiler-1.2.0.zip"/>
+    <zip basedir="${release}" destfile="../../ArgotCompiler-1.2.1.zip"/>
   </target>
 
   <target name="clean" description="clean up" >
