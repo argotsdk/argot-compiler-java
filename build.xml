@@ -55,13 +55,6 @@
 
     <!-- Put everything in ${build} into the jar file -->
     <copy file="LICENSE.TXT" tofile="${build}/LICENSE"/>
-  	<mkdir dir="${build}/argot"/>
-    <copy file="argot/meta.argot" tofile="${build}/argot/meta.argot"/>
-    <copy file="argot/meta.dictionary" tofile="${build}/argot/meta.dictionary"/>
-    <copy file="argot/common.argot" tofile="${build}/argot/common.argot"/>
-    <copy file="argot/common.dictionary" tofile="${build}/argot/common.dictionary"/>
-    <copy file="argot/remote.argot" tofile="${build}/argot/remote.argot"/>
-    <copy file="argot/remote.dictionary" tofile="${build}/argot/remote.dictionary"/>
   	
     <mkdir dir="${release}/lib"/>
     <jar jarfile="${release}/lib/argot-compiler-1.2.0.jar" basedir="${build}" manifest="bin/manifest.txt"/>
