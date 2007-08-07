@@ -256,7 +256,7 @@ entry { MetaDefinition tds; }
 			}
 			else
 			{
-				System.out.println( "warning: can't redefine " + typename.getText() );
+				System.out.println( "warning: can't redefine '" + typename.getText() +"'.  Definition ignored." );
 			
 				try
 				{
@@ -296,7 +296,7 @@ expression returns [Object e=null;] { Object[] p; }
 			/*_map.getId( id.getText() );*/
 			/* if anything these need to be looked up in a reference map. */
 			
-			Class c = _library.getTypeClass( _library.getId( id.getText() ) );
+			Class c = _library.getClass( _library.getId( id.getText() ) );
 			if ( c == null )
 			{
 				throw new RecognitionException( "type has no class: " + id.getText() );
@@ -341,7 +341,7 @@ primary returns [Object p=null; Object e; ]
 			ex.printStackTrace();
 		}
 	}
-	| SLBRACK { List l=new ArrayList(); } e=primary { l.add(e); } ( COMA e=primary { l.add(e); } )* SRBRACK
+	| SLBRACK { List l=new ArrayList(); } ( e=primary { l.add(e); } ( COMA e=primary { l.add(e); } )* )? SRBRACK
 	{
 		p = l.toArray();
 	}
