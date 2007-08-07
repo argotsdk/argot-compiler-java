@@ -16,6 +16,12 @@
 
 package com.argot.compiler;
 
+import java.io.FileInputStream;
+
+import com.argot.TypeLibrary;
+import com.argot.TypeLibrarySingleton;
+import com.argot.dictionary.Dictionary;
+
 import junit.framework.TestCase;
 
 public class CompilerTest 
@@ -30,66 +36,129 @@ extends TestCase
 		System.setProperty( "ARGOT_HOME", ".");
 	}	
 	
-	public void txestCompileCommonArgot()
+	public void testCompileCommonArgot()
 	throws Exception
 	{
+		System.out.println("COMPILE ARGOT COMMON" );		
 		String[] args = new String[1];
 		args[0] = "argot/common.argot";
 		
 		ArgotCompiler compiler = new ArgotCompiler();
-		compiler.argotCompile( args );		
+		compiler.argotCompile( args );
+		
+		TypeLibrary library = TypeLibrarySingleton.getDefault();
+		Dictionary.readDictionary( library, new FileInputStream( "argot/common.dictionary" ));		
 	}
 
-	public void txestCompileNetworkVMArgot()
+	public void testCompileChannelArgot()
 	throws Exception
 	{
+		System.out.println("COMPILE CHANNEL" );		
+		String[] args = new String[1];
+		args[0] = "argot/channel.argot";
+		
+		ArgotCompiler compiler = new ArgotCompiler();
+		compiler.argotCompile( args );
+		
+		TypeLibrary library = TypeLibrarySingleton.getDefault();
+		Dictionary.readDictionary( library, new FileInputStream( "argot/channel.dictionary" ));		
+	}
+	
+	public void testCompileNetworkVMArgot()
+	throws Exception
+	{
+		Thread.sleep( 1000 );
+		System.out.println("COMPILE NETWORKVM" );
+		
 		String[] args = new String[1];
 		args[0] = "argot/networkvm.argot";
 		
 		ArgotCompiler compiler = new ArgotCompiler();
-		compiler.argotCompile( args );		
+		compiler.argotCompile( args );
+		
+		TypeLibrary library = TypeLibrarySingleton.getDefault();
+		Dictionary.readDictionary( library, new FileInputStream( "argot/networkvm.dictionary" ));		
 	}
 	
-	public void tstCompileRemoteArgot()
+	public void testCompileRemoteArgot()
 	throws Exception
 	{
+		Thread.sleep( 1000 );
+		System.out.println("COMPILE REMOTE" );
+
 		String[] args = new String[1];
 		args[0] = "argot/remote.argot";
 		
 		ArgotCompiler compiler = new ArgotCompiler();
 		compiler.argotCompile( args );		
+
+		TypeLibrary library = TypeLibrarySingleton.getDefault();
+		Dictionary.readDictionary( library, new FileInputStream( "argot/remote.dictionary" ));		
 	}
 
-	public void testCompileRemoteArgot()
+	public void testCompileRemoteRpcArgot()
 	throws Exception
 	{
+		Thread.sleep( 1000 );
+		System.out.println("COMPILE REMOTE RPC" );
+		
 		String[] args = new String[1];
 		args[0] = "argot/remoterpc.argot";
 		
 		ArgotCompiler compiler = new ArgotCompiler();
-		compiler.argotCompile( args );		
+		compiler.argotCompile( args );
+		
+		TypeLibrary library = TypeLibrarySingleton.getDefault();
+		Dictionary.readDictionary( library, new FileInputStream( "argot/remoterpc.dictionary" ));		
 	}
 	
-	public void tsstCompileNetArgot()
+	public void testCompileNetArgot()
 	throws Exception
 	{
+		Thread.sleep( 1000 );
+		System.out.println("COMPILE NETARGOT" );
+		
 		String[] args = new String[1];
 		args[0] = "argot/netargot.argot";
 		
 		ArgotCompiler compiler = new ArgotCompiler();
-		compiler.argotCompile( args );		
+		compiler.argotCompile( args );
+		
+		TypeLibrary library = TypeLibrarySingleton.getDefault();
+		Dictionary.readDictionary( library, new FileInputStream( "argot/netargot.dictionary" ));		
 	}
 
 	public void testCompileTestInterfaceArgot()
 	throws Exception
 	{
+		Thread.sleep( 1000 );
+		System.out.println("COMPILE NETTEST" );
+		
 		String[] args = new String[1];
 		args[0] = "argot/nettest.argot";
 		
 		ArgotCompiler compiler = new ArgotCompiler();
-		compiler.argotCompile( args );		
+		compiler.argotCompile( args );
+
+		Thread.sleep( 1000 );
+		
+		TypeLibrary library = TypeLibrarySingleton.getDefault();
+		Dictionary.readDictionary( library, new FileInputStream( "argot/nettest.dictionary" ));		
 	}
 	
-	
+	public void testCompileTestKnowledgeBaseArgot()
+	throws Exception
+	{
+		System.out.println("COMPILE KNOWLEDGE" );
+		
+		String[] args = new String[1];
+		args[0] = "argot/knowledgebase.argot";
+		
+		ArgotCompiler compiler = new ArgotCompiler();
+		compiler.argotCompile( args );
+		
+		TypeLibrary library = TypeLibrarySingleton.getDefault();
+		Dictionary.readDictionary( library, new FileInputStream( "argot/knowledgebase.dictionary" ));
+	}	
 	
 }
