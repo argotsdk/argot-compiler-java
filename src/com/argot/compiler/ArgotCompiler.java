@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2007 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -27,15 +27,17 @@ import java.net.URL;
 import antlr.RecognitionException;
 import antlr.TokenStreamException;
 
-import com.argot.TypeBindCommon;
 import com.argot.TypeException;
+import com.argot.TypeLibraryLoader;
 import com.argot.TypeMap;
 import com.argot.TypeMapCore;
 
 import com.argot.TypeLibrary;
+import com.argot.common.CommonLoader;
 import com.argot.dictionary.Dictionary;
-import com.argot.dictionary.DictionaryMap;
-import com.argot.remote.RemoteTypes;
+import com.argot.dictionary.DictionaryLoader;
+import com.argot.meta.MetaLoader;
+import com.argot.remote.RemoteLoader;
 
 
 /**
@@ -50,16 +52,17 @@ public class ArgotCompiler
 	{
 	}
 
-	private void parse( TypeLibrary library, TypeMap map, InputStream in )
-	throws TypeException
+	private void parse( TypeLibrary library, TypeMap map, File inputFile )
+	throws TypeException, FileNotFoundException
 	{
-		ArgotLexer lexer = new ArgotLexer( in );
+		FileInputStream fin = new FileInputStream( inputFile );
+		ArgotLexer lexer = new ArgotLexer( fin );
 		ArgotParser parser = new ArgotParser(lexer);
 		
 		parser.setLibrary( library );
 		parser.setTypeMap( map );
 		parser.setValidateReference( false );
-		
+		parser.setBaseDirectory( inputFile.getParentFile() );
 		try
 		{
 			parser.file();
@@ -75,38 +78,23 @@ public class ArgotCompiler
 		}
 	}
 	
-	public InputStream getDictionaryStream( String argotHomeString, String location )
+	public void loadOptionalDictionary( TypeLibrary library, TypeLibraryLoader loader )
 	{
-		File dictionaryFile = new File( argotHomeString, location );
-		if ( dictionaryFile.exists())
-		{
-			System.out.println("Loading file: " + dictionaryFile.getPath() );
-			try
-			{
-				return new FileInputStream( dictionaryFile );
-			}
-			catch (FileNotFoundException e)
-			{
-				// ignore and drop through.
-			}
-		}
+		System.out.println("Loading file: " + loader.getName() );
 
-		ClassLoader cl = this.getClass().getClassLoader();
-		URL fileUrl = cl.getResource( location );
-		
-		InputStream is = cl.getResourceAsStream( location );
-		if ( is == null )
+		try
 		{
-			System.out.println("WARNING: Argot '" + location + "' file not found");
-			return null;
+			library.loadLibrary( loader );
 		}
-		System.out.println("Loading resource: " + fileUrl.toExternalForm() );		
-		return is;
+		catch (TypeException e)
+		{
+			System.out.println("WARNING: '" + loader.getName() + "' failed to load.");
+		}		
 	}
 
 	private void printHeader()
 	{
-		System.out.println("\nArgot Compiler Version 1.2.0");
+		System.out.println("\nArgot Compiler Version 1.2.1");
 		System.out.println("Copyright 2004-2007 (C) Live Media Pty Ltd.");
 		System.out.println("www.einet.com.au\n");		
 	}
@@ -124,30 +112,18 @@ public class ArgotCompiler
 		
 		ArgotCompiler compiler = new ArgotCompiler();
 		TypeLibrary library = new TypeLibrary();
-		TypeMapCore.loadLibrary( library );
-		DictionaryMap.loadDictionaryMap( library );
-
-		InputStream dictStream = getDictionaryStream( argotHomeString, "argot/common.dictionary");
-		if (dictStream != null)
-		{
-			Dictionary.readDictionary( library, dictStream );
-			TypeBindCommon.bindCommon(library);
-		}
+		library.loadLibrary( new MetaLoader() );
+		library.loadLibrary( new DictionaryLoader() );
 		
-		dictStream = getDictionaryStream( argotHomeString, "argot/remote.dictionary");
-		if (dictStream != null)
-		{
-			Dictionary.readDictionary( library, dictStream );
-			RemoteTypes.bindTypes(library);
-		}
-		
-		FileInputStream fin = new FileInputStream( inputFile );
-		FileOutputStream fout = new FileOutputStream( outputFile );
+		loadOptionalDictionary( library, new CommonLoader() );
+		loadOptionalDictionary( library, new RemoteLoader() );
 
 		System.out.println("Compling: " + inputFile.getName() );
 		
 		TypeMap map = new TypeMap( library );			
-		compiler.parse( library, map, fin );					
+		compiler.parse( library, map, inputFile );					
+
+		FileOutputStream fout = new FileOutputStream( outputFile );
 		Dictionary.writeDictionary( fout, map );
 	}
 	
