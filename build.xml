@@ -1,5 +1,5 @@
 <!--
- Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ Copyright 2003-2007 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  
  This software is licensed under the Argot Public License 
  which may be found in the file LICENSE distributed 
@@ -14,86 +14,168 @@
  jurisdiction of the Victorian courts.
 -->
 
-<project name="argot-compiler" default="release" basedir=".">
+<project name="argot-compiler" default="package" basedir=".">
 
-  <description>Argot build</description>
-  
-  <!-- set global properties for this build -->
-  <property name="src" location="src"/>
-  <property name="dist"  location="dist"/>
-  <property name="lib" location="lib"/>
-  <property name="build" location="build"/>
-  <property name="release" location="release"/>
+	<description>Argot Compiler Package</description>
 
-  <target name="init">
-    <tstamp/>
-    <mkdir dir="${build}"/>
-  	<mkdir dir="${lib}"/>
-  </target>
+	<property name="version" value="1.2.1" />
 
-  <target name="compile" depends="init"
-        description="compile the source">
-                
-	<path id="classpath">
-		<fileset dir="${lib}">
-			<include name="**/*.jar" />
-		</fileset>
-    </path>    
-    <javac srcdir="${src}" destdir="${build}" 
-    	classpathref="classpath" includes="**/*.java" 
-    	debug="on" optimize="true" deprecation="true" > 
-    	<classpath>
-			<fileset dir="lib">
-				<include name="**/*.jar"/>
-			</fileset>    		
-    	</classpath>
-    </javac>
-  </target>
+	<property name="argot.jar" value="lib/argot-${version}.jar" />
+	<property name="antlr.jar" value="lib/antlr272.jar" />
 
-  <target name="release" depends="compile"
-        description="generate the distribution release" >
+	<!-- set global properties for this build -->
+	<property name="src" location="src" />
+	<property name="test" location="test\src" />	
+	<property name="lib" location="lib" />
+	<property name="build" location="build" />
+	<property name="build.bin" location="build\bin" />
+	<property name="build.emma" location="build\emma" />
+	<property name="build.test" location="build\test" />
+	<property name="build.reports" location="build\reports" />
+	<property name="release" location="build\release" />
 
-    <!-- Put everything in ${build} into the jar file -->
-    <copy file="LICENSE.TXT" tofile="${build}/LICENSE"/>
-  	
-    <mkdir dir="${release}/lib"/>
-    <jar jarfile="${release}/lib/argot-compiler-1.2.0.jar" basedir="${build}" manifest="bin/manifest.txt"/>
-    <copy file="LICENSE.TXT" tofile="${release}/LICENSE.TXT"/>
-    <copy file="README.TXT" tofile="${release}/README.TXT"/>
-    <copy file="BUILD.TXT" tofile="${release}/BUILD.TXT"/>
-    <copy file="build.xml" tofile="${release}/build.xml"/>
-  	<copy file="lib/antlr272.jar" tofile="${release}/lib/antlr272.jar"/>
-  	<copy file="lib/argot-1.2.0.jar" tofile="${release}/lib/argot-1.2.0.jar"/>
-  	
-    <mkdir dir="${release}/argot"/>
-    <copy file="argot/README.TXT" tofile="${release}/argot/README"/>
-    <copy file="argot/meta.argot" tofile="${release}/argot/meta.argot"/>
-    <copy file="argot/meta.dictionary" tofile="${release}/argot/meta.dictionary"/>
-    <copy file="argot/common.argot" tofile="${release}/argot/common.argot"/>
-    <copy file="argot/common.dictionary" tofile="${release}/argot/common.dictionary"/>
-    <copy file="argot/remote.argot" tofile="${release}/argot/remote.argot"/>
-    <copy file="argot/remote.dictionary" tofile="${release}/argot/remote.dictionary"/>
+	<path id="compile.classpath">
+		<pathelement location="${argot.jar}"/>
+		<pathelement location="${antlr.jar}"/>
+	</path>
+	
+	<property name="emma.dir" value="C:\java\emma-2.0.5312" />
+	<path id="emma.lib">
+		<pathelement location="${emma.dir}/lib/emma.jar" />
+		<pathelement location="${emma.dir}/lib/emma_ant.jar" />
+	</path>
+	<taskdef resource="emma_ant.properties" classpathref="emma.lib" />
 
-  	<mkdir dir="${release}/bin"/>
-  	<copy file="bin/ac.bat" tofile="${release}/bin/ac.bat"/>
-  	<copy file="bin/manifest.txt" tofile="${release}/bin/manifest.txt"/>
+	<target name="init">
+		<tstamp />
+		<mkdir dir="${lib}" />
+		<mkdir dir="${build}" />
+		<mkdir dir="${build.bin}" />
+		<mkdir dir="${build.test}" />
+		<mkdir dir="${build.emma}" />
+		<mkdir dir="${release}" />
+	</target>
 
-  	<mkdir dir="${release}/src"/>
-  	<copy todir="${release}/src">
-  		<fileset dir="src"/>
-  	</copy>
-  	
-  	<mkdir dir="${release}/test"/>
-  	<copy todir="${release}/test">
-  		<fileset dir="test"/>
-  	</copy>
 
-    <!-- zip up the release -->
-    <zip basedir="${release}" destfile="../../ArgotCompiler-1.2.1.zip"/>
-  </target>
+	<target name="compile" depends="init" description="compile the source">
+		<javac 	srcdir="${src}" 
+				destdir="${build.bin}" 
+				classpathref="compile.classpath" 
+				includes="**/*.java" 
+				debug="on" 
+				optimize="true" 
+				deprecation="true" />
+	</target>
 
-  <target name="clean" description="clean up" >
-    <delete dir="${bin}"/>
-    <delete dir="${release}"/>
-  </target>
+	<target name="compile-tests" depends="init,compile" description="compile the junit tests">
+		<javac 	srcdir="${test}" 
+				destdir="${build.test}" 
+				classpathref="junit.classpath" 
+				includes="**/*.java" 
+				debug="on" 	
+				optimize="true" 
+				deprecation="true" />
+	</target>
+
+
+	<target name="emma" description="turns on EMMA instrumentation/reporting">
+		<property name="emma.enabled" value="true" />
+		<!-- EMMA instr class output directory: -->
+		<property name="out.instr.dir" value="${build.emma}" />
+		<mkdir dir="${out.instr.dir}" />
+	</target>
+
+	<target name="junit-tests" depends="compile-tests" description="run the junit tests">
+
+		<path id="emma.path">
+			<pathelement location="${build.bin}" />
+		</path>
+
+		<emma enabled="${emma.enabled}">
+			<instr instrpathref="emma.path" destdir="${out.instr.dir}" mode="fullcopy" metadatafile="${build.reports}/metadata.emma" merge="true" />
+		</emma>
+
+		<path id="junit.classpath">
+			<pathelement location="${build.bin}" />
+			<path refid="compile.classpath"/>
+		</path>
+		
+		<junit printsummary="yes" haltonfailure="no" fork="yes" forkmode="once" failureproperty="junit.failure">
+			<classpath>
+				<pathelement location="${build.emma}\classes" />
+				<fileset dir="${lib}">
+					<include name="**/*.jar" />
+				</fileset>
+				<path refid="emma.lib" />
+				<pathelement location="${build.test}" />
+			</classpath>
+			<jvmarg value="-Demma.coverage.out.file=${build.reports}/coverage.emma" />
+			<jvmarg value="-Demma.coverage.out.merge=false" />
+
+			<formatter type="plain" />
+
+			<batchtest fork="yes" todir="${build.reports}">
+				<fileset dir="test\src">
+					<include name="**/*Test.java" />
+					<exclude name="**/AllTests.java" />
+				</fileset>
+			</batchtest>
+		</junit>
+
+		<emma enabled="${emma.enabled}">
+			<report sourcepath="${src}">
+				<fileset dir="${build.reports}">
+					<include name="*.emma" />
+				</fileset>
+
+				<txt outfile="${build.reports}/coverage.txt" />
+				<html outfile="${build.reports}/coverage.html" />
+			</report>
+		</emma>
+
+		<fail if="junit.failure" message="JUnit tests failed" />
+	</target>
+
+	<!-- Put everything in ${build.bin} into the jar file -->
+	<target name="build-jar" depends="compile">
+		<copy file="LICENSE.TXT" tofile="${build.bin}/LICENSE" />
+		<mkdir dir="${release}/lib" />
+		<jar jarfile="${release}/lib/argot-compiler-${version}.jar" basedir="${build.bin}">
+			<manifest>
+				<attribute name="Main-Class" value="com.argot.compiler.ArgotCompiler"/>
+				<attribute name="Class-Path" value="antlr272.jar argot-1.2.1.jar"/>				
+			</manifest>			
+		</jar>
+
+	</target>
+
+	<target name="package" depends="clean,emma,compile,build-jar,junit-tests" description="generate the distribution release">
+
+		<copy file="LICENSE.TXT" tofile="${release}/LICENSE.TXT" />
+		<copy file="README.TXT" tofile="${release}/README.TXT" />
+		<copy file="BUILD.TXT" tofile="${release}/BUILD.TXT" />
+		<copy file="build.xml" tofile="${release}/build.xml" />
+		<copy file="${antlr.jar}" todir="${release}/lib" />
+		<copy file="${argot.jar}" todir="${release}/lib" />
+
+		<mkdir dir="${release}/bin" />
+		<copy file="bin/ac.bat" tofile="${release}/bin/ac.bat" />
+
+		<mkdir dir="${release}/src" />
+		<copy todir="${release}/src">
+			<fileset dir="src" />
+		</copy>
+
+		<mkdir dir="${release}/test" />
+		<copy todir="${release}/test">
+			<fileset dir="test" />
+		</copy>
+
+		<!-- zip up the release -->
+		<zip basedir="${release}" destfile="${build}/ArgotCompiler-${version}.zip" />
+	</target>
+
+	<target name="clean" description="clean up">
+		<delete dir="${build}" />
+	</target>
 </project>
