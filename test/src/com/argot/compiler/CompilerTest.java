@@ -19,8 +19,11 @@ package com.argot.compiler;
 import java.io.FileInputStream;
 
 import com.argot.TypeLibrary;
-import com.argot.TypeLibrarySingleton;
+import com.argot.TypeLibraryLoader;
+import com.argot.common.CommonLoader;
 import com.argot.dictionary.Dictionary;
+import com.argot.dictionary.DictionaryLoader;
+import com.argot.meta.MetaLoader;
 
 import junit.framework.TestCase;
 
@@ -28,6 +31,12 @@ public class CompilerTest
 extends TestCase
 {
 
+	private TypeLibraryLoader libraryLoaders[] = {
+		new MetaLoader(),
+		new DictionaryLoader(),
+		new CommonLoader()
+	};
+	
 	protected void setUp() 
 	throws Exception 
 	{
@@ -46,7 +55,7 @@ extends TestCase
 		ArgotCompiler compiler = new ArgotCompiler();
 		compiler.argotCompile( args );
 		
-		TypeLibrary library = TypeLibrarySingleton.getDefault();
+		TypeLibrary library = new TypeLibrary( libraryLoaders );
 		Dictionary.readDictionary( library, new FileInputStream( "argot/common.dictionary" ));		
 	}
 
@@ -60,7 +69,7 @@ extends TestCase
 		ArgotCompiler compiler = new ArgotCompiler();
 		compiler.argotCompile( args );
 		
-		TypeLibrary library = TypeLibrarySingleton.getDefault();
+		TypeLibrary library = new TypeLibrary( libraryLoaders );
 		Dictionary.readDictionary( library, new FileInputStream( "argot/channel.dictionary" ));		
 	}
 	
@@ -76,7 +85,7 @@ extends TestCase
 		ArgotCompiler compiler = new ArgotCompiler();
 		compiler.argotCompile( args );
 		
-		TypeLibrary library = TypeLibrarySingleton.getDefault();
+		TypeLibrary library = new TypeLibrary( libraryLoaders );
 		Dictionary.readDictionary( library, new FileInputStream( "argot/networkvm.dictionary" ));		
 	}
 	
@@ -92,7 +101,7 @@ extends TestCase
 		ArgotCompiler compiler = new ArgotCompiler();
 		compiler.argotCompile( args );		
 
-		TypeLibrary library = TypeLibrarySingleton.getDefault();
+		TypeLibrary library = new TypeLibrary( libraryLoaders );
 		Dictionary.readDictionary( library, new FileInputStream( "argot/remote.dictionary" ));		
 	}
 
@@ -108,7 +117,7 @@ extends TestCase
 		ArgotCompiler compiler = new ArgotCompiler();
 		compiler.argotCompile( args );
 		
-		TypeLibrary library = TypeLibrarySingleton.getDefault();
+		TypeLibrary library = new TypeLibrary( libraryLoaders );
 		Dictionary.readDictionary( library, new FileInputStream( "argot/remoterpc.dictionary" ));		
 	}
 	
@@ -124,7 +133,7 @@ extends TestCase
 		ArgotCompiler compiler = new ArgotCompiler();
 		compiler.argotCompile( args );
 		
-		TypeLibrary library = TypeLibrarySingleton.getDefault();
+		TypeLibrary library = new TypeLibrary( libraryLoaders );
 		Dictionary.readDictionary( library, new FileInputStream( "argot/netargot.dictionary" ));		
 	}
 
@@ -142,7 +151,7 @@ extends TestCase
 
 		Thread.sleep( 1000 );
 		
-		TypeLibrary library = TypeLibrarySingleton.getDefault();
+		TypeLibrary library = new TypeLibrary( libraryLoaders );
 		Dictionary.readDictionary( library, new FileInputStream( "argot/nettest.dictionary" ));		
 	}
 	
@@ -157,7 +166,7 @@ extends TestCase
 		ArgotCompiler compiler = new ArgotCompiler();
 		compiler.argotCompile( args );
 		
-		TypeLibrary library = TypeLibrarySingleton.getDefault();
+		TypeLibrary library = new TypeLibrary( libraryLoaders );
 		Dictionary.readDictionary( library, new FileInputStream( "argot/knowledgebase.dictionary" ));
 	}	
 	
