@@ -1,0 +1,90 @@
+/*
+ * Copyright 2003-2007 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ *
+ * This software is licensed under the Argot Public License 
+ * which may be found in the file LICENSE distributed 
+ * with this software.
+ *
+ * More information about this license can be found at
+ * http://www.einet.com.au/License
+ * 
+ * The Developer of this software is Live Media Pty Ltd,
+ * PO Box 4591, Melbourne 3001, Australia.  The license is subject 
+ * to the law of Victoria, Australia, and subject to exclusive 
+ * jurisdiction of the Victorian courts.
+ */
+ 
+import s32;
+import u16;
+import u8ascii;
+import empty;
+import u8;
+
+load "networkvm.dictionary";
+
+
+import nvm.exception.remote;
+import nvm.exception.trace;
+import nvm.exception;
+
+load "kb.dictionary";
+
+import knowledgeexception;
+import u8ascii;
+import s64;
+
+KnowledgeBase: remote.interface();
+
+KnowledgeBase.getTopicIdByPath: remote.method( #KnowledgeBase, "getTopicIdByPath",
+	[ remote.parameter( #u8ascii, "path" ) ],
+	[ remote.parameter( #s64, "id" ) ],
+	[ #knowledgeexception ]
+	);
+
+KnowledgeBase.getTopic: remote.method( #KnowledgeBase, "getTopic",
+	[ remote.parameter( #s64, "topicId" ) ],
+	[ remote.parameter( #topic, "topic" ) ],
+	[ #knowledgeexception ]
+	);
+
+
+KnowledgeBase.getChildren: remote.method( #KnowledgeBase, "getChildren",
+	[ remote.parameter( #s64, "id" ) ],
+	[ remote.parameter( #topiclist, "topics" ) ],
+	[ #knowledgeexception ]
+	);
+
+KnowledgeBase.getVersionHistory: remote.method( #KnowledgeBase, "getVersionHistory",
+	[ remote.parameter( #s64, "id" ) ],
+	[ remote.parameter( #topiclist, "topics" ) ],
+	[ #knowledgeexception ]
+	);	
+
+
+KnowledgeBase.getPopular: remote.method( #KnowledgeBase, "getPopular",
+	[ ],
+	[ remote.parameter( #topiclist, "topics" ) ],
+	[ #knowledgeexception ]
+	);
+
+KnowledgeBase.getRecent: remote.method( #KnowledgeBase, "getRecent",
+	[ ],
+	[ remote.parameter( #topiclist, "topics" ) ],
+	[ #knowledgeexception ]
+	);
+
+/*
+
+	public Topic updateTopic( String userSession, Topic topic )
+	throws UserException, KnowledgeException;
+
+	public Topic createTopic( String userSession, long pid, int type )
+	throws UserException, KnowledgeException;
+
+	public Topic saveTopic( String userSession, Topic topic )
+	throws UserException, KnowledgeException;
+	
+	public void moveTopic( String userSession, long id, long dest )
+	throws UserException, KnowledgeException;
+
+*/
