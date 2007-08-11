@@ -1,3 +1,0 @@
-Manifest-Version: 1.0
-Class-Path: antlr272.jar Argot-1.2.0.jar
-Main-Class: com.argot.compiler.ArgotCompiler
