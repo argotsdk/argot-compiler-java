@@ -1,0 +1,150 @@
+/*
+ * Copyright 2003-2007 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ *
+ * This software is licensed under the Argot Public License 
+ * which may be found in the file LICENSE distributed 
+ * with this software.
+ *
+ * More information about this license can be found at
+ * http://www.einet.com.au/License
+ * 
+ * The Developer of this software is Live Media Pty Ltd,
+ * PO Box 4591, Melbourne 3001, Australia.  The license is subject 
+ * to the law of Victoria, Australia, and subject to exclusive 
+ * jurisdiction of the Victorian courts.
+ */
+ 
+ load "remote.dictionary";
+ 
+ /** 
+ * This is the network virtual machine types.  
+ *
+ * 
+ *
+ */
+ 
+import empty;
+import u8;
+import u16;
+import u32;
+import s32;
+import u8ascii;
+
+import u32binary;
+
+import meta.identified;
+import meta.array;
+import meta.reference;
+import meta.sequence;
+import meta.name;
+import meta.expression;
+
+import remote.location;
+import remote.object;
+
+/*
+ * A Colony Resource Location is a simple URL.   The definition
+ * could be better as u8ascii has maximum length of 256 characters.
+ */
+crl: {
+		@u8ascii["location"]
+	};
+
+remote.location#crl: meta.map( #remote.location, #crl );
+
+/*
+ * A stack is an array of items.  In future this could be expanded
+ * to array( U16, contained( U16 meta.identified( meta.any ) ) )
+ * this would allow each item on the stack to be moved around without
+ * actually understanding what the item is.
+ */
+nvm.heap: {
+			meta.array( 
+			    @u16["size"],
+				meta.identified("object")
+			)
+		};
+
+
+
+nvm.instruction: meta.abstract();
+
+nvm.instruction.load_crl_host: { @empty["empty"] };
+nvm.instruction.load_crl_object: { @empty["empty"] };
+nvm.instruction.load_heap_object: { @u16["heapIndex"] };
+nvm.instruction.named_method_call: {
+		@u8ascii["methodName"],
+		meta.array(
+			@u8["size"],
+			@u16["typeId"]
+		)
+	};
+nvm.instruction.return: { @empty["empty"] };
+nvm.instruction.store_heap_object: { @u16["heapIndex"] };
+nvm.instruction.to_host: { @empty["empty"] };
+
+nvm.instruction#load_crl_host: meta.map( #nvm.instruction, #nvm.instruction.load_crl_host );
+nvm.instruction#to_host: meta.map( #nvm.instruction, #nvm.instruction.to_host );
+nvm.instruction#load_crl_object: meta.map( #nvm.instruction, #nvm.instruction.load_crl_object );
+nvm.instruction#load_heap_object: meta.map( #nvm.instruction, #nvm.instruction.load_heap_object );
+nvm.instruction#named_method_call: meta.map( #nvm.instruction, #nvm.instruction.named_method_call );
+nvm.instruction#return: meta.map( #nvm.instruction, #nvm.instruction.return );
+nvm.instruction#store_heap_object: meta.map( #nvm.instruction, #nvm.instruction.store_heap_object );
+
+nvm.instructions: {
+		meta.array(
+			@u16["size"],
+			@nvm.instruction["instruction"]
+		)
+	};
+	
+nvm.exception: meta.abstract();
+
+nvm.exception#empty: meta.map( #nvm.exception, #empty );
+
+
+nvm.exception.trace: 
+	{
+		@u8ascii["className"],
+		@u8ascii["methodName"],
+		@u8ascii["fileName"],
+		@s32["lineNumber"]
+	};	
+	
+nvm.exception.remote:
+	{
+		@u8ascii["reason"],
+		meta.array(
+			@u16["size"],
+			@nvm.exception.trace["stacktrace"]
+		)
+	};
+
+nvm.exception#remote: meta.map( #nvm.exception, #nvm.exception.remote );
+
+/*
+ * This virtual machine state includes instructions, heap, program counter
+ * and exception state.  
+ */
+ 
+nvm.state: {
+			@u16[ "programCounter" ],
+			@nvm.instructions[ "instructions" ],
+			@nvm.heap[ "heap" ],
+			@nvm.exception[ "exception" ]
+	};
+
+		
+nvm.host: remote.interface();
+
+nvm.host.process: remote.method( #nvm.host, "process",
+	[ remote.parameter( #nvm.state, "nvmState" ) ],
+	[ remote.parameter( #nvm.state, "nvmState" ) ],
+	[ #nvm.exception ]
+	);
+	
+nvm.host.getobject: remote.method( #nvm.host, "getObject",
+	[ remote.parameter( #remote.location, "metaLocation" ) ],
+	[ remote.parameter( #remote.object, "metaObject" ) ],
+	[ #nvm.exception ]
+	);

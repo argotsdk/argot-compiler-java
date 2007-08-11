@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2007 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -14,23 +14,27 @@
  * jurisdiction of the Victorian courts.
  */
 
-load "argot/remote.dictionary";
+load "networkvm.dictionary";
+load "channel.dictionary";
 
-
-import remote.parameter;
-import remote.interface;
-import remote.method;
 import remote.location;
-
-import meta.definition;
-import meta.definition#interface;
-
 
 import u16;
 import u8ascii;
 import empty;
 import u8;
+import u32;
 
+import channel.id;
+import channel.input;
+import channel.output;
+import channel.pipe;
+
+testvalue:
+   meta.sequence([
+       meta.reference( #u8, "x" ),
+       meta.reference( #u8ascii, "str" )
+   ]);
 
 
 test: remote.interface();
@@ -42,8 +46,88 @@ test.doSomething: remote.method( #test, "doSomething",
 	);
 	
 
+/* public int methodWithException( int x ) throws RemoteException; */
+	
+test.methodWithException: remote.method( #test, "methodWithException",
+	[ remote.parameter( #s32, "x" ) ],
+	[ remote.parameter( #s32, "ret" ) ],
+	[ #nvm.exception ]
+	);
+	
+/* public void methodNoReturn( int x ); */
+	
+test.methodNoReturn: remote.method( #test, "methodNoReturn",
+	[ remote.parameter( #s32, "x" ) ],
+	[ ],
+	[ ]
+	);
+	
+/* public void methodNoParam(); */
+
+test.methodNoParam: remote.method( #test, "methodNoParam",
+	[ ],
+	[ ],
+	[ ]
+	);
+	
+/* public void methodComplexParam( TestValue value ); */
+	
+test.methodComplexParam: remote.method( #test, "methodComplexParam",
+	[ remote.parameter( #testvalue, "x" ) ],
+	[ ],
+	[ ]
+	);
+	
+/* public TestValue methodComplexReturn( int x ); */
+
+test.methodComplexReturn: remote.method( #test, "methodComplexReturn",
+	[ remote.parameter( #s32, "x" ) ],
+	[ remote.parameter( #testvalue, "ret" ) ],
+	[ ]
+	);
+
+test.channel: remote.interface();
+	
+test.channel.sendInputStream: remote.method( #test.channel, "sendInputStream",
+	[ remote.parameter( #channel.input, "input" ) ],
+	[ remote.parameter( #u8ascii, "result") ],
+	[ ]
+	);
+	
+test.channel.receiveInputStream: remote.method( #test.channel, "receiveInputStream",
+	[ remote.parameter( #u8ascii, "input") ],
+	[ remote.parameter( #channel.input, "result" ) ],
+	[ ]
+	);
+	
+test.channel.sendOutputStream: remote.method( #test.channel, "sendOutputStream",
+	[ remote.parameter( #channel.output, "output" ),
+	  remote.parameter( #u8ascii, "input" ) ],
+	[ ],
+	[ ]
+	);
+	
+test.channel.receiveOutputStream: remote.method( #test.channel, "receiveOutputStream",
+	[ ],
+	[ remote.parameter( #channel.output, "output" ) ],
+	[ ]
+	);
+
+test.channel.sendEndPoint: remote.method( #test.channel, "sendEndPoint",
+	[ remote.parameter( #channel.pipe, "endpoint" ) ],
+	[ ],
+	[ ]
+	);
+	
+test.channel.receiveEndPoint: remote.method( #test.channel, "receiveEndPoint",
+	[ ],
+	[ remote.parameter( #channel.pipe, "output" ) ],
+	[ ]
+	);
+
 index: meta.sequence([
 		meta.reference( #u16, "index" )
 	]);
 	
+
 remote.location#index: meta.map( #remote.location, #index );
