@@ -24,6 +24,7 @@ import com.argot.common.CommonLoader;
 import com.argot.dictionary.Dictionary;
 import com.argot.dictionary.DictionaryLoader;
 import com.argot.meta.MetaLoader;
+import com.argot.remote.RemoteLoader;
 
 import junit.framework.TestCase;
 
@@ -34,7 +35,8 @@ extends TestCase
 	private TypeLibraryLoader libraryLoaders[] = {
 		new MetaLoader(),
 		new DictionaryLoader(),
-		new CommonLoader()
+		new CommonLoader(),
+		new RemoteLoader()
 	};
 	
 	protected void setUp() 
@@ -154,6 +156,22 @@ extends TestCase
 		TypeLibrary library = new TypeLibrary( libraryLoaders );
 		Dictionary.readDictionary( library, new FileInputStream( "argot/nettest.dictionary" ));		
 	}
+/*
+	public void testCompileTestKBArgot()
+	throws Exception
+	{
+		System.out.println("COMPILE KB" );
+		
+		String[] args = new String[1];
+		args[0] = "argot/kb.argot";
+		
+		ArgotCompiler compiler = new ArgotCompiler();
+		compiler.argotCompile( args );
+		
+		TypeLibrary library = new TypeLibrary( libraryLoaders );
+		Dictionary.readDictionary( library, new FileInputStream( "argot/networkvm.dictionary" ));
+		Dictionary.readDictionary( library, new FileInputStream( "argot/kb.dictionary" ));
+	}	
 	
 	public void testCompileTestKnowledgeBaseArgot()
 	throws Exception
@@ -167,7 +185,9 @@ extends TestCase
 		compiler.argotCompile( args );
 		
 		TypeLibrary library = new TypeLibrary( libraryLoaders );
+		Dictionary.readDictionary( library, new FileInputStream( "argot/networkvm.dictionary" ));
+		Dictionary.readDictionary( library, new FileInputStream( "argot/kb.dictionary" ));
 		Dictionary.readDictionary( library, new FileInputStream( "argot/knowledgebase.dictionary" ));
 	}	
-	
+*/
 }
