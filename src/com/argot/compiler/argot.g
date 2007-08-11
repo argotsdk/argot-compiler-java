@@ -59,6 +59,7 @@ options
 	private TypeLibrary _library;
 	private TypeMap _map;
 	private int _lastType;
+	private File _baseDirectory;
 	
 	private boolean _validateReferences = true;
 	
@@ -71,6 +72,11 @@ options
 	{
 		_map = map;
 		_lastType = 0;
+	}
+	
+	public void setBaseDirectory( File baseDirectory )
+	{
+		_baseDirectory = baseDirectory;
 	}
 	
 	public void setValidateReference( boolean validate )
@@ -198,21 +204,22 @@ reserve: RESERVE typename:IDENTIFIER SEMI
 load: LOAD file:QSTRING SEMI
 	{
 		// This will load the file specified.
+       	File loadFile = new File( _baseDirectory, file.getText());
 		try
         {
-            Dictionary.readDictionary( _library, new FileInputStream(file.getText()));
+            Dictionary.readDictionary( _library, new FileInputStream(loadFile));
         }
         catch (FileNotFoundException e)
         {
-			throw new RecognitionException( "failed to load " + file.getText() );
+			throw new RecognitionException( "failed to load " + loadFile.getPath() + ".\n" + e.getMessage() );
         }
         catch (TypeException e)
         {
-			throw new RecognitionException( "failed to load " + file.getText() );
+			throw new RecognitionException( "failed to load " + loadFile.getPath() + ".\n" + e.getMessage() );
         }
         catch (IOException e)
         {
-			throw new RecognitionException( "failed to load " + file.getText() );
+			throw new RecognitionException( "failed to load " + loadFile.getPath() + ".\n" + e.getMessage() );
         }
 		
 	}
