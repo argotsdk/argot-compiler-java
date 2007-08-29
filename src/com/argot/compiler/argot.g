@@ -37,6 +37,7 @@ import com.argot.TypeLibrary;
 import com.argot.TypeMap;
 import com.argot.TypeElement;
 import com.argot.TypeException;
+import com.argot.TypeConstructorAuto;
 import com.argot.meta.MetaDefinition;
 import com.argot.meta.MetaBasic;
 import com.argot.meta.MetaExpression;
@@ -59,7 +60,7 @@ options
 	private TypeLibrary _library;
 	private TypeMap _map;
 	private int _lastType;
-	private File _baseDirectory;
+	private ArgotCompiler _compiler;
 	
 	private boolean _validateReferences = true;
 	
@@ -74,9 +75,9 @@ options
 		_lastType = 0;
 	}
 	
-	public void setBaseDirectory( File baseDirectory )
+	public void setArgotCompiler( ArgotCompiler compiler )
 	{
-		_baseDirectory = baseDirectory;
+		_compiler = compiler;
 	}
 	
 	public void setValidateReference( boolean validate )
@@ -86,79 +87,8 @@ options
 
     public Object construct(Object[] objects, Class clss ) throws TypeException
     {
-		Constructor constructors[] = clss.getConstructors();
-
-		for ( int x=0; x < constructors.length; x++ )
-		{
-			if (  constructors[x].getParameterTypes().length == objects.length )
-			{
-				boolean found = true;
-				Class[] paramTypes = constructors[x].getParameterTypes();
-				for ( int y=0; y < paramTypes.length; y++ )
-				{
-					if ( objects[y] != null )
-						
-					if ( !paramTypes[y].isInstance( objects[y] ) )
-					{
-						// Basic comparison failed..  do some more rigourous checking.
-						if ( objects[y] == null )
-							continue;
-								
-						// First check if we have any basic types.
-						if ( paramTypes[y].getName().equals( "short") && objects[y].getClass().getName().equals( "java.lang.Short") )
-							continue;
-													
-						if ( paramTypes[y].getName().equals( "byte" ) && objects[y].getClass().getName().equals( "java.lang.Byte"))
-							continue;
-							
-						if ( paramTypes[y].getName().equals( "int" ) && objects[y].getClass().getName().equals( "java.lang.Integer" ))
-							continue;
-								
-						if ( paramTypes[y].getName().equals( "long" ) && objects[y].getClass().getName().equals( "java.lang.Long" ))
-							continue;
-								
-						if ( paramTypes[y].getName().equals( "boolean") && objects[y].getClass().getName().equals( "java.lang.Boolean" ))
-							continue;
-													
-						found = false;
-						break;
-					}
-				}
-					
-				if ( found == false)
-					continue;
-					
-				try
-				{
-					return constructors[x].newInstance( objects );
-				}
-				catch (IllegalArgumentException e)
-				{
-					e.printStackTrace();
-					throw new TypeException( "TypeReaderAuto:" + e.toString() );						
-				}
-				catch (InstantiationException e)
-				{
-					e.printStackTrace();
-					throw new TypeException( "TypeReaderAuto:" + e.toString() );
-				}
-				catch (IllegalAccessException e)
-				{
-					e.printStackTrace();
-					throw new TypeException( "TypeReaderAuto:" + e.toString() );
-				}
-				catch (InvocationTargetException e)
-				{
-					e.printStackTrace();
-						
-					throw new TypeException( "TypeReaderAuto:" + e.toString() + ":" + e.getCause().getMessage() );
-				}
-			}
-			
-
-		}
-		
-		throw new TypeException( "TypeReaderAuto: No valid constructors found." + clss.getName() );
+    	TypeConstructorAuto autoConstructor = new TypeConstructorAuto(clss);
+    	return autoConstructor.construct(objects);
     }
 
 
@@ -204,22 +134,21 @@ reserve: RESERVE typename:IDENTIFIER SEMI
 load: LOAD file:QSTRING SEMI
 	{
 		// This will load the file specified.
-       	File loadFile = new File( _baseDirectory, file.getText());
 		try
         {
-            Dictionary.readDictionary( _library, new FileInputStream(loadFile));
+        	_compiler.loadDictionary( file.getText() );
         }
         catch (FileNotFoundException e)
         {
-			throw new RecognitionException( "failed to load " + loadFile.getPath() + ".\n" + e.getMessage() );
+			throw new RecognitionException( "failed to load " + file.getText() + ".\n" + e.getMessage() );
         }
         catch (TypeException e)
         {
-			throw new RecognitionException( "failed to load " + loadFile.getPath() + ".\n" + e.getMessage() );
+			throw new RecognitionException( "failed to load " + file.getText() + ".\n" + e.getMessage() );
         }
         catch (IOException e)
         {
-			throw new RecognitionException( "failed to load " + loadFile.getPath() + ".\n" + e.getMessage() );
+			throw new RecognitionException( "failed to load " + file.getText() + ".\n" + e.getMessage() );
         }
 		
 	}
