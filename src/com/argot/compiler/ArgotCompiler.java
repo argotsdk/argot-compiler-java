@@ -23,6 +23,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.net.URLClassLoader;
 
 import antlr.RecognitionException;
 import antlr.TokenStreamException;
@@ -30,8 +31,6 @@ import antlr.TokenStreamException;
 import com.argot.TypeException;
 import com.argot.TypeLibraryLoader;
 import com.argot.TypeMap;
-import com.argot.TypeMapCore;
-
 import com.argot.TypeLibrary;
 import com.argot.common.CommonLoader;
 import com.argot.dictionary.Dictionary;
@@ -47,22 +46,56 @@ import com.argot.remote.RemoteLoader;
  */
 public class ArgotCompiler 
 {
-
-	public ArgotCompiler() 
+	private TypeLibrary _library;
+	private File _inputFile;
+	private File _outputFile;
+	private URL[] _paths;
+	private ClassLoader _classLoader;
+	
+	public ArgotCompiler( File inputFile, File outputFile, URL[] paths ) 
+	throws TypeException 
 	{
+		_inputFile = inputFile;
+		_outputFile = outputFile;
+		_paths = paths;
+
+		if (paths==null)
+		{
+			_classLoader = this.getClass().getClassLoader();
+		} 
+		else
+		{
+			_classLoader = new URLClassLoader(_paths, this.getClass().getClassLoader() );
+		}
+		printHeader();
+		
+		_library = new TypeLibrary();
+		_library.loadLibrary( new MetaLoader() );
+		_library.loadLibrary( new DictionaryLoader() );
+		
+		loadOptionalDictionary( _library, new CommonLoader() );
+		loadOptionalDictionary( _library, new RemoteLoader() );
+		
 	}
 
-	private void parse( TypeLibrary library, TypeMap map, File inputFile )
+	private void printHeader()
+	{
+		System.out.println("\nArgot Compiler Version 1.2.1");
+		System.out.println("Copyright 2004-2007 (C) Live Media Pty Ltd.");
+		System.out.println("www.einet.com.au\n");		
+	}
+	
+	private void parse( TypeMap map, File inputFile )
 	throws TypeException, FileNotFoundException
 	{
 		FileInputStream fin = new FileInputStream( inputFile );
 		ArgotLexer lexer = new ArgotLexer( fin );
 		ArgotParser parser = new ArgotParser(lexer);
 		
-		parser.setLibrary( library );
+		parser.setLibrary( _library );
 		parser.setTypeMap( map );
 		parser.setValidateReference( false );
-		parser.setBaseDirectory( inputFile.getParentFile() );
+		parser.setArgotCompiler( this );
 		try
 		{
 			parser.file();
@@ -76,6 +109,25 @@ public class ArgotCompiler
 		{
 			throw new TypeException( "Invalid specification" + e.toString() );
 		}
+	}
+	
+	public void loadDictionary( String fileName )
+	throws TypeException, FileNotFoundException, IOException
+	{
+		System.out.println("Loading: " + fileName );
+		File loadFile = new File( _inputFile.getParent(), fileName );
+		InputStream inStream = null;
+		if(!loadFile.exists())
+		{
+			inStream = _classLoader.getResourceAsStream( fileName );
+			if (inStream == null)
+				throw new FileNotFoundException("File not found as resource");
+		}
+		else
+		{
+			inStream = new FileInputStream(loadFile);
+		}
+        Dictionary.readDictionary( _library, inStream );	
 	}
 	
 	public void loadOptionalDictionary( TypeLibrary library, TypeLibraryLoader loader )
@@ -92,46 +144,29 @@ public class ArgotCompiler
 		}		
 	}
 
-	private void printHeader()
-	{
-		System.out.println("\nArgot Compiler Version 1.2.1");
-		System.out.println("Copyright 2004-2007 (C) Live Media Pty Ltd.");
-		System.out.println("www.einet.com.au\n");		
-	}
 	
-	public void doCompile( File inputFile, File outputFile ) 
+	public void doCompile() 
 	throws TypeException, IOException
 	{
-		printHeader();
-
 		String argotHomeString = System.getProperty("ARGOT_HOME");
 		if ( argotHomeString == null )
 		{
 			argotHomeString = ".";
 		}		
 		
-		ArgotCompiler compiler = new ArgotCompiler();
-		TypeLibrary library = new TypeLibrary();
-		library.loadLibrary( new MetaLoader() );
-		library.loadLibrary( new DictionaryLoader() );
-		
-		loadOptionalDictionary( library, new CommonLoader() );
-		loadOptionalDictionary( library, new RemoteLoader() );
 
-		System.out.println("Compling: " + inputFile.getName() );
+		System.out.println("Compling: " + _inputFile.getName() );
 		
-		TypeMap map = new TypeMap( library );			
-		compiler.parse( library, map, inputFile );					
+		TypeMap map = new TypeMap( _library );
+		parse( map, _inputFile );					
 
-		FileOutputStream fout = new FileOutputStream( outputFile );
+		FileOutputStream fout = new FileOutputStream( _outputFile );
 		Dictionary.writeDictionary( fout, map );
 	}
 	
-	public void argotCompile( String[] args ) 
+	public static void argotCompile( String[] args ) 
 	throws FileNotFoundException, TypeException, IOException
-	{
-		printHeader();
-		
+	{	
 		if ( args.length == 0 )
 		{
 			System.out.println("Usage: ac <input.argot>");
@@ -160,15 +195,15 @@ public class ArgotCompiler
 		}
 		File outputFile = new File(outputFileName);
 		
-		doCompile( inputFile, outputFile );
+		ArgotCompiler compiler = new ArgotCompiler( inputFile, outputFile, null );
+		compiler.doCompile();
 	}
 
 	public static void main(String[] args)
 	{
 		try 
 		{
-			ArgotCompiler compiler = new ArgotCompiler();
-			compiler.argotCompile( args );
+			argotCompile( args );
 		} 
 		catch (FileNotFoundException e) 
 		{

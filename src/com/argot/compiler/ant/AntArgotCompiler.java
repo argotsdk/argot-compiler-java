@@ -3,9 +3,11 @@ package com.argot.compiler.ant;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URL;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
+import org.apache.tools.ant.types.Path;
 
 import com.argot.TypeException;
 import com.argot.compiler.ArgotCompiler;
@@ -15,6 +17,7 @@ extends Task
 {
 	private File _input;
 	private File _output;
+	private Path _path;
 	
 	public void setInput( File file )
 	{
@@ -24,6 +27,11 @@ extends Task
 	public void setOutput( File output )
 	{
 		_output = output;
+	}
+	
+	public void setPath( Path path )
+	{
+		_path = path;
 	}
 	
 	public void execute() 
@@ -55,8 +63,22 @@ extends Task
 				return;
 			}
 			
-			ArgotCompiler compiler = new ArgotCompiler();
-			compiler.doCompile( _input, _output );
+			URL[] paths = null; 
+			if ( _path != null )
+			{
+				String[] pathStrings = _path.list();
+				paths = new URL[ pathStrings.length ];
+				for (int x=0;x<pathStrings.length;x++)
+				{
+					String pathx = pathStrings[x];
+					File file = new File(pathx);
+					paths[x] = file.toURI().toURL();
+					System.out.println("path:" + paths[x].toExternalForm() );
+				}
+			}
+			
+			ArgotCompiler compiler = new ArgotCompiler( _input, _output, paths );
+			compiler.doCompile();
 		}
 		catch (FileNotFoundException e)
 		{

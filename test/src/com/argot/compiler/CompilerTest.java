@@ -18,6 +18,7 @@ package com.argot.compiler;
 
 import java.io.FileInputStream;
 
+
 import com.argot.TypeLibrary;
 import com.argot.TypeLibraryLoader;
 import com.argot.common.CommonLoader;
@@ -54,8 +55,7 @@ extends TestCase
 		String[] args = new String[1];
 		args[0] = "argot/common.argot";
 		
-		ArgotCompiler compiler = new ArgotCompiler();
-		compiler.argotCompile( args );
+		ArgotCompiler.argotCompile( args );
 		
 		TypeLibrary library = new TypeLibrary( libraryLoaders );
 		Dictionary.readDictionary( library, new FileInputStream( "argot/common.dictionary" ));		
@@ -68,8 +68,7 @@ extends TestCase
 		String[] args = new String[1];
 		args[0] = "argot/channel.argot";
 		
-		ArgotCompiler compiler = new ArgotCompiler();
-		compiler.argotCompile( args );
+		ArgotCompiler.argotCompile( args );
 		
 		TypeLibrary library = new TypeLibrary( libraryLoaders );
 		Dictionary.readDictionary( library, new FileInputStream( "argot/channel.dictionary" ));		
@@ -84,8 +83,7 @@ extends TestCase
 		String[] args = new String[1];
 		args[0] = "argot/networkvm.argot";
 		
-		ArgotCompiler compiler = new ArgotCompiler();
-		compiler.argotCompile( args );
+		ArgotCompiler.argotCompile( args );
 		
 		TypeLibrary library = new TypeLibrary( libraryLoaders );
 		Dictionary.readDictionary( library, new FileInputStream( "argot/networkvm.dictionary" ));		
@@ -100,8 +98,7 @@ extends TestCase
 		String[] args = new String[1];
 		args[0] = "argot/remote.argot";
 		
-		ArgotCompiler compiler = new ArgotCompiler();
-		compiler.argotCompile( args );		
+		ArgotCompiler.argotCompile( args );
 
 		TypeLibrary library = new TypeLibrary( libraryLoaders );
 		Dictionary.readDictionary( library, new FileInputStream( "argot/remote.dictionary" ));		
@@ -116,8 +113,7 @@ extends TestCase
 		String[] args = new String[1];
 		args[0] = "argot/remoterpc.argot";
 		
-		ArgotCompiler compiler = new ArgotCompiler();
-		compiler.argotCompile( args );
+		ArgotCompiler.argotCompile( args );
 		
 		TypeLibrary library = new TypeLibrary( libraryLoaders );
 		Dictionary.readDictionary( library, new FileInputStream( "argot/remoterpc.dictionary" ));		
@@ -132,8 +128,7 @@ extends TestCase
 		String[] args = new String[1];
 		args[0] = "argot/netargot.argot";
 		
-		ArgotCompiler compiler = new ArgotCompiler();
-		compiler.argotCompile( args );
+		ArgotCompiler.argotCompile( args );
 		
 		TypeLibrary library = new TypeLibrary( libraryLoaders );
 		Dictionary.readDictionary( library, new FileInputStream( "argot/netargot.dictionary" ));		
@@ -148,8 +143,7 @@ extends TestCase
 		String[] args = new String[1];
 		args[0] = "argot/nettest.argot";
 		
-		ArgotCompiler compiler = new ArgotCompiler();
-		compiler.argotCompile( args );
+		ArgotCompiler.argotCompile( args );
 
 		Thread.sleep( 1000 );
 		
