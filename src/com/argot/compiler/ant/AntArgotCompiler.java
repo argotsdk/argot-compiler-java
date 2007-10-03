@@ -18,6 +18,8 @@ extends Task
 	private File _input;
 	private File _output;
 	private Path _path;
+	private boolean _loadCommon = true;
+	private boolean _loadRemote = true;
 	
 	public void setInput( File file )
 	{
@@ -32,6 +34,16 @@ extends Task
 	public void setPath( Path path )
 	{
 		_path = path;
+	}
+	
+	public void setLoadCommon( boolean load)
+	{
+		_loadCommon = load;
+	}
+	
+	public void setLoadRemote( boolean load )
+	{
+		_loadRemote = load;
 	}
 	
 	public void execute() 
@@ -78,6 +90,8 @@ extends Task
 			}
 			
 			ArgotCompiler compiler = new ArgotCompiler( _input, _output, paths );
+			compiler.setLoadCommon(_loadCommon);
+			compiler.setLoadRemote(_loadRemote);
 			compiler.doCompile();
 		}
 		catch (FileNotFoundException e)

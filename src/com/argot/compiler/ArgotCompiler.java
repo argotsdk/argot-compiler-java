@@ -51,6 +51,8 @@ public class ArgotCompiler
 	private File _outputFile;
 	private URL[] _paths;
 	private ClassLoader _classLoader;
+	private boolean _loadCommon;
+	private boolean _loadRemote;
 	
 	public ArgotCompiler( File inputFile, File outputFile, URL[] paths ) 
 	throws TypeException 
@@ -58,6 +60,8 @@ public class ArgotCompiler
 		_inputFile = inputFile;
 		_outputFile = outputFile;
 		_paths = paths;
+		_loadCommon = true;
+		_loadRemote = true;
 
 		if (paths==null)
 		{
@@ -71,11 +75,17 @@ public class ArgotCompiler
 		
 		_library = new TypeLibrary();
 		_library.loadLibrary( new MetaLoader() );
-		_library.loadLibrary( new DictionaryLoader() );
-		
-		loadOptionalDictionary( _library, new CommonLoader() );
-		loadOptionalDictionary( _library, new RemoteLoader() );
-		
+		_library.loadLibrary( new DictionaryLoader() );		
+	}
+	
+	public void setLoadCommon(boolean load)
+	{
+		_loadCommon = load;
+	}
+	
+	public void setLoadRemote(boolean load)
+	{
+		_loadRemote = load;
 	}
 
 	private void printHeader()
@@ -148,6 +158,16 @@ public class ArgotCompiler
 	public void doCompile() 
 	throws TypeException, IOException
 	{
+		if (_loadCommon)
+		{
+			loadOptionalDictionary( _library, new CommonLoader() );
+		}
+		
+		if (_loadCommon && _loadRemote)
+		{
+			loadOptionalDictionary( _library, new RemoteLoader() );
+		}
+		
 		String argotHomeString = System.getProperty("ARGOT_HOME");
 		if ( argotHomeString == null )
 		{
