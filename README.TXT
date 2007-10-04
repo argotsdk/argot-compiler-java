@@ -51,6 +51,16 @@ Please view the example .argot files to see how argot is specified.
 Version History
 ---------------
 
+1.2.1 - 4 October 2007
+
+- Added Argot compiler ANT task.
+- Change compiler to use Argot TypeLibraryLoader method for
+  loading dictionary files.
+- Allow dictionary files to be loaded from directories or
+  jar files.
+- Allow ANT task to not load common and remote core dictionaries.
+  The meta.dictionary and dictionary.dictionary are always loaded.
+
 1.2.0 - 20 December 2005
 
 - Initial shared source release in C, Java and C#.
