@@ -88,7 +88,7 @@ options
     public Object construct(Object[] objects, Class clss ) throws TypeException
     {
     	TypeConstructorAuto autoConstructor = new TypeConstructorAuto(clss);
-    	return autoConstructor.construct(objects);
+    	return autoConstructor.construct(null,objects);
     }
 
 
