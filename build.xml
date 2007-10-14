@@ -18,7 +18,7 @@
 
 	<description>Argot Compiler Package</description>
 
-	<property name="version" value="1.2.1" />
+	<property name="version" value="1.2.1a" />
 
 	<property name="argot.jar" value="lib/argot-${version}.jar" />
 	<property name="antlr.jar" value="lib/antlr272.jar" />
@@ -143,7 +143,7 @@
 		<jar jarfile="${release}/lib/argot-compiler-${version}.jar" basedir="${build.bin}">
 			<manifest>
 				<attribute name="Main-Class" value="com.argot.compiler.ArgotCompiler"/>
-				<attribute name="Class-Path" value="antlr272.jar argot-1.2.1.jar"/>				
+				<attribute name="Class-Path" value="antlr272.jar argot-1.2.1a.jar"/>				
 			</manifest>			
 		</jar>
 
