@@ -106,6 +106,9 @@ extends Task
 		{
 			throw new BuildException(e);
 		}
-		
+		catch( Throwable e )
+		{
+			throw new BuildException(e);
+		}
 	}
 }
