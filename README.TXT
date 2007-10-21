@@ -51,6 +51,11 @@ Please view the example .argot files to see how argot is specified.
 Version History
 ---------------
 
+1.2.1a - 14th October 2007
+
+- Updated to match Argot version 1.2.1a.
+- Catch throwable in Ant task.
+
 1.2.1 - 4 October 2007
 
 - Added Argot compiler ANT task.
