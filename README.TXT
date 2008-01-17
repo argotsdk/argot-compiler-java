@@ -51,7 +51,7 @@ Please view the example .argot files to see how argot is specified.
 Version History
 ---------------
 
-1.2.2 - ?? December 2007
+1.2.2 - 17 January 2008
 
 - Updated to match Argot version 1.2.2.
 - Fixed bug in Argot TypeMap to ensure dictionaries are written
