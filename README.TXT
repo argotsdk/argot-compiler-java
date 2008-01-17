@@ -51,6 +51,13 @@ Please view the example .argot files to see how argot is specified.
 Version History
 ---------------
 
+1.2.2 - ?? December 2007
+
+- Updated to match Argot version 1.2.2.
+- Fixed bug in Argot TypeMap to ensure dictionaries are written
+  in the order they are defined.  This ensures meta.map does
+  not come before meta.abstract types.
+
 1.2.1a - 14th October 2007
 
 - Updated to match Argot version 1.2.1a.
