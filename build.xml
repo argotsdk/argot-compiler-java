@@ -18,7 +18,7 @@
 
 	<description>Argot Compiler Package</description>
 
-	<property name="version" value="1.2.1a" />
+	<property name="version" value="1.2.2" />
 
 	<property name="argot.jar" value="lib/argot-${version}.jar" />
 	<property name="antlr.jar" value="lib/antlr272.jar" />
