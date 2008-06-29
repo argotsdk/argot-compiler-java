@@ -13,22 +13,25 @@
  * to the law of Victoria, Australia, and subject to exclusive 
  * jurisdiction of the Victorian courts.
  */
- 
-import u32;
- 
- 
-channel.id: {
-	@u32["id"]
-};
 
-channel.input: {
-	@channel.id["id"]
-};
+!import uint32;
 
-channel.output: {
-	@channel.id["id"]
-};
+(dictionary.source [
 
-channel.pipe: {
-	@channel.id["id"]
-};
+(meta.structure meta.name:"channel.id" (meta.sequence [
+	(meta.tag u8ascii:"id" (meta.reference #uint32))
+]))
+
+(meta.structure meta.name:"channel.input" (meta.sequence [
+	(meta.tag u8ascii:"id" (meta.reference #channel.id)) 
+]))
+
+(meta.structure meta.name:"channel.output" (meta.sequence [
+	(meta.tag u8ascii:"id" (meta.reference #channel.id)) 
+]))
+
+(meta.structure meta.name:"channel.pipe" (meta.sequence [
+	(meta.tag u8ascii:"id" (meta.reference #channel.id))
+])) 
+
+])

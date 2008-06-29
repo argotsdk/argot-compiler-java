@@ -14,120 +14,171 @@
  * jurisdiction of the Victorian courts.
  */
 
-load "networkvm.dictionary";
-load "channel.dictionary";
+!load "networkvm.dictionary";
+!load "channel.dictionary";
 
-import remote.location;
+!import remote.location;
+!import remote.exception;
+!import remote.exception.basic;
+!import remote.stack_trace_element;
 
-import u16;
-import u8ascii;
-import empty;
-import u8;
-import u32;
+!import uint16;
+!import u8ascii;
+!import empty;
+!import uint8;
+!import uint32;
+!import int32;
 
-import channel.id;
-import channel.input;
-import channel.output;
-import channel.pipe;
-
-testvalue:
-   meta.sequence([
-       meta.reference( #u8, "x" ),
-       meta.reference( #u8ascii, "str" )
-   ]);
+!import channel.id;
+!import channel.input;
+!import channel.output;
+!import channel.pipe;
 
 
-test: remote.interface();
+(dictionary.source [
 
-test.doSomething: remote.method( #test, "doSomething",
-	[ remote.parameter( #s32, "param" ) ],
-	[ remote.parameter( #s32, "ret" ) ],
-	[ #s32 ]
-	);
-	
+(meta.structure meta.name:"testvalue"
+	(meta.sequence [
+		(meta.tag u8ascii:"x" (meta.reference #uint8))
+		(meta.tag u8ascii:"str" (meta.reference #u8ascii))
+	])
+)
+
+(meta.structure meta.name:"test_exception" (meta.sequence [
+	(meta.reference #remote.exception.basic)
+]))
+
+(meta.map #remote.exception #test_exception)
+
+(meta.structure meta.name:"test" (remote.interface))
+
+(meta.structure meta.name:"test.doSomething"
+	(remote.method #test u8ascii:"doSomething"
+		[ (remote.parameter #int32 u8ascii:"param" ) ]
+		[ (remote.parameter #int32 u8ascii:"ret" ) ]
+		[ #int32 ]
+	)
+)
 
 /* public int methodWithException( int x ) throws RemoteException; */
+
+(meta.structure meta.name:"test.methodWithException"
+	(remote.method #test u8ascii:"methodWithException"
+		[ (remote.parameter #int32 u8ascii:"x") ]
+		[ (remote.parameter #int32 u8ascii:"ret") ]
+		[ #remote.exception ]
+	)
+)
 	
-test.methodWithException: remote.method( #test, "methodWithException",
-	[ remote.parameter( #s32, "x" ) ],
-	[ remote.parameter( #s32, "ret" ) ],
-	[ #nvm.exception ]
-	);
-	
+/* public void methodUndeclaredException(); */
+
+(meta.structure meta.name:"test.methodUndeclaredException"
+	(remote.method #test u8ascii:"methodUndeclaredException"
+		[  ]
+		[  ]
+		[  ]
+	)
+)
+
+/* public void methodCustomException() throws TestException; */
+
+(meta.structure meta.name:"test.methodCustomException"
+	(remote.method #test u8ascii:"methodCustomException"
+		[  ]
+		[  ]
+		[ #test_exception ]
+	)
+)
+
 /* public void methodNoReturn( int x ); */
-	
-test.methodNoReturn: remote.method( #test, "methodNoReturn",
-	[ remote.parameter( #s32, "x" ) ],
-	[ ],
-	[ ]
-	);
+
+(meta.structure meta.name:"test.methodNoReturn" 
+	(remote.method #test u8ascii:"methodNoReturn" 
+		[ (remote.parameter #int32 u8ascii:"x") ]
+		[ ]
+		[ ]
+	)
+)
 	
 /* public void methodNoParam(); */
 
-test.methodNoParam: remote.method( #test, "methodNoParam",
-	[ ],
-	[ ],
-	[ ]
-	);
+(meta.structure meta.name:"test.methodNoParam"
+	(remote.method #test u8ascii:"methodNoParam"
+		[] [] []
+	)
+)
+
 	
 /* public void methodComplexParam( TestValue value ); */
-	
-test.methodComplexParam: remote.method( #test, "methodComplexParam",
-	[ remote.parameter( #testvalue, "x" ) ],
-	[ ],
-	[ ]
-	);
+
+(meta.structure meta.name:"test.methodComplexParam"
+	(remote.method #test u8ascii:"methodComplexParam"
+		[ (remote.parameter #testvalue u8ascii:"x" ) ]
+		[ ]
+		[ ]
+	)
+)
 	
 /* public TestValue methodComplexReturn( int x ); */
 
-test.methodComplexReturn: remote.method( #test, "methodComplexReturn",
-	[ remote.parameter( #s32, "x" ) ],
-	[ remote.parameter( #testvalue, "ret" ) ],
-	[ ]
-	);
+(meta.structure meta.name:"test.methodComplexReturn"
+	(remote.method #test u8ascii:"methodComplexReturn"
+		[ (remote.parameter #int32 u8ascii:"x" ) ]
+		[ (remote.parameter #testvalue u8ascii:"ret" ) ]
+		[ ]
+	)
+)
 
-test.channel: remote.interface();
-	
-test.channel.sendInputStream: remote.method( #test.channel, "sendInputStream",
-	[ remote.parameter( #channel.input, "input" ) ],
-	[ remote.parameter( #u8ascii, "result") ],
-	[ ]
-	);
-	
-test.channel.receiveInputStream: remote.method( #test.channel, "receiveInputStream",
-	[ remote.parameter( #u8ascii, "input") ],
-	[ remote.parameter( #channel.input, "result" ) ],
-	[ ]
-	);
-	
-test.channel.sendOutputStream: remote.method( #test.channel, "sendOutputStream",
-	[ remote.parameter( #channel.output, "output" ),
-	  remote.parameter( #u8ascii, "input" ) ],
-	[ ],
-	[ ]
-	);
-	
-test.channel.receiveOutputStream: remote.method( #test.channel, "receiveOutputStream",
-	[ ],
-	[ remote.parameter( #channel.output, "output" ) ],
-	[ ]
-	);
+(meta.structure meta.name:"test.channel" (remote.interface))
 
-test.channel.sendEndPoint: remote.method( #test.channel, "sendEndPoint",
-	[ remote.parameter( #channel.pipe, "endpoint" ) ],
-	[ ],
-	[ ]
-	);
-	
-test.channel.receiveEndPoint: remote.method( #test.channel, "receiveEndPoint",
-	[ ],
-	[ remote.parameter( #channel.pipe, "output" ) ],
-	[ ]
-	);
+(meta.structure meta.name:"test.channel.sendInputStream"
+	(remote.method #test.channel u8ascii:"sendInputStream"
+		[ (remote.parameter #channel.input u8ascii:"input") ]
+		[ (remote.parameter #u8ascii u8ascii:"result") ]
+		[ ]
+	)
+)
 
-index: meta.sequence([
-		meta.reference( #u16, "index" )
-	]);
-	
+(meta.structure meta.name:"test.channel.receiveInputStream"
+	(remote.method #test.channel u8ascii:"receiveInputStream"
+		[ (remote.parameter #u8ascii u8ascii:"input") ]
+		[ (remote.parameter #channel.input u8ascii:"result") ]
+		[ ]
+	)
+)
 
-remote.location#index: meta.map( #remote.location, #index );
+(meta.structure meta.name:"test.channel.sendOutputStream"
+	(remote.method #test.channel u8ascii:"sendOutputStream"
+		[ (remote.parameter #channel.output u8ascii:"output")
+		  (remote.parameter #u8ascii u8ascii:"input") ]
+		[ ]
+		[ ]
+	)
+)
+
+(meta.structure meta.name:"test.channel.receiveOutputStream"
+	(remote.method #test.channel u8ascii:"receiveOutputStream"
+		[ ]
+		[ (remote.parameter #channel.output u8ascii:"output") ]
+		[ ]
+	)
+)
+
+(meta.structure meta.name:"test.channel.sendEndPoint"
+	(remote.method #test.channel u8ascii:"sendEndPoint"
+		[ (remote.parameter #channel.pipe u8ascii:"endpoint") ]
+		[ ]
+		[ ]
+	)
+)
+
+(meta.structure meta.name:"test.channel.receiveEndPoint"
+	(remote.method #test.channel u8ascii:"receiveEndPoint"
+		[ ]
+		[ (remote.parameter #channel.pipe u8ascii:"endpoint") ]
+		[ ]
+	)
+)
+
+
+])

@@ -14,57 +14,91 @@
  * jurisdiction of the Victorian courts.
  */
 
-import empty;
-import u8ascii;
-import u8;
-import u16;
-import meta.definition;
+!import empty;
+!import u8ascii;
+!import uint8;
+!import uint16;
+!import meta.definition;
+!import int32;
 
+(dictionary.source [
 
 /* Remote Interfaces and Object definitions */
-remote.parameter:
-   meta.sequence([
-       meta.reference( #u16, "type" ),
-       meta.reference( #u8ascii, "name" )
-   ]);
 
-remote.method:
-   {
-       meta.reference( #u16, "interface" ),
-       meta.reference( #u8ascii, "name" ),
-       meta.array(
-           meta.reference( #u8, "size" ),
-           meta.reference( #remote.parameter, "request" )
-       ),
-       meta.array(
-           meta.reference( #u8, "size" ),
-           meta.reference( #remote.parameter, "reply" )
-       ),
-       meta.array(
-           meta.reference( #u8, "size" ),
-           meta.reference( #u16, "error" )
-       )
-   };
-   
-   
-remote.interface:
-	meta.sequence([
-	   meta.array(
-	       meta.reference( #u8, "size" ),
-	       meta.reference( #u16, "interface" )
-	   )
-   ]);
-   
-   
-meta.definition#interface: meta.map( #meta.definition, #remote.interface );
-meta.definition#method: meta.map( #meta.definition, #remote.method );
+(meta.structure meta.name:"remote.parameter"
+	(meta.sequence [
+		(meta.tag u8ascii:"type" (meta.reference #uint16))
+		(meta.tag u8ascii:"name" (meta.reference #u8ascii))
+	]))
 
-remote.location: meta.abstract();
+(meta.structure meta.name:"remote.method"
+	(meta.sequence [
+		(meta.tag u8ascii:"interface" (meta.reference #uint16))
+		(meta.tag u8ascii:"name" (meta.reference #u8ascii))
+		(meta.tag u8ascii:"request"
+			(meta.array (meta.reference #uint8) (meta.reference #remote.parameter)))
+		(meta.tag u8ascii:"response"
+			(meta.array (meta.reference #uint8) (meta.reference #remote.parameter)))
+		(meta.tag u8ascii:"error"
+			(meta.array (meta.reference #uint8) (meta.reference #uint16)))
+	]))
 
-remote.object:
-	meta.sequence([
-		meta.reference( #remote.location, "location" ),
-		meta.reference( #u16, "class" )
-	]);
+(meta.structure meta.name:"remote.interface"
+	(meta.sequence [
+		(meta.array 
+			(meta.reference #uint8)
+			(meta.reference #uint16)
+		)
+	])
+)
 
+(meta.map #meta.definition #remote.interface)
+(meta.map #meta.definition #remote.method)
+
+(meta.structure meta.name:"remote.location" (meta.abstract))
+
+(meta.structure meta.name:"remote.object" (meta.sequence [
+	(meta.tag u8ascii:"location" (meta.reference #remote.location))
+	(meta.tag u8ascii:"class" (meta.reference #uint16))
+]))
+
+(meta.structure meta.name:"remote.exception" (meta.abstract))
+
+
+/* allow exceptions to be null */
+(meta.map #remote.exception #empty)
+
+(meta.structure meta.name:"remote.stack_trace_element" (meta.sequence [
+	(meta.tag u8ascii:"className" (meta.reference #u8ascii))
+	(meta.tag u8ascii:"methodName" (meta.reference #u8ascii))
+	(meta.tag u8ascii:"fileName" (meta.reference #u8ascii))
+	(meta.tag u8ascii:"lineNumber" (meta.reference #int32))
+])) 
+
+/* Most exceptions will have the following */
+
+(meta.structure meta.name:"remote.exception.basic" 
+	(meta.sequence [
+		(meta.tag u8ascii:"reason" (meta.reference #u8ascii))
+		(meta.tag u8ascii:"cause" (meta.reference #remote.exception))
+		(meta.tag u8ascii:"stacktrace"
+			(meta.array
+				(meta.reference #uint16)
+				(meta.reference #remote.stack_trace_element)
+			)
+		)
+	])
+)
+
+/* This is the default wrapped exception */
+
+(meta.structure meta.name:"remote.exception.wrapped"
+	(meta.sequence [
+		(meta.reference #remote.exception.basic)
+	])
+)
+
+(meta.map #remote.exception #remote.exception.wrapped)
+
+])
  

@@ -16,32 +16,50 @@
 
 
 
-import u8;
-import u16;
-import bool;
-import empty;
+!import uint8;
+!import uint16;
+!import int32;
+!import bool;
+!import empty;
+!import u8ascii;
 
-import remote.location;
-import meta.identified;
-import meta.name;
+!import remote.location;
+!import remote.exception;
+!import remote.exception.basic;
+!import remote.stack_trace_element;
+!import meta.identified;
+!import meta.name;
 
-remote.rpc.request:
-	{
-		meta.reference( #remote.location , "location" ),
-		meta.reference( #u16, "method" ),
-		meta.array(
-			meta.reference( #u8, "size" ),
-			meta.reference( #meta.identified, "any" )
+
+(dictionary.source [
+
+(meta.structure meta.name:"remote.rpc.request" (meta.sequence [
+	(meta.tag u8ascii:"location" (meta.reference #remote.location))
+	(meta.tag u8ascii:"method" (meta.reference #uint16))
+	(meta.tag u8ascii:"data"
+		(meta.array
+			(meta.reference #uint8)
+			(meta.reference #meta.identified)
 		)
-	};
+	)
+]))
 
-remote.rpc.response:
-	{
-		meta.reference( #bool, "inError" ),
-		meta.array(
-			meta.reference( #u8, "size" ),
-			meta.reference( #meta.identified, "any" )
+(meta.structure meta.name:"remote.rpc.response" (meta.sequence [
+	(meta.tag u8ascii:"inError" (meta.reference #bool))
+	(meta.tag u8ascii:"data"
+		(meta.array
+			(meta.reference #uint8)
+			(meta.reference #meta.identified)
 		)
-	};
-	
-remote.location#empty: meta.map( #remote.location, #empty );	
+	)
+]))
+
+(meta.map #remote.location #empty)
+
+(meta.structure meta.name:"remote.rpc.exception" (meta.sequence [
+	(meta.reference #remote.exception.basic)
+]))
+
+(meta.map #remote.exception #remote.rpc.exception)
+
+])

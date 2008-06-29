@@ -24,15 +24,24 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.HashMap;
+import java.util.Map;
 
-import antlr.RecognitionException;
-import antlr.TokenStreamException;
+import org.antlr.runtime.ANTLRInputStream;
+import org.antlr.runtime.CommonTokenStream;
+import org.antlr.runtime.RecognitionException;
+import org.antlr.runtime.tree.CommonTree;
+import org.antlr.runtime.tree.CommonTreeNodeStream;
 
 import com.argot.TypeException;
 import com.argot.TypeLibraryLoader;
 import com.argot.TypeMap;
 import com.argot.TypeLibrary;
 import com.argot.common.CommonLoader;
+import com.argot.compiler.dictionary.DictionarySourceLoader;
+import com.argot.compiler.primitive.ArgotPrimitiveParser;
+import com.argot.compiler.primitive.StringPrimitiveParser;
+import com.argot.compiler.primitive.UInt8PrimitiveParser;
 import com.argot.dictionary.Dictionary;
 import com.argot.dictionary.DictionaryLoader;
 import com.argot.meta.MetaLoader;
@@ -53,6 +62,10 @@ public class ArgotCompiler
 	private ClassLoader _classLoader;
 	private boolean _loadCommon;
 	private boolean _loadRemote;
+	private boolean _compileDictionary;
+	private Map _primitiveParsers;
+	private TypeMap _map;
+	private int _lastType;
 	
 	public ArgotCompiler( File inputFile, File outputFile, URL[] paths ) 
 	throws TypeException 
@@ -62,6 +75,11 @@ public class ArgotCompiler
 		_paths = paths;
 		_loadCommon = true;
 		_loadRemote = true;
+		_compileDictionary = true;
+		_primitiveParsers = new HashMap();
+		setPrimitiveParser( "meta.name", new StringPrimitiveParser() );
+		setPrimitiveParser( "u8ascii", new StringPrimitiveParser() );
+		setPrimitiveParser( "uint8", new UInt8PrimitiveParser() );
 
 		if (paths==null)
 		{
@@ -75,7 +93,8 @@ public class ArgotCompiler
 		
 		_library = new TypeLibrary();
 		_library.loadLibrary( new MetaLoader() );
-		_library.loadLibrary( new DictionaryLoader() );		
+		_library.loadLibrary( new DictionaryLoader() );
+		_library.loadLibrary( new DictionarySourceLoader() );
 	}
 	
 	public void setLoadCommon(boolean load)
@@ -87,40 +106,62 @@ public class ArgotCompiler
 	{
 		_loadRemote = load;
 	}
+	
+	public void setCompileDictionary(boolean dict)
+	{
+		_compileDictionary = dict;
+	}
+	
+	public void setPrimitiveParser( String type, ArgotPrimitiveParser parser )
+	{
+		_primitiveParsers.put( type, parser );
+	}
+	
+	public ArgotPrimitiveParser getPrimitiveParser( String type )
+	{
+		return (ArgotPrimitiveParser) _primitiveParsers.get( type );
+	}
 
 	private void printHeader()
 	{
-		System.out.println("\nArgot Compiler Version 1.2.2");
-		System.out.println("Copyright 2004-2007 (C) Live Media Pty Ltd.");
+		System.out.println("\nArgot Compiler Version 1.3.a");
+		System.out.println("Copyright 2004-2008 (C) Live Media Pty Ltd.");
 		System.out.println("www.einet.com.au\n");		
 	}
 	
-	private void parse( TypeMap map, File inputFile )
-	throws TypeException, FileNotFoundException
+	private Object parse( TypeMap map, File inputFile )
+	throws TypeException, FileNotFoundException, IOException
 	{
 		FileInputStream fin = new FileInputStream( inputFile );
-		ArgotLexer lexer = new ArgotLexer( fin );
-		ArgotParser parser = new ArgotParser(lexer);
+		ANTLRInputStream input = new ANTLRInputStream(fin);
+		ArgotLexer lexer = new ArgotLexer( input );
 		
-		parser.setLibrary( _library );
-		parser.setTypeMap( map );
-		parser.setValidateReference( false );
-		parser.setArgotCompiler( this );
+		CommonTokenStream tokens = new CommonTokenStream(lexer);
+		
+		ArgotParser parser = new ArgotParser(tokens);
+		
 		try
 		{
-			parser.file();
+			ArgotParser.file_return r = parser.file();
+			CommonTree t = (CommonTree)r.getTree(); // get tree from parser
+			CommonTreeNodeStream nodes = new CommonTreeNodeStream(t);
+			
+			ArgotTree tree = new ArgotTree(nodes); // create a tree parser
+			tree.setLibrary( _library );
+			tree.setTypeMap( map );
+			//tree.setValidateReference( false );
+			tree.setArgotCompiler( this );
+			Object[] o = (Object[]) tree.file();
+			return map;
 		}
 		catch (RecognitionException e)
 		{
 			e.printStackTrace();
 			throw new TypeException( "Specification not recognised" + e.toString() );
 		}
-		catch (TokenStreamException e)
-		{
-			throw new TypeException( "Invalid specification" + e.toString() );
-		}
 	}
 	
+
 	public void loadDictionary( String fileName )
 	throws TypeException, FileNotFoundException, IOException
 	{
@@ -137,7 +178,7 @@ public class ArgotCompiler
 		{
 			inStream = new FileInputStream(loadFile);
 		}
-        Dictionary.readDictionary( _library, inStream );	
+        Dictionary.readDictionary( _library, inStream );
 	}
 	
 	public void loadOptionalDictionary( TypeLibrary library, TypeLibraryLoader loader )
@@ -150,6 +191,7 @@ public class ArgotCompiler
 		}
 		catch (TypeException e)
 		{
+			e.printStackTrace();
 			System.out.println("WARNING: '" + loader.getName() + "' failed to load.");
 		}		
 	}
@@ -178,10 +220,17 @@ public class ArgotCompiler
 		System.out.println("Compling: " + _inputFile.getName() );
 		
 		TypeMap map = new TypeMap( _library );
-		parse( map, _inputFile );					
+		Object o = parse( map, _inputFile );
+		if (_compileDictionary)
+		{
+			FileOutputStream fout = new FileOutputStream( _outputFile );
+			Dictionary.writeDictionary( fout, map );			
+		}
+		else
+		{
+			throw new TypeException("not implemented");
+		}
 
-		FileOutputStream fout = new FileOutputStream( _outputFile );
-		Dictionary.writeDictionary( fout, map );
 	}
 	
 	public static void argotCompile( String[] args ) 
