@@ -14,107 +14,211 @@
  * jurisdiction of the Victorian courts.
  */
  
-import meta.basic;
-import meta.expression;
-import meta.sequence;
-import meta.reference;
-import meta.name;
+!import meta.fixed_width;
+!import meta.fixed_width.attribute;
+!import meta.expression;
+!import meta.sequence;
+!import meta.reference;
+!import meta.name;
+
+(dictionary.source [
 
 /*
  *  The empty data type does not read any data. Like a NOP for Argot.
  */
-empty: meta.basic( 0, 0 );
-
+ 
+(meta.structure meta.name:"empty" 
+	(meta.fixed_width uint8:0 
+		[ (meta.fixed_width.attribute.size uint8:0) ] 
+	) 
+)
+		
 /*
  *  Unsigned data types (big endian network order).
  */
-u8:  meta.basic( 8, 0 );
-u16: meta.basic( 16, 0 );
-u32: meta.basic( 32, 0 );
-u64: meta.basic( 64, 0 );
+
+(meta.structure meta.name:"uint8" 
+	(meta.fixed_width uint8:8 
+		[ (meta.fixed_width.attribute.size uint8:8)
+		  (meta.fixed_width.attribute.integer)
+		  (meta.fixed_width.attribute.unsigned)
+		  (meta.fixed_width.attribute.bigendian) ]
+	)
+)
+
+
+(meta.structure meta.name:"uint16" 
+	(meta.fixed_width uint8:16
+		[ (meta.fixed_width.attribute.size uint8:16)
+		  (meta.fixed_width.attribute.integer)
+		  (meta.fixed_width.attribute.unsigned)
+		  (meta.fixed_width.attribute.bigendian) ] 
+	)
+)
+
+(meta.structure meta.name:"uint32" 
+	(meta.fixed_width uint8:32
+		[ (meta.fixed_width.attribute.size uint8:32)
+		  (meta.fixed_width.attribute.integer)
+		  (meta.fixed_width.attribute.unsigned)
+		  (meta.fixed_width.attribute.bigendian) ] 
+	)
+)
+
+(meta.structure meta.name:"uint64" 
+	(meta.fixed_width uint8:64
+		[ (meta.fixed_width.attribute.size uint8:64)
+		  (meta.fixed_width.attribute.integer)
+		  (meta.fixed_width.attribute.unsigned)
+		  (meta.fixed_width.attribute.bigendian) ] 
+	)
+)
 
 /*
  *  Signed data types (big endian network order).
  */
-s8:  meta.basic( 8, 1 );
-s16: meta.basic( 16, 1 );
-s32: meta.basic( 32, 1 );
-s64: meta.basic( 64, 1 );
+
+(meta.structure meta.name:"int8" 
+	(meta.fixed_width uint8:8 
+		[ (meta.fixed_width.attribute.size uint8:8)
+		  (meta.fixed_width.attribute.integer)
+		  (meta.fixed_width.attribute.signed)
+		  (meta.fixed_width.attribute.bigendian) ] 
+	)
+)
+
+
+(meta.structure meta.name:"int16" 
+	(meta.fixed_width uint8:16
+		[ (meta.fixed_width.attribute.size uint8:16)
+		  (meta.fixed_width.attribute.integer)
+		  (meta.fixed_width.attribute.signed)
+		  (meta.fixed_width.attribute.bigendian) ] 
+	)
+)
+
+(meta.structure meta.name:"int32" 
+	(meta.fixed_width uint8:32
+		[ (meta.fixed_width.attribute.size uint8:32)
+		  (meta.fixed_width.attribute.integer)
+		  (meta.fixed_width.attribute.signed)
+		  (meta.fixed_width.attribute.bigendian) ] 
+	)
+)
+
+(meta.structure meta.name:"int64" 
+	(meta.fixed_width uint8:64
+		[ (meta.fixed_width.attribute.size uint8:64)
+		  (meta.fixed_width.attribute.integer)
+		  (meta.fixed_width.attribute.signed)
+		  (meta.fixed_width.attribute.bigendian) ]
+	)
+)
+
+
+/*
+ *  Floats and Double.
+ */
+ 
+(meta.structure meta.name:"float" 
+	(meta.fixed_width uint8:32
+		[ (meta.fixed_width.attribute.size uint8:32)
+		/*  (meta.fixed_width.attribute.IEEE756) */
+		  (meta.fixed_width.attribute.signed) ]
+	)
+)
+
+(meta.structure meta.name:"double" 
+	(meta.fixed_width uint8:64
+		[ (meta.fixed_width.attribute.size uint8:64)
+		/*  (meta.fixed_width.attribute.IEEE756) */
+		  (meta.fixed_width.attribute.signed) ] 
+	)
+)
+
 
 /*
  *  Boolean value is a byte that can be 0 false..  !0 true.
  */
  
-bool: { 
-			@u8[ "bool" ] 
-	};
+(meta.structure meta.name:"bool" (meta.reference #uint8))
 
 
 /*
- *  A UTF8 encoded string.  Maximum size 255 bytes.
+ *  An ascii encoded string.  Maximum size 255 bytes.
  */
-u8ascii: {
-			meta.encoding(
-				meta.array(
-					@u8[ "size" ],
-					@u8[ "data" ]
-				),
-				"ISO646-US"
-			) 
-		};
-		
+
+(meta.structure meta.name:"u8ascii"
+	(meta.encoding
+		(meta.array
+			(meta.reference #uint8)
+			(meta.reference #uint8)
+		)
+		u8ascii:"ISO646-US"
+	)
+)
+	
 /*
  *  A UTF8 encoded string.  Maximum size u32.max bytes.
  */		
-u32utf8: { 
-			meta.encoding(
-				meta.array(
-					@u32[ "size" ],
-					@u8[ "data"]
-				),
-				"UTF8"
-			) 
-		};
 
+(meta.structure meta.name:"u32utf8"
+	(meta.encoding
+		(meta.array
+			(meta.reference #uint32)
+			(meta.reference #uint8)
+		)
+		u8ascii:"UTF8"
+	)
+)
 
 /*
  *  A binary data block.  Maximum size u32.max.
  */
-u32binary: { 
-			meta.array(
-				@u32["size"],
-				@u8[ "data" ]
-			)
-		};
+
+(meta.structure meta.name:"u32binary"
+	(meta.array
+		(meta.reference #uint32)
+		(meta.reference #uint8)
+	)
+)
 
 /*
  * A binary data block.  Maximum size u16.max
  */ 
-u16binary: { 
-			meta.array(
-				@u16["size"],
-				@u8[ "data" ]
-			)
-		};
-		
+
+(meta.structure meta.name:"u16binary"
+	(meta.array
+		(meta.reference #uint16)
+		(meta.reference #uint8)
+	)
+)
+	
 /*
  * Allows any data to be loaded.
  */
-meta.identified: {
-			@meta.name["description"]
-		};
-		
-meta.expression#identified: meta.map( #meta.expression, #meta.identified );
 
-date: meta.abstract();
+(meta.structure meta.name:"meta.identified"
+	(meta.sequence [
+		(meta.tag u8ascii:"description" (meta.reference #meta.name))
+	])
+)
+
+(meta.map #meta.expression #meta.identified)
+		
+
+/*
+ * Date is an abstract type that can be defined using various methods.
+ */
+
+(meta.structure meta.name:"date" (meta.abstract))
 
 /*
  *  A Java data is the number of milliseconds (or is it seconds) from 1st of Janurary 1970.
  */
-date.java: {  
-	@s64["date"] 
-};
 
-date#java: meta.map( #date, #date.java );
+(meta.structure meta.name:"date.java" (meta.sequence [ (meta.reference #int64) ]))
 
+(meta.map #date #date.java)
 
+])

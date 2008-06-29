@@ -14,69 +14,38 @@
  * jurisdiction of the Victorian courts.
  */
  
-import u8;
-import u16;
+!import uint8;
+!import uint16;
+!import u8ascii;
 
-import meta.name;
-import meta.expression;
-import meta.definition;
-import meta.identified;
+!import meta.name;
+!import meta.expression;
+!import meta.definition;
+!import meta.identified;
 
-/* An envelop is an array of bytes specified with a size.
-   The type is the data that the envelop contains.
-*/
+!import meta.definition.envelop;
+!import dictionary.entry;
+!import dictionary.entry.list;
 
-meta.envelop:
-	{
-		@meta.expression["size"],
-		@meta.expression["type"]
-	};
+(dictionary.source [
 
-/*
- Make an evelop available as a base definition.
-*/	
-meta.definition#envelop: meta.map( #meta.definition, #meta.envelop );
 
-/* Dictionary definition.
-*/
-dictionary.definition:
-	meta.envelop( 
-		@u16["size"],
-		@meta.definition["definition"]
-	);
-	
-dictionary.entry:
-	{
-		@u16["id"],
-		@meta.name["name"],
-		@dictionary.definition["definition"]
-	};
+(meta.structure meta.name:"dictionary.words"
+	(meta.envelop
+		(meta.reference #uint16)
+		(meta.reference #dictionary.entry.list)))
+		
+(meta.structure meta.name:"dictionary.file" (meta.sequence [
+	(meta.tag u8ascii:"core" 
+		(meta.array
+			(meta.reference #uint8)
+			(meta.reference #dictionary.words)))
+	(meta.tag u8ascii:"meta"
+		(meta.array
+			(meta.reference #uint8)
+			(meta.reference #dictionary.words)))
+	(meta.tag u8ascii:"message"
+		(meta.identified u8ascii:"message"))
+]))
 
-	
-dictionary.map:
-	{
-		meta.array(
-			@u16["size"],
-			@dictionary.entry["word"]
-		)
-	};
-	
-dictionary.words:
-	meta.envelop(
-		@u16["size"],
-		@dictionary.map["words"]
-	);
-	
-dictionary.file: 
-	{
-		meta.array( 
-			@u8["core"],
-		    @dictionary.map[ "words"] 
-		),
-		meta.array( 
-			@u8["message"],
-			@dictionary.map["words"] 
-		), 
-		@meta.identified["message"]
-	};
-	
+])

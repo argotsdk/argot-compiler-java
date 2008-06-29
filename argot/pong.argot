@@ -1,8 +1,10 @@
 
+(dictionary.source [
 
-pong.shape : abstract();
+(meta.structure meta.name:"pong.shape" (meta.abstract))
 
-pong.shape.circle:
-	{
-		meta.reference( #u8, "diameter" );
-	};
+(meta.structure meta.name:"pong.shape.circle" (meta.sequence [
+	(meta.tag u8ascii:"diameter" (meta.reference #uint8))
+]))
+
+])

@@ -16,6 +16,7 @@
 
 package com.argot.compiler;
 
+import java.io.File;
 import java.io.FileInputStream;
 
 
@@ -40,6 +41,11 @@ extends TestCase
 		new RemoteLoader()
 	};
 	
+	private TypeLibraryLoader baselibraryLoaders[] = {
+		new MetaLoader(),
+		new DictionaryLoader()
+	};
+	
 	protected void setUp() 
 	throws Exception 
 	{
@@ -47,6 +53,19 @@ extends TestCase
 
 		System.setProperty( "ARGOT_HOME", ".");
 	}	
+
+	public void testCompileMetaArgot()
+	throws Exception
+	{
+		System.out.println("COMPILE ARGOT META" );		
+		String[] args = new String[1];
+		args[0] = "argot/meta.argot";
+		
+		ArgotCompiler.argotCompile( args );
+		
+		TypeLibrary library = new TypeLibrary( baselibraryLoaders );
+		Dictionary.readDictionary( library, new FileInputStream( "argot/meta.dictionary" ));		
+	}
 	
 	public void testCompileCommonArgot()
 	throws Exception
@@ -54,10 +73,12 @@ extends TestCase
 		System.out.println("COMPILE ARGOT COMMON" );		
 		String[] args = new String[1];
 		args[0] = "argot/common.argot";
+
+		ArgotCompiler ac = new ArgotCompiler( new File( args[0] ), new File( "argot/common.dictionary" ), null);
+		ac.setLoadCommon(false);
+		ac.doCompile();
 		
-		ArgotCompiler.argotCompile( args );
-		
-		TypeLibrary library = new TypeLibrary( libraryLoaders );
+		TypeLibrary library = new TypeLibrary( baselibraryLoaders );
 		Dictionary.readDictionary( library, new FileInputStream( "argot/common.dictionary" ));		
 	}
 
@@ -72,6 +93,23 @@ extends TestCase
 		
 		TypeLibrary library = new TypeLibrary( libraryLoaders );
 		Dictionary.readDictionary( library, new FileInputStream( "argot/channel.dictionary" ));		
+	}
+
+	public void testCompileRemoteArgot()
+	throws Exception
+	{
+		Thread.sleep( 1000 );
+		System.out.println("COMPILE REMOTE" );
+
+		String[] args = new String[1];
+		args[0] = "argot/remote.argot";
+		
+		ArgotCompiler ac = new ArgotCompiler( new File( args[0] ), new File( "argot/remote.dictionary" ), null);
+		ac.setLoadRemote(false);
+		ac.doCompile();
+		
+		TypeLibrary library = new TypeLibrary( libraryLoaders );
+		Dictionary.readDictionary( library, new FileInputStream( "argot/remote.dictionary" ));		
 	}
 	
 	public void testCompileNetworkVMArgot()
@@ -89,20 +127,7 @@ extends TestCase
 		Dictionary.readDictionary( library, new FileInputStream( "argot/networkvm.dictionary" ));		
 	}
 	
-	public void testCompileRemoteArgot()
-	throws Exception
-	{
-		Thread.sleep( 1000 );
-		System.out.println("COMPILE REMOTE" );
 
-		String[] args = new String[1];
-		args[0] = "argot/remote.argot";
-		
-		ArgotCompiler.argotCompile( args );
-
-		TypeLibrary library = new TypeLibrary( libraryLoaders );
-		Dictionary.readDictionary( library, new FileInputStream( "argot/remote.dictionary" ));		
-	}
 
 	public void testCompileRemoteRpcArgot()
 	throws Exception

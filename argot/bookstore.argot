@@ -14,47 +14,50 @@
  * jurisdiction of the Victorian courts.
  */
  
-load "networkvm.dictionary";
+!load "networkvm.dictionary";
 
-import u8ascii;
-import meta.array;
-import meta.reference;
-import meta.sequence;
-import u16;
-import u8;
-import meta.expression;
-import meta.name;
+!import u8ascii;
+!import meta.array as array;
+!import meta.reference as reference;
+!import meta.sequence as sequence;
+!import u16;
+!import u8;
+!import meta.expression as expression;
+!import meta.name as name;
 
-import nvm.exception;
+!import nvm.exception;
 
 /*
  *  A very simple book description.
  */
 
-book: 
-	{
-		@u8ascii["ISBN"],
-		@u8ascii["title"],
-		@u8ascii["description"],
-		@u8ascii["author"]
-	};
-	
+(dictionary.source [
+
+(structure name:"book" 
+	(sequence [
+		(tag u8ascii:"ISBN" (reference #u8ascii))
+		(tag u8ascii:"title" (reference #u8ascii))
+		(tag u8ascii:"description" (reference #u8ascii))
+		(tag u8ascii:"author" (reference #u8ascii))
+	])
+)
+
+
 /*
  *  A list of books.
  */
- 
-booklist: 
-	{
-		meta.array( 
-			@u8["size"],
-			@book["book"]
-		)
-	};
-	
-	
-bookNotFound:
-	{
-		@u8ascii["reason"]
-	};
 
-nvm.exception#bookNotFound: meta.map( #nvm.exception, #bookNotFound );
+(structure name:"booklist"
+	(array
+		(reference #u8)
+		(reference #book)
+	)
+)
+ 
+(structure name:"bookNotFound"
+	(tag "reason" (reference #u8ascii))
+)
+	
+(map #nvm.exception #bookNotFound)
+
+])

@@ -18,10 +18,10 @@
 
 	<description>Argot Compiler Package</description>
 
-	<property name="version" value="1.2.2" />
+	<property name="version" value="1.3.a" />
 
 	<property name="argot.jar" value="lib/argot-${version}.jar" />
-	<property name="antlr.jar" value="lib/antlr272.jar" />
+	<property name="antlr.jar" value="lib/antlr-runtime-3.0.1.jar" />
 
 	<!-- set global properties for this build -->
 	<property name="src" location="src" />
@@ -143,9 +143,10 @@
 		<jar jarfile="${release}/lib/argot-compiler-${version}.jar" basedir="${build.bin}">
 			<manifest>
 				<attribute name="Main-Class" value="com.argot.compiler.ArgotCompiler"/>
-				<attribute name="Class-Path" value="antlr272.jar argot-1.2.1a.jar"/>				
+				<attribute name="Class-Path" value="${antlr.jar} ${argot.jar}"/>				
 			</manifest>			
 		</jar>
+		<copy file="${antlr.jar}" todir="${release}/lib" />
 
 	</target>
 
