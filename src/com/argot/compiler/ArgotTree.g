@@ -40,7 +40,7 @@ import com.argot.TypeMap;
 import com.argot.TypeException;
 import com.argot.TypeConstructorAuto;
 import com.argot.meta.MetaDefinition;
-import com.argot.meta.MetaMap;
+import com.argot.meta.MetaAbstractMap;
 //import com.argot.meta.MetaFixedWidth;
 //import com.argot.meta.MetaExpression;
 //import com.argot.meta.MetaReference;
@@ -287,11 +287,11 @@ expression returns [Object e]
     		MetaStructure structure = (MetaStructure) e;
         registerType( structure.getName(), structure.getDefinition() );
     }
-    else if ( "meta.map".equals( id.getText() ) )
+    else if ( "meta.abstract.map".equals( id.getText() ) )
     {
     	try
     	{
-    		MetaMap map = (MetaMap) e;
+    		MetaAbstractMap map = (MetaAbstractMap) e;
     		registerType( map.getMapTypeName( _library ), map );
     	}
     	catch (TypeException ex)

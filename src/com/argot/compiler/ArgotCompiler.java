@@ -41,6 +41,7 @@ import com.argot.common.CommonLoader;
 import com.argot.compiler.dictionary.DictionarySourceLoader;
 import com.argot.compiler.primitive.ArgotPrimitiveParser;
 import com.argot.compiler.primitive.StringPrimitiveParser;
+import com.argot.compiler.primitive.UInt16PrimitiveParser;
 import com.argot.compiler.primitive.UInt8PrimitiveParser;
 import com.argot.dictionary.Dictionary;
 import com.argot.dictionary.DictionaryLoader;
@@ -80,6 +81,7 @@ public class ArgotCompiler
 		setPrimitiveParser( "meta.name", new StringPrimitiveParser() );
 		setPrimitiveParser( "u8ascii", new StringPrimitiveParser() );
 		setPrimitiveParser( "uint8", new UInt8PrimitiveParser() );
+		setPrimitiveParser( "uint16", new UInt16PrimitiveParser() );
 
 		if (paths==null)
 		{
