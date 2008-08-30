@@ -14,11 +14,8 @@
  * jurisdiction of the Victorian courts.
  */
  
- /** 
- * This is the network virtual machine types.  
- *
- * 
- *
+ /* 
+ * This is the network virtual machine types.
  */
 
 !import empty;
@@ -78,13 +75,13 @@
 		(meta.tag u8ascii:"heapIndex" (meta.reference #uint16))]))
 (meta.structure meta.name:"nvm.instruction.to_host" (meta.sequence []))
 
-(meta.map #nvm.instruction #nvm.instruction.load_crl_host)
-(meta.map #nvm.instruction #nvm.instruction.to_host)
-(meta.map #nvm.instruction #nvm.instruction.load_crl_object)
-(meta.map #nvm.instruction #nvm.instruction.load_heap_object)
-(meta.map #nvm.instruction #nvm.instruction.named_method_call)
-(meta.map #nvm.instruction #nvm.instruction.return)
-(meta.map #nvm.instruction #nvm.instruction.store_heap_object)
+(meta.abstract.map #nvm.instruction #nvm.instruction.load_crl_host)
+(meta.abstract.map #nvm.instruction #nvm.instruction.to_host)
+(meta.abstract.map #nvm.instruction #nvm.instruction.load_crl_object)
+(meta.abstract.map #nvm.instruction #nvm.instruction.load_heap_object)
+(meta.abstract.map #nvm.instruction #nvm.instruction.named_method_call)
+(meta.abstract.map #nvm.instruction #nvm.instruction.return)
+(meta.abstract.map #nvm.instruction #nvm.instruction.store_heap_object)
 
 (meta.structure meta.name:"nvm.instructions" (meta.sequence [
 	(meta.array

@@ -78,7 +78,7 @@
  * META_MAP_ID 6
  */
 
-(meta.structure meta.name:"meta.map" (meta.sequence [
+(meta.structure meta.name:"meta.abstract.map" (meta.sequence [
 	(meta.tag u8ascii:"abstract" (meta.reference #meta.id))
 	(meta.tag u8ascii:"concrete" (meta.reference #meta.id))
 	]))
@@ -211,19 +211,19 @@
 (meta.structure meta.name:"meta.fixed_width.attribute.bigendian" (meta.sequence[]))
 
 /* META_BASIC_ATTRIBUTE_TO_SIZE_ID 23 */
-(meta.map #meta.fixed_width.attribute #meta.fixed_width.attribute.size)
+(meta.abstract.map #meta.fixed_width.attribute #meta.fixed_width.attribute.size)
 
 /* META_BASIC_ATTRIBUTE_TO_INTEGER_ID 24 */
-(meta.map #meta.fixed_width.attribute #meta.fixed_width.attribute.integer)
+(meta.abstract.map #meta.fixed_width.attribute #meta.fixed_width.attribute.integer)
 
 /* META_BASIC_ATTRIBUTE_TO_UNSIGNED_ID 25 */
-(meta.map #meta.fixed_width.attribute #meta.fixed_width.attribute.unsigned)
+(meta.abstract.map #meta.fixed_width.attribute #meta.fixed_width.attribute.unsigned)
 
 /* META_BASIC_ATTRIBUTE_TO_SIGNED_ID 26 */
-(meta.map #meta.fixed_width.attribute #meta.fixed_width.attribute.signed)
+(meta.abstract.map #meta.fixed_width.attribute #meta.fixed_width.attribute.signed)
 
 /* META_BASIC_ATTRIBUTE_TO_BIGENDIAN_ID 27 */
-(meta.map #meta.fixed_width.attribute #meta.fixed_width.attribute.bigendian)
+(meta.abstract.map #meta.fixed_width.attribute #meta.fixed_width.attribute.bigendian)
 
 			
 /*
@@ -231,37 +231,37 @@
  */
 
 /* META_EXPRESSION_TO_REFERENCE_ID 28 */
-(meta.map #meta.expression #meta.reference)
+(meta.abstract.map #meta.expression #meta.reference)
 
 /* META_EXPRESSION_TO_TAG_ID 29 */
-(meta.map #meta.expression #meta.tag)
+(meta.abstract.map #meta.expression #meta.tag)
 
 /* META_EXPRESSION_TO_SEQUENCE_ID 30 */
-(meta.map #meta.expression #meta.sequence)
+(meta.abstract.map #meta.expression #meta.sequence)
 
 /* META_EXPRESSION_TO_ARRAY_ID 31 */
-(meta.map #meta.expression #meta.array)
+(meta.abstract.map #meta.expression #meta.array)
 
 /* META_EXPRESSION_TO_ENVELOP_ID 32 */
-(meta.map #meta.expression #meta.envelop)
+(meta.abstract.map #meta.expression #meta.envelop)
 
 /* META_EXPRESSION_TO_ENCODING_ID 33 */
-(meta.map #meta.expression #meta.encoding)
+(meta.abstract.map #meta.expression #meta.encoding)
 
 /* DEFINITION_ID 34 */
 (meta.structure meta.name:"meta.definition" (meta.abstract))
 
 /* DEFINITION_TO_FIXED_WIDTH 35 */
-(meta.map #meta.definition #meta.fixed_width)
+(meta.abstract.map #meta.definition #meta.fixed_width)
 
 /* DEFINITION_TO_MAP 36 */
-(meta.map #meta.definition #meta.map)
+(meta.abstract.map #meta.definition #meta.abstract.map)
 
 /* DEFINITION_TO_ABSTRACT 37 */
-(meta.map #meta.definition #meta.abstract)
+(meta.abstract.map #meta.definition #meta.abstract)
 
 /* DEFINITION_TO_EXPRESSION 38 */
-(meta.map #meta.definition #meta.expression)
+(meta.abstract.map #meta.definition #meta.expression)
 
 /* DEFINITION_ENVELOP 39 */
 (meta.structure meta.name:"meta.definition.envelop"

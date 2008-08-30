@@ -52,8 +52,8 @@
 	])
 )
 
-(meta.map #meta.definition #remote.interface)
-(meta.map #meta.definition #remote.method)
+(meta.abstract.map #meta.definition #remote.interface)
+(meta.abstract.map #meta.definition #remote.method)
 
 (meta.structure meta.name:"remote.location" (meta.abstract))
 
@@ -66,7 +66,7 @@
 
 
 /* allow exceptions to be null */
-(meta.map #remote.exception #empty)
+(meta.abstract.map #remote.exception #empty)
 
 (meta.structure meta.name:"remote.stack_trace_element" (meta.sequence [
 	(meta.tag u8ascii:"className" (meta.reference #u8ascii))
@@ -98,7 +98,7 @@
 	])
 )
 
-(meta.map #remote.exception #remote.exception.wrapped)
+(meta.abstract.map #remote.exception #remote.exception.wrapped)
 
 ])
  

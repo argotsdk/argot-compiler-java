@@ -48,7 +48,7 @@
 	(meta.reference #remote.exception.basic)
 ]))
 
-(meta.map #remote.exception #test_exception)
+(meta.abstract.map #remote.exception #test_exception)
 
 (meta.structure meta.name:"test" (remote.interface))
 

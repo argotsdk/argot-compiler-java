@@ -204,7 +204,7 @@
 	])
 )
 
-(meta.map #meta.expression #meta.identified)
+(meta.abstract.map #meta.expression #meta.identified)
 		
 
 /*
@@ -219,6 +219,6 @@
 
 (meta.structure meta.name:"date.java" (meta.sequence [ (meta.reference #int64) ]))
 
-(meta.map #date #date.java)
+(meta.abstract.map #date #date.java)
 
 ])

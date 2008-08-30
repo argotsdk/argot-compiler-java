@@ -1,31 +1,18 @@
-/*
- * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
- *
- * This software is licensed under the Argot Public License 
- * which may be found in the file LICENSE distributed 
- * with this software.
- *
- * More information about this license can be found at
- * http://www.einet.com.au/License
- * 
- * The Developer of this software is Live Media Pty Ltd,
- * PO Box 4591, Melbourne 3001, Australia.  The license is subject 
- * to the law of Victoria, Australia, and subject to exclusive 
- * jurisdiction of the Victorian courts.
- */
- 
 !load "networkvm.dictionary";
 
 !import u8ascii;
-!import meta.array as array;
-!import meta.reference as reference;
-!import meta.sequence as sequence;
-!import u16;
-!import u8;
-!import meta.expression as expression;
-!import meta.name as name;
+!import meta.array;
+!import meta.reference;
+!import meta.sequence;
+!import uint16;
+!import uint8;
+!import int32;
+!import meta.expression;
+!import meta.name;
 
-!import nvm.exception;
+!import remote.exception;
+!import remote.exception.basic;
+!import remote.stack_trace_element;
 
 /*
  *  A very simple book description.
@@ -33,31 +20,83 @@
 
 (dictionary.source [
 
-(structure name:"book" 
-	(sequence [
-		(tag u8ascii:"ISBN" (reference #u8ascii))
-		(tag u8ascii:"title" (reference #u8ascii))
-		(tag u8ascii:"description" (reference #u8ascii))
-		(tag u8ascii:"author" (reference #u8ascii))
+(meta.structure meta.name:"book" 
+	(meta.sequence [
+		(meta.tag u8ascii:"ISBN" (meta.reference #u8ascii))
+		(meta.tag u8ascii:"title" (meta.reference #u8ascii))
+		(meta.tag u8ascii:"description" (meta.reference #u8ascii))
+		(meta.tag u8ascii:"author" (meta.reference #u8ascii))
 	])
 )
-
 
 /*
  *  A list of books.
  */
 
-(structure name:"booklist"
-	(array
-		(reference #u8)
-		(reference #book)
+(meta.structure meta.name:"booklist" (meta.sequence [
+	(meta.array
+		(meta.reference #uint8)
+		(meta.reference #book)
 	)
-)
+]))
  
-(structure name:"bookNotFound"
-	(tag "reason" (reference #u8ascii))
-)
+(meta.structure meta.name:"bookNotFound" (meta.sequence [
+	(meta.reference #remote.exception.basic)
+]))
 	
-(map #nvm.exception #bookNotFound)
+(meta.abstract.map #remote.exception #bookNotFound)
+
+	
+(meta.structure meta.name:"bookstore" (remote.interface)) 
+
+(meta.structure meta.name:"bookstore.addbook" 
+   (remote.method #bookstore u8ascii:"addBook"
+	[ (remote.parameter #book u8ascii:"book") ] 
+	[ (remote.parameter #bool u8ascii:"success") ]
+	[ #bookNotFound ]
+))
+    
+
+(meta.structure meta.name:"bookstore.removebook" 
+   (remote.method #bookstore u8ascii:"removeBook"
+	[ (remote.parameter #u8ascii u8ascii:"isbn") ] 
+	[ ]
+	[ #bookNotFound ]
+))
+        
+(meta.structure meta.name:"bookstore.findBooksByAuthor" 
+   (remote.method #bookstore u8ascii:"findBooksByAuthor"
+	[ (remote.parameter #u8ascii u8ascii:"name") ] 
+	[ (remote.parameter #booklist u8ascii:"booklist") ]
+	[ ]
+))
+        
+(meta.structure meta.name:"bookstore.getBookByIsbn" 
+   (remote.method #bookstore u8ascii:"getBookByIsbn"
+	[ (remote.parameter #u8ascii u8ascii:"isbn") ] 
+	[ (remote.parameter #book u8ascii:"book") ]
+	[ #bookNotFound ]
+))
+ 
+(meta.structure meta.name:"bookstore.getAllBooks" 
+   (remote.method #bookstore u8ascii:"getAllBooks"
+	[ ] 
+	[ (remote.parameter #booklist u8ascii:"allbooks") ]
+	[ ]
+))
+
+(meta.structure meta.name:"bookstore.loadbooks" 
+   (remote.method #bookstore u8ascii:"loadBooks"
+	[ (remote.parameter #u8ascii u8ascii:"filename") ] 
+	[ ]
+	[ #bookNotFound ]
+))
+	
+(meta.structure meta.name:"bookstore.saveBooks" 
+   (remote.method #bookstore u8ascii:"saveBooks"
+	[ (remote.parameter #u8ascii u8ascii:"filename") ] 
+	[ ]
+	[ #bookNotFound ]
+))
 
 ])
