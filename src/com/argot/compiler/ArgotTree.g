@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2008 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -29,28 +29,28 @@ package com.argot.compiler;
 import java.io.*;
 import java.util.List;
 import java.util.ArrayList;
-//import java.util.Vector;
 
-//import java.lang.reflect.Constructor;
-//import java.lang.reflect.InvocationTargetException;
 
 import com.argot.TypeLibrary;
 import com.argot.TypeMap;
-//import com.argot.TypeElement;
+import com.argot.TypeLocation;
+import com.argot.TypeElement;
 import com.argot.TypeException;
-import com.argot.TypeConstructorAuto;
+import com.argot.auto.TypeConstructorAuto;
+import com.argot.meta.MetaIdentity;
 import com.argot.meta.MetaDefinition;
 import com.argot.meta.MetaAbstractMap;
-//import com.argot.meta.MetaFixedWidth;
-//import com.argot.meta.MetaExpression;
-//import com.argot.meta.MetaReference;
-//import com.argot.meta.MetaSequence;
-//import com.argot.meta.MetaArray;
+import com.argot.meta.DictionaryName;
+import com.argot.meta.DictionaryDefinition;
+import com.argot.meta.DictionaryRelation;
+import com.argot.meta.MetaName;
+import com.argot.meta.MetaSequence;
+import com.argot.meta.MetaVersion;
 
-//import com.argot.dictionary.Dictionary;
-
+import com.argot.compiler.dictionary.LibraryEntry;
+import com.argot.compiler.dictionary.LibraryDefinition;
+import com.argot.compiler.dictionary.LibraryRelation;
 import com.argot.compiler.primitive.ArgotPrimitiveParser;
-import com.argot.compiler.dictionary.MetaStructure;
 }
 
 
@@ -60,10 +60,8 @@ import com.argot.compiler.dictionary.MetaStructure;
 {
 	private TypeLibrary _library;
 	private TypeMap _map;
-	private int _lastType;
 	private ArgotCompiler _compiler;
-	
-	//private boolean _validateReferences = true;
+	private TypeMap _readMap;
 	
 	public void setLibrary( TypeLibrary lib )
 	{
@@ -73,97 +71,105 @@ import com.argot.compiler.dictionary.MetaStructure;
 	public void setTypeMap( TypeMap map )
 	{
 		_map = map;
-		_lastType = 1;
+	}
+	
+	public void setReadTypeMap( TypeMap readMap )
+	{
+	 _readMap = readMap;
 	}
 	
 	public void setArgotCompiler( ArgotCompiler compiler )
 	{
 		_compiler = compiler;
 	}
-	
-	/*public void setValidateReference( boolean validate )
-	{
-		_validateReferences = validate;
-	}*/
 
-    public Object construct(Object[] objects, Class clss ) throws TypeException
+    public Object construct(int definitionId, Object[] objects, Class clss ) throws TypeException
     {
+      TypeElement structure = _library.getStructure( definitionId );
+      if ( structure instanceof MetaSequence )
+      {
+        MetaSequence sequence = (MetaSequence) structure;
+        for (int x=0; x<sequence.size();x++)
+        {
+          int nid = _readMap.getStreamId(sequence.getElement(x).getTypeId());
+        }
+        
+      }
+   
     	TypeConstructorAuto autoConstructor = new TypeConstructorAuto(clss);
     	return autoConstructor.construct(null,objects);
     }
 
-	public void registerType( MetaStructure structure ) throws TypeException, RecognitionException
-	{
-		String typename = structure.getName();
-		MetaDefinition tds = structure.getDefinition();
-		// An Entry adds the newly defined entry to the system.
-		try
-		{
-			//TypeStructure struct = new TypeStructure( _library, tds );
-			//if ( !_library.isValid( typename.getText() ) || _library.isReserved( typename.getText() ) )
-			int state = _library.getTypeState( typename );
-			if ( state == TypeLibrary.TYPE_NOT_DEFINED || state == TypeLibrary.TYPE_RESERVED )
-			{
-				//if  ( _library.isReserved( typename.getText() ) )
-				if ( state == TypeLibrary.TYPE_RESERVED )
-				{
-					_library.register( typename, tds );	
-				}
-				else
-				{
-					_library.register( typename, tds );
-					_map.map( _lastType++, _library.getId( typename ) );
-				}
-			}
-			else
-			{
-				System.out.println( "warning: can't redefine '" + typename +"'.  Definition ignored." );
-			
-				try
-				{
-					_map.map( _lastType++, _library.getId( typename ) );
-				}
-				catch( TypeException ex )
-				{
-					System.out.println( "import into map failed" );
-				}
-			
-			}
-		}
-		catch( TypeException ex )
-		{
-			ex.printStackTrace();
-			throw new RecognitionException( /*"failed to map " + typename*/ );			
-		}
-		
-	}
-	
-	private void registerType( String typename, MetaDefinition tds )
+	private void registerType( TypeLocation location, MetaDefinition tds )
 	throws RecognitionException
 	{
+	
 		try
 		{
-			int state = _library.getTypeState( typename );
+	    if (location instanceof LibraryDefinition)
+	    {
+	      LibraryDefinition libDef = (LibraryDefinition) location;
+	      MetaName name = libDef.getName();
+	      MetaVersion version = libDef.getVersion();
+	      
+	      DictionaryName libName = new DictionaryName(name);
+	      int nameState = _library.getTypeState(_library.getTypeId(libName));
+	      int nameId = -1;
+	      if ( nameState == TypeLibrary.TYPE_NOT_DEFINED )
+	      {
+	         nameId = _library.register(libName, new MetaIdentity());
+	      }
+	      else
+	      {
+	         nameId = _library.getTypeId(libName);
+	      }
+	      
+	      location = new DictionaryDefinition(nameId,name,version);
+	      
+	      if (!_map.isMapped(nameId))
+	      {
+	         //_map.map( _lastType++, nameId );
+	         //_map.getStreamId( nameId );
+	      }
+	    }
+	    else if (location instanceof LibraryRelation)
+	    {
+	     LibraryRelation libRel = (LibraryRelation) location;
+	     MetaName name = _library.getName( libRel.getId() );
+	     DictionaryDefinition dictDef = new DictionaryDefinition( libRel.getId(), name, libRel.getVersion() );
+	     
+	     int libRelId = _library.getTypeId( dictDef );
+	     if ( !_map.isMapped(libRelId))
+	     {
+	       //_map.map( _lastType++, libRelId );
+	       _map.getStreamId( libRelId );
+	     }
+	     
+	     location = new DictionaryRelation( libRelId, libRel.getTag() );
+	    }
+
+
+			int state = _library.getTypeState( _library.getTypeId(location) );
 			if ( state == TypeLibrary.TYPE_NOT_DEFINED || state == TypeLibrary.TYPE_RESERVED )
 			{
 				//if  ( _library.isReserved( typename.getText() ) )
 				if ( state == TypeLibrary.TYPE_RESERVED )
 				{
-					_library.register( typename, tds );	
+					_library.register( location, tds );	
 				}
 				else
 				{
-					_library.register( typename, tds );
-					_map.map( _lastType++, _library.getId( typename ) );
+					int nId = _library.register( location, tds );
+					_map.getStreamId( nId );
 				}
 			}
 			else
 			{
-				System.out.println( "warning: can't redefine '" + typename +"'.  Definition ignored." );
+				System.out.println( "warning: can't redefine '" +"'.  Definition ignored." );
 			
 				try
 				{
-					_map.map( _lastType++, _library.getId( typename ) );
+					_map.getStreamId( _library.getTypeId( location ));
 				}
 				catch( TypeException ex )
 				{
@@ -175,7 +181,7 @@ import com.argot.compiler.dictionary.MetaStructure;
 		catch( TypeException ex )
 		{
 			ex.printStackTrace();
-			throw new ArgotParserException( "failed to map " + typename, input);
+			throw new ArgotParserException( "failed to map ", input);
 		}
 	
 	}
@@ -199,10 +205,12 @@ line returns [Object l]
 
 reserve: ^('reserve' typename=IDENTIFIER )
   {
+    System.out.println("reserve not implemented" );
+  /*
     try
     {
       _library.reserve( typename.getText() );
-      _map.map( _lastType++, _library.getId( typename.getText() ));
+      _map.map( _lastType++, _library.getTypeId( typename.getText() ));
     }
     catch( TypeException ex )
     {
@@ -215,6 +223,7 @@ reserve: ^('reserve' typename=IDENTIFIER )
         throw new ArgotParserException( "failed to reserve " + typename.getText(), input);
       }
     }
+    */
   }
   ;
 
@@ -254,7 +263,8 @@ importl: ^('import' typename=IDENTIFIER ( alias=IDENTIFIER)? )
     // This will import into the map the type specified.
     try
     {
-      _map.map( _lastType++, _library.getId( typename.getText() ) );
+      //_map.map( _lastType++, _library.getTypeId( typename.getText() ) );
+      _readMap.getStreamId( _library.getTypeId( typename.getText() ) );
     }
     catch( TypeException ex )
     {
@@ -267,37 +277,26 @@ importl: ^('import' typename=IDENTIFIER ( alias=IDENTIFIER)? )
 expression returns [Object e]
   : ^(LBRACE { List l = new ArrayList(); } id=IDENTIFIER (p=primary { l.add(p); } )* )
   {
-    //System.out.println( id.getText() );
     try
     {
-      
-      Class c = _library.getClass( _library.getId( id.getText() ) );
+      int nid = _readMap.getStreamId( _library.getTypeId( id.getText() ));
+      int defId = _readMap.getDefinitionId( nid );
+      Class c = _library.getClass( defId );
       if ( c == null )
       {
         throw new ArgotParserException( "type has no class: " + id.getText(), input );
       }
-      e = construct( l.toArray(), c );
+      e = construct( defId, l.toArray(), c );
     }
     catch( TypeException ex )
     {
       ex.printStackTrace();
+      throw new ArgotParserException("type has no class: " + id.getText(), input );
     }
-    if ( "meta.structure".equals( id.getText() ) )
+    if ( "library.entry".equals( id.getText() ) )
     {
-    		MetaStructure structure = (MetaStructure) e;
-        registerType( structure.getName(), structure.getDefinition() );
-    }
-    else if ( "meta.abstract.map".equals( id.getText() ) )
-    {
-    	try
-    	{
-    		MetaAbstractMap map = (MetaAbstractMap) e;
-    		registerType( map.getMapTypeName( _library ), map );
-    	}
-    	catch (TypeException ex)
-    	{
-    		throw new ArgotParserException( ex.getMessage(), input );
-    	}
+    		LibraryEntry structure = (LibraryEntry) e;
+        registerType( structure.getLocation(), structure.getDefinition() );
     }
 
   }
@@ -317,7 +316,12 @@ primary returns [Object p]
   {
     try
     {
-      $p = new Integer( _library.getId( argotType.getText() )); 
+      int id =  _library.getTypeId( argotType.getText() ); 
+     /* if (!_map.isMapped(id))
+      {
+        _map.map( _lastType++, id );
+      }*/
+      $p = new Integer(id);
     }
     catch( TypeException ex )
     {
