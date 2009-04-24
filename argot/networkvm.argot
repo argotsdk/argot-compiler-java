@@ -40,7 +40,7 @@
 !import remote.interface;
 !import remote.exception;
 
-(dictionary.source [
+(library.list [
 
 /*
  * A stack is an array of items.  In future this could be expanded
@@ -49,20 +49,32 @@
  * actually understanding what the item is.
  */
 
-(meta.structure meta.name:"nvm.heap" (meta.sequence [
-	(meta.array 
-		(meta.reference #uint16)
-		(meta.identified u8ascii:"object")
-	)]))
+(library.entry 
+	(library.definition u8ascii:"nvm.heap" u8ascii:"1.3")
+	(meta.sequence [
+		(meta.array 
+			(meta.reference #uint16)
+			(meta.identified meta.name:"object")
+		)]))
 	
 
-(meta.structure meta.name:"nvm.instruction" (meta.abstract))
+(library.entry 
+	(library.definition u8ascii:"nvm.instruction.load_crl_host" u8ascii:"1.3")
+	(meta.sequence []))
 
-(meta.structure meta.name:"nvm.instruction.load_crl_host" (meta.sequence []))
-(meta.structure meta.name:"nvm.instruction.load_crl_object" (meta.sequence []))
-(meta.structure meta.name:"nvm.instruction.load_heap_object" (meta.sequence [
-		(meta.tag u8ascii:"heapIndex" (meta.reference #uint16))]))
-(meta.structure meta.name:"nvm.instruction.named_method_call" (meta.sequence [
+(library.entry 
+	(library.definition u8ascii:"nvm.instruction.load_crl_object" u8ascii:"1.3")
+	(meta.sequence []))
+
+(library.entry 
+	(library.definition u8ascii:"nvm.instruction.load_heap_object" u8ascii:"1.3")
+	(meta.sequence [
+		(meta.tag u8ascii:"heapIndex" (meta.reference #uint16))
+	]))
+
+(library.entry 
+	(library.definition u8ascii:"nvm.instruction.named_method_call" u8ascii:"1.3")
+	(meta.sequence [
 		(meta.tag u8ascii:"methodName" (meta.reference #u8ascii))
 		(meta.tag u8ascii:"typeId"
 			(meta.array
@@ -70,51 +82,72 @@
 				(meta.reference #uint16)
 			)
 		)]))
-(meta.structure meta.name:"nvm.instruction.return" (meta.sequence []))
-(meta.structure meta.name:"nvm.instruction.store_heap_object" (meta.sequence [
-		(meta.tag u8ascii:"heapIndex" (meta.reference #uint16))]))
-(meta.structure meta.name:"nvm.instruction.to_host" (meta.sequence []))
 
-(meta.abstract.map #nvm.instruction #nvm.instruction.load_crl_host)
-(meta.abstract.map #nvm.instruction #nvm.instruction.to_host)
-(meta.abstract.map #nvm.instruction #nvm.instruction.load_crl_object)
-(meta.abstract.map #nvm.instruction #nvm.instruction.load_heap_object)
-(meta.abstract.map #nvm.instruction #nvm.instruction.named_method_call)
-(meta.abstract.map #nvm.instruction #nvm.instruction.return)
-(meta.abstract.map #nvm.instruction #nvm.instruction.store_heap_object)
+(library.entry 
+	(library.definition u8ascii:"nvm.instruction.return" u8ascii:"1.3")
+	(meta.sequence []))
 
-(meta.structure meta.name:"nvm.instructions" (meta.sequence [
-	(meta.array
-		(meta.reference #uint16)
-		(meta.reference #nvm.instruction)
-	)
-]))
+(library.entry 
+	(library.definition u8ascii:"nvm.instruction.store_heap_object" u8ascii:"1.3")
+	(meta.sequence [
+		(meta.tag u8ascii:"heapIndex" (meta.reference #uint16))
+	]))
+
+(library.entry 
+	(library.definition u8ascii:"nvm.instruction.to_host" u8ascii:"1.3")
+	(meta.sequence []))
+
+(library.entry 
+	(library.definition u8ascii:"nvm.instruction" u8ascii:"1.3")
+	(meta.abstract [ 
+		(meta.abstract.map #nvm.instruction.load_crl_host)
+		(meta.abstract.map #nvm.instruction.to_host)
+		(meta.abstract.map #nvm.instruction.load_crl_object)
+		(meta.abstract.map #nvm.instruction.load_heap_object)
+		(meta.abstract.map #nvm.instruction.named_method_call)
+		(meta.abstract.map #nvm.instruction.return)
+		(meta.abstract.map #nvm.instruction.store_heap_object)
+	]))
+
+(library.entry 
+	(library.definition u8ascii:"nvm.instructions" u8ascii:"1.3")
+	(meta.sequence [
+		(meta.array
+			(meta.reference #uint16)
+			(meta.reference #nvm.instruction))
+	]))
 
 /*
  * This virtual machine state includes instructions, heap, program counter
  * and exception state.  
  */
 
-(meta.structure meta.name:"nvm.state" (meta.sequence [
-	(meta.tag u8ascii:"programCounter" (meta.reference #uint16))
-	(meta.tag u8ascii:"instructions" (meta.reference #nvm.instructions))
-	(meta.tag u8ascii:"heap" (meta.reference #nvm.heap))
-	(meta.tag u8ascii:"exception" (meta.reference #remote.exception))
-]))
+(library.entry 
+	(library.definition u8ascii:"nvm.state" u8ascii:"1.3")
+	(meta.sequence [
+		(meta.tag u8ascii:"programCounter" (meta.reference #uint16))
+		(meta.tag u8ascii:"instructions" (meta.reference #nvm.instructions))
+		(meta.tag u8ascii:"heap" (meta.reference #nvm.heap))
+		(meta.tag u8ascii:"exception" (meta.reference #remote.exception))
+	]))
 
 
-(meta.structure meta.name:"nvm.host" (remote.interface))
+(library.entry 
+	(library.definition u8ascii:"nvm.host" u8ascii:"1.3")
+	(remote.interface [ ]))
 
-(meta.structure meta.name:"nvm.host.process"
-	(remote.method #nvm.host u8ascii:"process"
+(library.entry 
+	(library.relation #nvm.host u8ascii:"1.3" u8ascii:"nvm.host.process")
+	(remote.method u8ascii:"process"
 		[ (remote.parameter #nvm.state u8ascii:"nvmState" ) ]
 		[ (remote.parameter #nvm.state u8ascii:"nvmState" ) ]
 		[ #remote.exception ]
 	)
 )
 
-(meta.structure meta.name:"nvm.host.getobject"
-	(remote.method #nvm.host u8ascii:"getObject"
+(library.entry 
+	(library.relation #nvm.host u8ascii:"1.3" u8ascii:"nvm.host.getobject")
+	(remote.method u8ascii:"getObject"
 		[ (remote.parameter #remote.location u8ascii:"metaLocation" ) ]
 		[ (remote.parameter #remote.object u8ascii:"metaObject" ) ]
 		[ #remote.exception ]

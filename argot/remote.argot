@@ -15,25 +15,26 @@
  */
 
 !import empty;
-!import u8ascii;
 !import uint8;
 !import uint16;
-!import meta.definition;
 !import int32;
+!import u8ascii;
+!import meta.definition;
 
-(dictionary.source [
+(library.list [
 
 /* Remote Interfaces and Object definitions */
 
-(meta.structure meta.name:"remote.parameter"
+(library.entry 
+	(library.definition u8ascii:"remote.parameter" u8ascii:"1.3")
 	(meta.sequence [
 		(meta.tag u8ascii:"type" (meta.reference #uint16))
 		(meta.tag u8ascii:"name" (meta.reference #u8ascii))
 	]))
 
-(meta.structure meta.name:"remote.method"
+(library.entry 
+	(library.definition u8ascii:"remote.method" u8ascii:"1.3")
 	(meta.sequence [
-		(meta.tag u8ascii:"interface" (meta.reference #uint16))
 		(meta.tag u8ascii:"name" (meta.reference #u8ascii))
 		(meta.tag u8ascii:"request"
 			(meta.array (meta.reference #uint8) (meta.reference #remote.parameter)))
@@ -43,41 +44,55 @@
 			(meta.array (meta.reference #uint8) (meta.reference #uint16)))
 	]))
 
-(meta.structure meta.name:"remote.interface"
+(library.entry 
+	(library.definition u8ascii:"remote.interface" u8ascii:"1.3")
 	(meta.sequence [
 		(meta.array 
 			(meta.reference #uint8)
-			(meta.reference #uint16)
+			(meta.reference #uint16)  /* meta.id */
 		)
 	])
 )
 
-(meta.abstract.map #meta.definition #remote.interface)
-(meta.abstract.map #meta.definition #remote.method)
+(library.entry 
+	(library.relation #meta.definition u8ascii:"1.3" u8ascii:"remote.interface")
+	(meta.abstract.map #remote.interface))
+	
+(library.entry 
+	(library.relation #meta.definition u8ascii:"1.3" u8ascii:"remote.method")
+	(meta.abstract.map #remote.method))
 
-(meta.structure meta.name:"remote.location" (meta.abstract))
+(library.entry 
+	(library.definition u8ascii:"remote.location" u8ascii:"1.3")
+	(meta.abstract []))
 
-(meta.structure meta.name:"remote.object" (meta.sequence [
-	(meta.tag u8ascii:"location" (meta.reference #remote.location))
-	(meta.tag u8ascii:"class" (meta.reference #uint16))
-]))
+(library.entry 
+	(library.definition u8ascii:"remote.object" u8ascii:"1.3")
+	(meta.sequence [
+		(meta.tag u8ascii:"location" (meta.reference #remote.location))
+		(meta.tag u8ascii:"class" (meta.reference #uint16))
+	]))
 
-(meta.structure meta.name:"remote.exception" (meta.abstract))
+(library.entry 
+	(library.definition u8ascii:"remote.exception" u8ascii:"1.3")
+	(meta.abstract [
+		(meta.abstract.map #empty)  /* allow exceptions to be null */
+	]))
 
 
-/* allow exceptions to be null */
-(meta.abstract.map #remote.exception #empty)
-
-(meta.structure meta.name:"remote.stack_trace_element" (meta.sequence [
-	(meta.tag u8ascii:"className" (meta.reference #u8ascii))
-	(meta.tag u8ascii:"methodName" (meta.reference #u8ascii))
-	(meta.tag u8ascii:"fileName" (meta.reference #u8ascii))
-	(meta.tag u8ascii:"lineNumber" (meta.reference #int32))
-])) 
+(library.entry 
+	(library.definition u8ascii:"remote.stack_trace_element" u8ascii:"1.3")
+	(meta.sequence [
+		(meta.tag u8ascii:"className" (meta.reference #u8ascii))
+		(meta.tag u8ascii:"methodName" (meta.reference #u8ascii))
+		(meta.tag u8ascii:"fileName" (meta.reference #u8ascii))
+		(meta.tag u8ascii:"lineNumber" (meta.reference #int32))
+	])) 
 
 /* Most exceptions will have the following */
 
-(meta.structure meta.name:"remote.exception.basic" 
+(library.entry 
+	(library.definition u8ascii:"remote.exception.basic" u8ascii:"1.3")
 	(meta.sequence [
 		(meta.tag u8ascii:"reason" (meta.reference #u8ascii))
 		(meta.tag u8ascii:"cause" (meta.reference #remote.exception))
@@ -92,13 +107,16 @@
 
 /* This is the default wrapped exception */
 
-(meta.structure meta.name:"remote.exception.wrapped"
+(library.entry 
+	(library.definition u8ascii:"remote.exception.wrapped" u8ascii:"1.3")
 	(meta.sequence [
 		(meta.reference #remote.exception.basic)
 	])
 )
 
-(meta.abstract.map #remote.exception #remote.exception.wrapped)
+(library.entry 
+	(library.relation #remote.exception u8ascii:"1.3" u8ascii:"remote.exception.wrapped")
+	(meta.abstract.map #remote.exception.wrapped))
 
 ])
  
