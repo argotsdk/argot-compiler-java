@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -22,6 +22,7 @@ import java.io.FileInputStream;
 
 import com.argot.TypeLibrary;
 import com.argot.TypeLibraryLoader;
+import com.argot.TypeMap;
 import com.argot.common.CommonLoader;
 import com.argot.dictionary.Dictionary;
 import com.argot.dictionary.DictionaryLoader;
@@ -40,6 +41,12 @@ extends TestCase
 		new CommonLoader(),
 		new RemoteLoader()
 	};
+
+	private TypeLibraryLoader baseCommonLoaders[] = {
+			new MetaLoader(),
+			new DictionaryLoader(),
+			new CommonLoader(),
+		};
 	
 	private TypeLibraryLoader baselibraryLoaders[] = {
 		new MetaLoader(),
@@ -60,12 +67,46 @@ extends TestCase
 		System.out.println("COMPILE ARGOT META" );		
 		String[] args = new String[1];
 		args[0] = "argot/meta.argot";
-		
-		ArgotCompiler.argotCompile( args );
+
+		ArgotCompiler ac = new ArgotCompiler( new File( args[0] ), new File( "argot/meta.dictionary" ), null);
+		ac.setLoadCommon(false);
+		ac.doCompile();
 		
 		TypeLibrary library = new TypeLibrary( baselibraryLoaders );
 		Dictionary.readDictionary( library, new FileInputStream( "argot/meta.dictionary" ));		
 	}
+
+	public void testCompileMetaExtensionsArgot()
+	throws Exception
+	{
+		System.out.println("COMPILE ARGOT META EXTENSIONS" );		
+		String[] args = new String[1];
+		args[0] = "argot/meta_extensions.argot";
+
+		ArgotCompiler ac = new ArgotCompiler( new File( args[0] ), new File( "argot/meta_extensions.dictionary" ), null);
+		ac.setLoadCommon(false);
+		ac.doCompile();
+		
+		TypeLibrary library = new TypeLibrary( baselibraryLoaders );
+		TypeMap map = Dictionary.readDictionary( library, new FileInputStream( "argot/meta_extensions.dictionary" ));
+		assertEquals( 5, map.size() );
+	}
+
+	public void testCompileDictionaryArgot()
+	throws Exception
+	{
+		System.out.println("COMPILE ARGOT DICTIONARY" );		
+		String[] args = new String[1];
+		args[0] = "argot/dictionary.argot";
+
+		ArgotCompiler ac = new ArgotCompiler( new File( args[0] ), new File( "argot/dictionary.dictionary" ), null);
+		ac.setLoadCommon(true);
+		ac.doCompile();
+		
+		TypeLibrary library = new TypeLibrary( baseCommonLoaders );
+		TypeMap map = Dictionary.readDictionary( library, new FileInputStream( "argot/dictionary.dictionary" ));
+		assertEquals( 8, map.size() );
+	}	
 	
 	public void testCompileCommonArgot()
 	throws Exception
@@ -79,7 +120,8 @@ extends TestCase
 		ac.doCompile();
 		
 		TypeLibrary library = new TypeLibrary( baselibraryLoaders );
-		Dictionary.readDictionary( library, new FileInputStream( "argot/common.dictionary" ));		
+		TypeMap map = Dictionary.readDictionary( library, new FileInputStream( "argot/common.dictionary" ));
+		assertEquals( 23, map.size() );
 	}
 
 	public void testCompileChannelArgot()
@@ -108,7 +150,7 @@ extends TestCase
 		ac.setLoadRemote(false);
 		ac.doCompile();
 		
-		TypeLibrary library = new TypeLibrary( libraryLoaders );
+		TypeLibrary library = new TypeLibrary( baseCommonLoaders );
 		Dictionary.readDictionary( library, new FileInputStream( "argot/remote.dictionary" ));		
 	}
 	

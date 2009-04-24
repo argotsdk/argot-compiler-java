@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2007 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -33,13 +33,19 @@ import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
 
+import com.argot.ReferenceTypeMap;
 import com.argot.TypeException;
 import com.argot.TypeLibraryLoader;
 import com.argot.TypeMap;
 import com.argot.TypeLibrary;
+import com.argot.TypeMapperCore;
+import com.argot.TypeMapperDynamic;
+import com.argot.TypeMapperLibrary;
 import com.argot.common.CommonLoader;
-import com.argot.compiler.dictionary.DictionarySourceLoader;
+import com.argot.compiler.dictionary.LibraryLoader;
 import com.argot.compiler.primitive.ArgotPrimitiveParser;
+import com.argot.compiler.primitive.MetaNameParser;
+import com.argot.compiler.primitive.MetaVersionParser;
 import com.argot.compiler.primitive.StringPrimitiveParser;
 import com.argot.compiler.primitive.UInt16PrimitiveParser;
 import com.argot.compiler.primitive.UInt8PrimitiveParser;
@@ -80,8 +86,11 @@ public class ArgotCompiler
 		_primitiveParsers = new HashMap();
 		setPrimitiveParser( "meta.name", new StringPrimitiveParser() );
 		setPrimitiveParser( "u8ascii", new StringPrimitiveParser() );
+		setPrimitiveParser( "u8utf8", new StringPrimitiveParser() );
 		setPrimitiveParser( "uint8", new UInt8PrimitiveParser() );
 		setPrimitiveParser( "uint16", new UInt16PrimitiveParser() );
+		setPrimitiveParser( "meta.version", new MetaVersionParser() );
+		setPrimitiveParser( "meta.name", new MetaNameParser() );
 
 		if (paths==null)
 		{
@@ -96,7 +105,7 @@ public class ArgotCompiler
 		_library = new TypeLibrary();
 		_library.loadLibrary( new MetaLoader() );
 		_library.loadLibrary( new DictionaryLoader() );
-		_library.loadLibrary( new DictionarySourceLoader() );
+		_library.loadLibrary( new LibraryLoader() );
 	}
 	
 	public void setLoadCommon(boolean load)
@@ -127,11 +136,11 @@ public class ArgotCompiler
 	private void printHeader()
 	{
 		System.out.println("\nArgot Compiler Version 1.3.a");
-		System.out.println("Copyright 2004-2008 (C) Live Media Pty Ltd.");
+		System.out.println("Copyright 2004-2009 (C) Live Media Pty Ltd.");
 		System.out.println("www.einet.com.au\n");		
 	}
 	
-	private Object parse( TypeMap map, File inputFile )
+	private Object parse( TypeMap readMap, TypeMap map, File inputFile )
 	throws TypeException, FileNotFoundException, IOException
 	{
 		FileInputStream fin = new FileInputStream( inputFile );
@@ -151,6 +160,7 @@ public class ArgotCompiler
 			ArgotTree tree = new ArgotTree(nodes); // create a tree parser
 			tree.setLibrary( _library );
 			tree.setTypeMap( map );
+			tree.setReadTypeMap(readMap);
 			//tree.setValidateReference( false );
 			tree.setArgotCompiler( this );
 			Object[] o = (Object[]) tree.file();
@@ -221,8 +231,10 @@ public class ArgotCompiler
 
 		System.out.println("Compling: " + _inputFile.getName() );
 		
-		TypeMap map = new TypeMap( _library );
-		Object o = parse( map, _inputFile );
+		TypeMap readMap = new TypeMap( _library, new TypeMapperDynamic(new TypeMapperCore(new TypeMapperLibrary())));
+
+		TypeMap map = new TypeMap( _library, new TypeMapperDynamic( new TypeMapperLibrary() ) );
+		Object o = parse( readMap, map, _inputFile );
 		if (_compileDictionary)
 		{
 			FileOutputStream fout = new FileOutputStream( _outputFile );
