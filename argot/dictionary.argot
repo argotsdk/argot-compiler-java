@@ -15,37 +15,25 @@
  */
  
 !import uint8;
-!import uint16;
 !import u8ascii;
-
-!import meta.name;
-!import meta.expression;
-!import meta.definition;
-!import meta.identified;
-
-!import meta.definition.envelop;
-!import dictionary.entry;
 !import dictionary.entry.list;
 
-(dictionary.source [
+(library.list [
 
-
-(meta.structure meta.name:"dictionary.words"
-	(meta.envelop
-		(meta.reference #uint16)
-		(meta.reference #dictionary.entry.list)))
 		
-(meta.structure meta.name:"dictionary.file" (meta.sequence [
-	(meta.tag u8ascii:"core" 
-		(meta.array
-			(meta.reference #uint8)
-			(meta.reference #dictionary.words)))
-	(meta.tag u8ascii:"meta"
-		(meta.array
-			(meta.reference #uint8)
-			(meta.reference #dictionary.words)))
-	(meta.tag u8ascii:"message"
-		(meta.identified u8ascii:"message"))
-]))
+(library.entry
+	(library.definition u8ascii:"dictionary.file" u8ascii:"1.3")
+	(meta.sequence [
+		(meta.tag u8ascii:"core" 
+			(meta.array
+				(meta.reference #uint8)
+				(meta.reference #dictionary.entry.list)))
+		(meta.tag u8ascii:"meta"
+			(meta.array
+				(meta.reference #uint8)
+				(meta.reference #dictionary.entry.list)))
+		(meta.tag u8ascii:"message"
+			(meta.identified u8ascii:"message"))
+	]))
 
 ])

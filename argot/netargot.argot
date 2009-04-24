@@ -19,25 +19,30 @@
 !import uint32;
 !import u32binary;
 
-(dictionary.source [
+(library.list [
 
 /*
  * net argot uses a particular reader which creates an expandable
  * data buffer.
  */
 
-(meta.structure meta.name:"netargot.u32binary" (meta.sequence [
-	(meta.tag u8ascii:"data" (meta.reference #u32binary))
-]))
+
+(library.entry 
+	(library.definition u8ascii:"netargot.u32binary" u8ascii:"1.3")
+	(meta.sequence [
+		(meta.tag u8ascii:"data" (meta.reference #u32binary))
+	]))
 
 /*
  * This is the format of all type requests.  It should in future be
  * changed to enumerated( 1, 2, 3, 4 ) contained( identified( sometype | othertype ) )
  */
 
-(meta.structure meta.name:"netargot.request" (meta.sequence [
-	(meta.tag u8ascii:"type" (meta.reference #uint32))
-	(meta.tag u8ascii:"data" (meta.reference #netargot.u32binary))
-]))
+(library.entry 
+	(library.definition u8ascii:"netargot.request" u8ascii:"1.3")
+	(meta.sequence [
+		(meta.tag u8ascii:"type" (meta.reference #uint32))
+		(meta.tag u8ascii:"data" (meta.reference #netargot.u32binary))
+	]))
 
 ])

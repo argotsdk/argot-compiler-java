@@ -14,13 +14,15 @@
  * jurisdiction of the Victorian courts.
  */
  
+ /*!import meta.fixed_width.attribute.size;*/
+ 
  /*
  * The meta dictionary.
  *
  * This is the core dictionary used to describe data types.
  *
  */
-(dictionary.source [
+(library.list [
 
 /*
  * The empty type is used for tagging information.  It is a 
@@ -28,82 +30,126 @@
  * EMPTY_ID 1
  */
 
-(meta.structure meta.name:"empty" 
-	(meta.fixed_width uint8:0 
-		[ (meta.fixed_width.attribute.size uint8:0) ] ))
+(library.entry 
+	(library.definition meta.name:"empty" meta.version:"1.3")	
+	(meta.fixed_width uint16:0
+		[ (meta.fixed_width.attribute.size uint16:0) ]))
+
 
 /*
  * The u8 type is unsigned 8bit big endian.
  * UINT8_ID 2
  */
 
-(meta.structure meta.name:"uint8" 
-	(meta.fixed_width uint8:8 
-		[ (meta.fixed_width.attribute.size uint8:8)
-		  (meta.fixed_width.attribute.integer)
-		  (meta.fixed_width.attribute.unsigned)
-		  (meta.fixed_width.attribute.bigendian) ] ))
+(library.entry
+	(library.definition meta.name:"uint8" meta.version:"1.3")
+	(meta.fixed_width uint16:8 
+		[ (meta.fixed_width.attribute.size uint16:8)
+	  	  (meta.fixed_width.attribute.integer)
+	  	  (meta.fixed_width.attribute.unsigned)
+	  	  (meta.fixed_width.attribute.bigendian) ] ))
 
 /*
  * The u16 type is unsigned 16bit big endian.
  * UINT16_ID 3
  */
-
-(meta.structure meta.name:"uint16" 
-	(meta.fixed_width uint8:16
-		[ (meta.fixed_width.attribute.size uint8:16)
-		  (meta.fixed_width.attribute.integer)
-		  (meta.fixed_width.attribute.unsigned)
-		  (meta.fixed_width.attribute.bigendian) ] ))
-
+ 
+(library.entry
+	(library.definition meta.name:"uint16" meta.version:"1.3")
+	(meta.fixed_width uint16:16
+	[ (meta.fixed_width.attribute.size uint16:16)
+	  (meta.fixed_width.attribute.integer)
+	  (meta.fixed_width.attribute.unsigned)
+	  (meta.fixed_width.attribute.bigendian) ] ))
 
 /*
  * meta.id is used to identify a type.
  * META_ID_ID 4
  */
  
-(meta.structure meta.name:"meta.id" (meta.reference #uint16))
+(library.entry 
+	(library.definition meta.name:"meta.id" meta.version:"1.3")
+	(meta.reference #uint16))
 
-/*
- * A type defined as abstract has an empty definition.
- * META_ABSTRACT_ID 5
- */
 
-(meta.structure meta.name:"meta.abstract" (meta.sequence []))
-				
 /*
  * A map is used to map an abstract data type to a
  * concrete data type.  Two U16 values are used to specify
  * the data types in the dictionary being defined.
- * META_MAP_ID 6
+ * META_MAP_ID 5
  */
-
-(meta.structure meta.name:"meta.abstract.map" (meta.sequence [
-	(meta.tag u8ascii:"abstract" (meta.reference #meta.id))
-	(meta.tag u8ascii:"concrete" (meta.reference #meta.id))
+			
+(library.entry 
+	(library.definition meta.name:"meta.abstract.map" meta.version:"1.3") 
+	(meta.sequence [
+		(meta.tag u8utf8:"id" (meta.reference #meta.id))
 	]))
+	
+/*
+ * A type defined as abstract has an empty definition.
+ * META_ABSTRACT_ID 6
+ */
+	
+(library.entry
+	(library.definition meta.name:"meta.abstract" meta.version:"1.3")
+	(meta.sequence [
+		(meta.array 
+			(meta.reference #uint8)
+			(meta.reference #meta.abstract.map))]))
 
 
 /*
- * u8ascii is a simple ASCII encoded string of maxiumum length 255
+ * u8utf8 is a simple ASCII encoded string of maxiumum length 255
  * characters.
- * U8ASCII_ID 7
+ * u8utf8_ID 7
  */
 
-(meta.structure meta.name:"u8ascii" 
+(library.entry
+	(library.definition meta.name:"u8utf8" meta.version:"1.3") 
 	(meta.encoding 
 		(meta.array 
 			(meta.reference #uint8) 
-			(meta.reference #uint8) 
-		)
-		u8ascii:"ISO646-US" )) 
+			(meta.reference #uint8))
+		u8utf8:"UTF-8")) 
 
 /*
- *  meta.name defines all type names.  Its a simple u8ascii string.
+ *  meta.name defines all type names.  Its a simple u8utf8 string.
  *  META_NAME_ID 8
  */
 
-(meta.structure meta.name:"meta.name" (meta.reference #u8ascii))
+(library.entry
+	(library.definition meta.name:"meta.name_part" meta.version:"1.3")
+	(meta.reference #u8utf8))
+
+(library.entry
+	(library.definition meta.name:"meta.name" meta.version:"1.3")
+	(meta.array 
+		(meta.reference #uint8)
+		(meta.reference #meta.name_part)))
+
+(library.entry 
+	(library.definition meta.name:"meta.version" meta.version:"1.3")
+	(meta.sequence [
+		(meta.tag u8utf8:"major" (meta.reference #uint8))
+		(meta.tag u8utf8:"minor" (meta.reference #uint8))
+	]))
+
+
+(library.entry
+	(library.definition meta.name:"meta.definition" meta.version:"1.3")
+	(meta.abstract [
+		(meta.abstract.map #meta.fixed_width)
+		(meta.abstract.map #meta.abstract)
+		(meta.abstract.map #meta.abstract.map)
+		(meta.abstract.map #meta.expression)
+		(meta.abstract.map #meta.identity)
+	]))
+
+(library.entry
+	(library.definition meta.name:"meta.identity" meta.version:"1.3")
+	(meta.sequence [
+	]))
+
 
 /*
  *  An expression is an abstract type. It allows different
@@ -112,8 +158,17 @@
  *  META_EXPRESSION_ID 9
  */
 
-(meta.structure meta.name:"meta.expression" (meta.abstract))
 
+(library.entry 
+	(library.definition meta.name:"meta.expression" meta.version:"1.3")
+	(meta.abstract [
+		(meta.abstract.map #meta.reference)
+		(meta.abstract.map #meta.tag)
+		(meta.abstract.map #meta.sequence)
+		(meta.abstract.map #meta.array)
+		(meta.abstract.map #meta.envelop)
+		(meta.abstract.map #meta.encoding)
+	]))
 
 /*
  *  A reference delcares a usage of another data tpye
@@ -122,7 +177,9 @@
  *  META_REFERENCE_ID 10
  */
 
-(meta.structure meta.name:"meta.reference" (meta.sequence [(meta.reference #meta.id)]))
+(library.entry 
+	(library.definition meta.name:"meta.reference" meta.version:"1.3")
+	(meta.sequence [(meta.reference #meta.id)]))
 		
 /*
  *  A tag is used to label a part of a sequence.  It is only
@@ -130,9 +187,13 @@
  *  META_TAG_ID 11
  */
  
-(meta.structure meta.name:"meta.tag" (meta.sequence [
-			(meta.tag u8ascii:"name" (meta.reference #u8ascii))
-			(meta.tag u8ascii:"data" (meta.reference #meta.expression))]))
+(library.entry
+	(library.definition meta.name:"meta.tag" meta.version:"1.3")
+	(meta.sequence [
+		(meta.tag u8utf8:"name" 
+			(meta.reference #u8utf8))
+		(meta.tag u8utf8:"data" 
+			(meta.reference #meta.expression))]))
 
 		
 /*
@@ -142,9 +203,11 @@
  *  META_SEQUENCE_ID 12
  */
 
-(meta.structure meta.name:"meta.sequence" (meta.sequence [(meta.array 
-			(meta.reference #uint8)
-			(meta.reference #meta.expression))]))
+(library.entry 
+	(library.definition meta.name:"meta.sequence" meta.version:"1.3")
+	(meta.array 
+		(meta.reference #uint8)
+		(meta.reference #meta.expression)))
 
 		
 /*
@@ -153,9 +216,11 @@
  *  META_ARRAY_ID 13
  */
 		
-(meta.structure meta.name:"meta.array" (meta.sequence [
-	(meta.tag u8ascii:"size" (meta.reference #meta.expression))
-	(meta.tag u8ascii:"data" (meta.reference #meta.expression))]))
+(library.entry
+	(library.definition meta.name:"meta.array" meta.version:"1.3")
+	(meta.sequence [
+		(meta.tag u8utf8:"size" (meta.reference #meta.expression))
+		(meta.tag u8utf8:"data" (meta.reference #meta.expression))]))
 
 /*
  *  An envelop is used to wrap any data.  This allows a group of data
@@ -164,9 +229,12 @@
  *  META_ENVELOP_ID 14
  */
 
-(meta.structure meta.name:"meta.envelop" (meta.sequence [
-		(meta.tag u8ascii:"size" (meta.reference #meta.expression))
-		(meta.tag u8ascii:"type" (meta.reference #meta.id)) ]))
+(library.entry
+	(library.definition meta.name:"meta.envelop" meta.version:"1.3")
+	(meta.sequence [
+		(meta.tag u8utf8:"size" (meta.reference #meta.expression))
+		(meta.tag u8utf8:"type" (meta.reference #meta.expression)) ]))
+
 
 /*
  *  Encoding specifies the data encoding used on a character
@@ -175,115 +243,124 @@
  *  META_ENCODING_ID 15
  */
 
-(meta.structure meta.name:"meta.encoding" (meta.sequence [
-			(meta.tag u8ascii:"data" (meta.reference #meta.expression))
-			(meta.tag u8ascii:"encoding" (meta.reference #u8ascii))]))
+(library.entry 
+	(library.definition meta.name:"meta.encoding" meta.version:"1.3")
+	(meta.sequence [
+		(meta.tag u8utf8:"data" (meta.reference #meta.expression))
+		(meta.tag u8utf8:"encoding" (meta.reference #u8utf8))]))
+
 
 /*
  * Basic types are defined by a width and set of flags.
  * META_FIXED_WIDTH_ID 16 
  */
 
-(meta.structure meta.name:"meta.fixed_width" 
+(library.entry 
+	(library.definition meta.name:"meta.fixed_width" meta.version:"1.3") 
 	(meta.sequence [
-		(meta.tag u8ascii:"size" (meta.reference #uint8))
-		(meta.tag u8ascii:"flags" 
+		(meta.tag u8utf8:"size" (meta.reference #uint16))
+	   	(meta.tag u8utf8:"flags" 
 			(meta.array 
 				(meta.reference #uint8)
 				(meta.reference #meta.fixed_width.attribute)))]))
 
 /* META_BASIC_ATTRIBUTE_ID 17 */
-(meta.structure meta.name:"meta.fixed_width.attribute" (meta.abstract))
+
+(library.entry
+	(library.definition meta.name:"meta.fixed_width.attribute" meta.version:"1.3")
+	(meta.abstract [
+		(meta.abstract.map #meta.fixed_width.attribute.size)
+		(meta.abstract.map #meta.fixed_width.attribute.integer)
+		(meta.abstract.map #meta.fixed_width.attribute.unsigned)
+		(meta.abstract.map #meta.fixed_width.attribute.bigendian)
+	]))
+
 
 /* META_BASIC_ATTRIBUTE_SIZE_ID 18 */
-(meta.structure meta.name:"meta.fixed_width.attribute.size" (meta.sequence [(meta.tag u8ascii:"size" (meta.reference #uint16))]))
+
+(library.entry
+	(library.definition meta.name:"meta.fixed_width.attribute.size" meta.version:"1.3")
+	(meta.sequence [
+		(meta.tag u8utf8:"size" (meta.reference #uint16))
+	]))
+
 
 /* META_BASIC_ATTRIBUTE_INTEGER_ID 19 */
-(meta.structure meta.name:"meta.fixed_width.attribute.integer" (meta.sequence []))
+
+(library.entry
+	(library.definition meta.name:"meta.fixed_width.attribute.integer" meta.version:"1.3")
+	(meta.sequence []))
+
 
 /* META_BASIC_ATTRIBUTE_UNSIGNED_ID 20 */
-(meta.structure meta.name:"meta.fixed_width.attribute.unsigned" (meta.sequence []))
 
-/* META_BASIC_ATTRIBUTE_SIGNED_ID 21 */
-(meta.structure meta.name:"meta.fixed_width.attribute.signed" (meta.sequence []))
+(library.entry 
+	(library.definition meta.name:"meta.fixed_width.attribute.unsigned" meta.version:"1.3") 
+	(meta.sequence []))
+
 
 /* META_BASIC_ATTRIBUTE_BIGENDIAN_ID 22 */
-(meta.structure meta.name:"meta.fixed_width.attribute.bigendian" (meta.sequence[]))
 
-/* META_BASIC_ATTRIBUTE_TO_SIZE_ID 23 */
-(meta.abstract.map #meta.fixed_width.attribute #meta.fixed_width.attribute.size)
+(library.entry 
+	(library.definition meta.name:"meta.fixed_width.attribute.bigendian" meta.version:"1.3")
+	(meta.sequence[]))
 
-/* META_BASIC_ATTRIBUTE_TO_INTEGER_ID 24 */
-(meta.abstract.map #meta.fixed_width.attribute #meta.fixed_width.attribute.integer)
 
-/* META_BASIC_ATTRIBUTE_TO_UNSIGNED_ID 25 */
-(meta.abstract.map #meta.fixed_width.attribute #meta.fixed_width.attribute.unsigned)
+(library.entry
+	(library.definition meta.name:"dictionary.name" meta.version:"1.3")
+	(meta.sequence [
+		(meta.tag u8utf8:"name" (meta.reference #meta.name))
+	]))
 
-/* META_BASIC_ATTRIBUTE_TO_SIGNED_ID 26 */
-(meta.abstract.map #meta.fixed_width.attribute #meta.fixed_width.attribute.signed)
+(library.entry
+	(library.definition meta.name:"dictionary.definition" meta.version:"1.3")
+	(meta.sequence [
+		(meta.tag u8utf8:"id" (meta.reference #meta.id))
+		(meta.tag u8utf8:"version" (meta.reference #meta.version))
+	]))
 
-/* META_BASIC_ATTRIBUTE_TO_BIGENDIAN_ID 27 */
-(meta.abstract.map #meta.fixed_width.attribute #meta.fixed_width.attribute.bigendian)
+(library.entry
+	(library.definition meta.name:"dictionary.relation" meta.version:"1.3")
+	(meta.sequence [
+		(meta.tag u8utf8:"id" (meta.reference #meta.id))
+	]))
 
-			
-/*
- *  Mappings from abstract expressions to concrete expressions.
- */
+(library.entry
+	(library.definition meta.name:"dictionary.location" meta.version:"1.3")
+	(meta.abstract [
+		(meta.abstract.map #dictionary.name)
+		(meta.abstract.map #dictionary.definition)
+		(meta.abstract.map #dictionary.relation)
+	]))
 
-/* META_EXPRESSION_TO_REFERENCE_ID 28 */
-(meta.abstract.map #meta.expression #meta.reference)
-
-/* META_EXPRESSION_TO_TAG_ID 29 */
-(meta.abstract.map #meta.expression #meta.tag)
-
-/* META_EXPRESSION_TO_SEQUENCE_ID 30 */
-(meta.abstract.map #meta.expression #meta.sequence)
-
-/* META_EXPRESSION_TO_ARRAY_ID 31 */
-(meta.abstract.map #meta.expression #meta.array)
-
-/* META_EXPRESSION_TO_ENVELOP_ID 32 */
-(meta.abstract.map #meta.expression #meta.envelop)
-
-/* META_EXPRESSION_TO_ENCODING_ID 33 */
-(meta.abstract.map #meta.expression #meta.encoding)
-
-/* DEFINITION_ID 34 */
-(meta.structure meta.name:"meta.definition" (meta.abstract))
-
-/* DEFINITION_TO_FIXED_WIDTH 35 */
-(meta.abstract.map #meta.definition #meta.fixed_width)
-
-/* DEFINITION_TO_MAP 36 */
-(meta.abstract.map #meta.definition #meta.abstract.map)
-
-/* DEFINITION_TO_ABSTRACT 37 */
-(meta.abstract.map #meta.definition #meta.abstract)
-
-/* DEFINITION_TO_EXPRESSION 38 */
-(meta.abstract.map #meta.definition #meta.expression)
 
 /* DEFINITION_ENVELOP 39 */
-(meta.structure meta.name:"meta.definition.envelop"
+
+(library.entry
+	(library.definition meta.name:"meta.definition.envelop" meta.version:"1.3")
 	(meta.envelop 
 		(meta.reference #uint16)
-		(meta.reference #meta.definition)
-	)
-)
+		(meta.reference #meta.definition)))
+
+
 
 /* DEFINITION_ENTRY_ID 40 */
-(meta.structure meta.name:"dictionary.entry"
+
+(library.entry 
+	(library.definition meta.name:"dictionary.entry" meta.version:"1.3")
 	(meta.sequence [
-		(meta.tag u8ascii:"id" (meta.reference #meta.id))
-		(meta.tag u8ascii:"name" (meta.reference #meta.name))
-		(meta.tag u8ascii:"definition" (meta.reference #meta.definition.envelop))  
-	])
-)
-			
+		(meta.tag u8utf8:"id" (meta.reference #meta.id))
+		(meta.tag u8utf8:"location" (meta.reference #dictionary.location))
+		(meta.tag u8utf8:"definition" (meta.reference #meta.definition.envelop))]))
+
+
 /* DEFINITION_ENTRY_LIST_ID 41 */
-(meta.structure meta.name:"dictionary.entry.list"
+
+(library.entry
+	(library.definition meta.name:"dictionary.entry.list" meta.version:"1.3")
 	(meta.array 
 		(meta.reference #uint16)
 		(meta.reference #dictionary.entry )))
 
 ])
+

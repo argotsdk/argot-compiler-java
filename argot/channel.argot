@@ -16,22 +16,30 @@
 
 !import uint32;
 
-(dictionary.source [
+(library.list [
 
-(meta.structure meta.name:"channel.id" (meta.sequence [
-	(meta.tag u8ascii:"id" (meta.reference #uint32))
-]))
+(library.entry 
+	(library.definition u8ascii:"channel.id" u8ascii:"1.3")
+	(meta.sequence [
+		(meta.tag u8ascii:"id" (meta.reference #uint32))
+	]))
 
-(meta.structure meta.name:"channel.input" (meta.sequence [
-	(meta.tag u8ascii:"id" (meta.reference #channel.id)) 
-]))
+(library.entry 
+	(library.definition u8ascii:"channel.input" u8ascii:"1.3")
+	(meta.sequence [
+		(meta.tag u8ascii:"id" (meta.reference #channel.id)) 
+	]))
 
-(meta.structure meta.name:"channel.output" (meta.sequence [
-	(meta.tag u8ascii:"id" (meta.reference #channel.id)) 
-]))
+(library.entry 
+	(library.definition u8ascii:"channel.output" u8ascii:"1.3")
+	(meta.sequence [
+		(meta.tag u8ascii:"id" (meta.reference #channel.id)) 
+	]))
 
-(meta.structure meta.name:"channel.pipe" (meta.sequence [
-	(meta.tag u8ascii:"id" (meta.reference #channel.id))
-])) 
+(library.entry 
+	(library.definition u8ascii:"channel.pipe" u8ascii:"1.3")
+	(meta.sequence [
+		(meta.tag u8ascii:"id" (meta.reference #channel.id))
+	])) 
 
 ])

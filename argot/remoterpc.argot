@@ -26,29 +26,35 @@
 !import meta.identified;
 !import meta.name;
 
-(dictionary.source [
+(library.list [
 
-(meta.structure meta.name:"remote.rpc.request" (meta.sequence [
-	(meta.tag u8ascii:"location" (meta.reference #remote.location))
-	(meta.tag u8ascii:"method" (meta.reference #uint16))
-	(meta.tag u8ascii:"data"
-		(meta.array
-			(meta.reference #uint8)
-			(meta.reference #meta.identified)
+(library.entry 
+	(library.definition u8ascii:"remote.rpc.request" u8ascii:"1.3")
+	(meta.sequence [
+		(meta.tag u8ascii:"location" (meta.reference #remote.location))
+		(meta.tag u8ascii:"method" (meta.reference #uint16))
+		(meta.tag u8ascii:"data"
+			(meta.array
+				(meta.reference #uint8)
+				(meta.reference #meta.identified)
+			)
 		)
-	)
-]))
+	]))
 
-(meta.structure meta.name:"remote.rpc.response" (meta.sequence [
-	(meta.tag u8ascii:"inError" (meta.reference #bool))
-	(meta.tag u8ascii:"data"
-		(meta.array
-			(meta.reference #uint8)
-			(meta.reference #meta.identified)
+(library.entry 
+	(library.definition u8ascii:"remote.rpc.response" u8ascii:"1.3")
+	(meta.sequence [
+		(meta.tag u8ascii:"inError" (meta.reference #bool))
+		(meta.tag u8ascii:"data"
+			(meta.array
+				(meta.reference #uint8)
+				(meta.reference #meta.identified)
+			)
 		)
-	)
-]))
+	]))
 
-(meta.abstract.map #remote.location #empty)
+(library.entry 
+	(library.relation #remote.location u8ascii:"1.3" u8ascii:"empty")
+	(meta.abstract.map #empty))
 
 ])

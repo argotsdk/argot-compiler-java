@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2005 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
  *
  * This software is licensed under the Argot Public License 
  * which may be found in the file LICENSE distributed 
@@ -21,204 +21,213 @@
 !import meta.reference;
 !import meta.name;
 
-(dictionary.source [
+
+(library.list [
+
 
 /*
  *  The empty data type does not read any data. Like a NOP for Argot.
  */
  
-(meta.structure meta.name:"empty" 
-	(meta.fixed_width uint8:0 
-		[ (meta.fixed_width.attribute.size uint8:0) ] 
-	) 
-)
+(library.entry 
+	(library.definition u8ascii:"empty" u8ascii:"1.3")
+	(meta.fixed_width uint16:0
+		[ (meta.fixed_width.attribute.size uint16:0) ]))
 		
 /*
  *  Unsigned data types (big endian network order).
  */
 
-(meta.structure meta.name:"uint8" 
-	(meta.fixed_width uint8:8 
-		[ (meta.fixed_width.attribute.size uint8:8)
-		  (meta.fixed_width.attribute.integer)
-		  (meta.fixed_width.attribute.unsigned)
-		  (meta.fixed_width.attribute.bigendian) ]
-	)
-)
+(library.entry
+	(library.definition u8ascii:"uint8" u8ascii:"1.3")
+	(meta.fixed_width uint16:8 
+		[ (meta.fixed_width.attribute.size uint16:8)
+	  	  (meta.fixed_width.attribute.integer)
+	  	  (meta.fixed_width.attribute.unsigned)
+	  	  (meta.fixed_width.attribute.bigendian) ] ))
 
 
-(meta.structure meta.name:"uint16" 
-	(meta.fixed_width uint8:16
-		[ (meta.fixed_width.attribute.size uint8:16)
-		  (meta.fixed_width.attribute.integer)
-		  (meta.fixed_width.attribute.unsigned)
-		  (meta.fixed_width.attribute.bigendian) ] 
-	)
-)
+(library.entry
+	(library.definition u8ascii:"uint16" u8ascii:"1.3")
+	(meta.fixed_width uint16:16
+	[ (meta.fixed_width.attribute.size uint16:16)
+	  (meta.fixed_width.attribute.integer)
+	  (meta.fixed_width.attribute.unsigned)
+	  (meta.fixed_width.attribute.bigendian) ] ))
 
-(meta.structure meta.name:"uint32" 
-	(meta.fixed_width uint8:32
-		[ (meta.fixed_width.attribute.size uint8:32)
-		  (meta.fixed_width.attribute.integer)
-		  (meta.fixed_width.attribute.unsigned)
-		  (meta.fixed_width.attribute.bigendian) ] 
-	)
-)
 
-(meta.structure meta.name:"uint64" 
-	(meta.fixed_width uint8:64
-		[ (meta.fixed_width.attribute.size uint8:64)
-		  (meta.fixed_width.attribute.integer)
-		  (meta.fixed_width.attribute.unsigned)
-		  (meta.fixed_width.attribute.bigendian) ] 
-	)
-)
+
+(library.entry
+	(library.definition u8ascii:"uint32" u8ascii:"1.3")
+	(meta.fixed_width uint16:32
+	[ (meta.fixed_width.attribute.size uint16:32)
+	  (meta.fixed_width.attribute.integer)
+	  (meta.fixed_width.attribute.unsigned)
+	  (meta.fixed_width.attribute.bigendian) ] ))
+
+(library.entry
+	(library.definition u8ascii:"uint64" u8ascii:"1.3")
+	(meta.fixed_width uint16:64
+	[ (meta.fixed_width.attribute.size uint16:64)
+	  (meta.fixed_width.attribute.integer)
+	  (meta.fixed_width.attribute.unsigned)
+	  (meta.fixed_width.attribute.bigendian) ] ))
 
 /*
  *  Signed data types (big endian network order).
  */
 
-(meta.structure meta.name:"int8" 
-	(meta.fixed_width uint8:8 
-		[ (meta.fixed_width.attribute.size uint8:8)
-		  (meta.fixed_width.attribute.integer)
-		  (meta.fixed_width.attribute.signed)
-		  (meta.fixed_width.attribute.bigendian) ] 
-	)
-)
+(library.entry
+	(library.definition u8ascii:"int8" u8ascii:"1.3")
+	(meta.fixed_width uint16:8
+	[ (meta.fixed_width.attribute.size uint16:8)
+	  (meta.fixed_width.attribute.integer)
+	/*  (meta.fixed_width.attribute.signed) */
+	  (meta.fixed_width.attribute.bigendian) ] ))
 
+(library.entry
+	(library.definition u8ascii:"int16" u8ascii:"1.3")
+	(meta.fixed_width uint16:16
+	[ (meta.fixed_width.attribute.size uint16:16)
+	  (meta.fixed_width.attribute.integer)
+	/*  (meta.fixed_width.attribute.signed) */
+	  (meta.fixed_width.attribute.bigendian) ] ))
 
-(meta.structure meta.name:"int16" 
-	(meta.fixed_width uint8:16
-		[ (meta.fixed_width.attribute.size uint8:16)
-		  (meta.fixed_width.attribute.integer)
-		  (meta.fixed_width.attribute.signed)
-		  (meta.fixed_width.attribute.bigendian) ] 
-	)
-)
+(library.entry
+	(library.definition u8ascii:"int32" u8ascii:"1.3")
+	(meta.fixed_width uint16:32
+	[ (meta.fixed_width.attribute.size uint16:32)
+	  (meta.fixed_width.attribute.integer)
+	 /* (meta.fixed_width.attribute.signed) */
+	  (meta.fixed_width.attribute.bigendian) ] ))
 
-(meta.structure meta.name:"int32" 
-	(meta.fixed_width uint8:32
-		[ (meta.fixed_width.attribute.size uint8:32)
-		  (meta.fixed_width.attribute.integer)
-		  (meta.fixed_width.attribute.signed)
-		  (meta.fixed_width.attribute.bigendian) ] 
-	)
-)
-
-(meta.structure meta.name:"int64" 
-	(meta.fixed_width uint8:64
-		[ (meta.fixed_width.attribute.size uint8:64)
-		  (meta.fixed_width.attribute.integer)
-		  (meta.fixed_width.attribute.signed)
-		  (meta.fixed_width.attribute.bigendian) ]
-	)
-)
+(library.entry
+	(library.definition u8ascii:"int64" u8ascii:"1.3")
+	(meta.fixed_width uint16:64
+	[ (meta.fixed_width.attribute.size uint16:64)
+	  (meta.fixed_width.attribute.integer)
+	/*  (meta.fixed_width.attribute.signed) */
+	  (meta.fixed_width.attribute.bigendian) ] ))
 
 
 /*
  *  Floats and Double.
  */
- 
-(meta.structure meta.name:"float" 
-	(meta.fixed_width uint8:32
-		[ (meta.fixed_width.attribute.size uint8:32)
-		/*  (meta.fixed_width.attribute.IEEE756) */
-		  (meta.fixed_width.attribute.signed) ]
-	)
-)
 
-(meta.structure meta.name:"double" 
-	(meta.fixed_width uint8:64
-		[ (meta.fixed_width.attribute.size uint8:64)
+(library.entry
+	(library.definition u8ascii:"float" u8ascii:"1.3") 
+	(meta.fixed_width uint16:32
+		[ (meta.fixed_width.attribute.size uint16:32)
+		 /* (meta.fixed_width.attribute.IEEE756) */
+		/*  (meta.fixed_width.attribute.signed) */ ]))
+
+
+(library.entry 
+	(library.definition u8ascii:"double" u8ascii:"1.3") 
+	(meta.fixed_width uint16:64
+		[ (meta.fixed_width.attribute.size uint16:64)
 		/*  (meta.fixed_width.attribute.IEEE756) */
-		  (meta.fixed_width.attribute.signed) ] 
-	)
-)
+		  /* (meta.fixed_width.attribute.signed) */ ]))
 
 
 /*
  *  Boolean value is a byte that can be 0 false..  !0 true.
  */
- 
-(meta.structure meta.name:"bool" (meta.reference #uint8))
+
+
+(library.entry
+	(library.definition u8ascii:"bool" u8ascii:"1.3")
+	(meta.reference #uint8))
 
 
 /*
  *  An ascii encoded string.  Maximum size 255 bytes.
  */
 
-(meta.structure meta.name:"u8ascii"
+(library.entry
+	(library.definition u8ascii:"u8ascii" u8ascii:"1.3")
 	(meta.encoding
 		(meta.array
 			(meta.reference #uint8)
+			(meta.reference #uint8))
+		u8ascii:"ISO646-US"))
+
+(library.entry
+	(library.definition u8ascii:"u8utf8" u8ascii:"1.3")
+	(meta.encoding
+		(meta.array
 			(meta.reference #uint8)
-		)
-		u8ascii:"ISO646-US"
-	)
-)
+			(meta.reference #uint8))
+		u8ascii:"UTF-8"))
 	
 /*
  *  A UTF8 encoded string.  Maximum size u32.max bytes.
  */		
 
-(meta.structure meta.name:"u32utf8"
+(library.entry
+	(library.definition u8ascii:"u32utf8" u8ascii:"1.3")
 	(meta.encoding
 		(meta.array
 			(meta.reference #uint32)
-			(meta.reference #uint8)
-		)
-		u8ascii:"UTF8"
-	)
-)
+			(meta.reference #uint8))
+		u8ascii:"UTF-8"))
 
 /*
  *  A binary data block.  Maximum size u32.max.
  */
 
-(meta.structure meta.name:"u32binary"
+
+(library.entry
+	(library.definition u8ascii:"u32binary" u8ascii:"1.3")
 	(meta.array
 		(meta.reference #uint32)
-		(meta.reference #uint8)
-	)
-)
+		(meta.reference #uint8)))
 
 /*
  * A binary data block.  Maximum size u16.max
  */ 
 
-(meta.structure meta.name:"u16binary"
+(library.entry
+	(library.definition u8ascii:"u16binary" u8ascii:"1.3")
 	(meta.array
 		(meta.reference #uint16)
-		(meta.reference #uint8)
-	)
-)
+		(meta.reference #uint8)))
 	
 /*
  * Allows any data to be loaded.
  */
 
-(meta.structure meta.name:"meta.identified"
+(library.entry
+	(library.definition u8ascii:"meta.identified" u8ascii:"1.3")
 	(meta.sequence [
-		(meta.tag u8ascii:"description" (meta.reference #meta.name))
-	])
-)
+		(meta.tag u8ascii:"description" (meta.reference #u8utf8))
+	]))
 
-(meta.abstract.map #meta.expression #meta.identified)
+(library.entry
+	(library.relation #meta.expression u8ascii:"1.3" u8ascii:"identified")
+	(meta.abstract.map #meta.identified))
 		
 
 /*
  * Date is an abstract type that can be defined using various methods.
  */
 
-(meta.structure meta.name:"date" (meta.abstract))
+
+(library.entry
+	(library.definition u8ascii:"date" u8ascii:"1.3")
+	(meta.abstract []))
 
 /*
  *  A Java data is the number of milliseconds (or is it seconds) from 1st of Janurary 1970.
  */
 
-(meta.structure meta.name:"date.java" (meta.sequence [ (meta.reference #int64) ]))
 
-(meta.abstract.map #date #date.java)
+(library.entry
+	(library.definition u8ascii:"date.java" u8ascii:"1.3")
+	(meta.sequence [ (meta.reference #int64) ]))
+
+(library.entry
+	(library.relation #date u8ascii:"1.3" u8ascii:"java")
+	(meta.abstract.map #date.java))
 
 ])

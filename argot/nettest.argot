@@ -35,25 +35,33 @@
 !import channel.pipe;
 
 
-(dictionary.source [
+(library.list [
 
-(meta.structure meta.name:"testvalue"
+(library.entry 
+	(library.definition u8ascii:"testvalue" u8ascii:"1.3")
 	(meta.sequence [
 		(meta.tag u8ascii:"x" (meta.reference #uint8))
 		(meta.tag u8ascii:"str" (meta.reference #u8ascii))
 	])
 )
 
-(meta.structure meta.name:"test_exception" (meta.sequence [
-	(meta.reference #remote.exception.basic)
-]))
+(library.entry 
+	(library.definition u8ascii:"test_exception" u8ascii:"1.3")
+	(meta.sequence [
+		(meta.reference #remote.exception.basic)
+	]))
 
-(meta.abstract.map #remote.exception #test_exception)
+(library.entry 
+	(library.relation #remote.exception u8ascii:"1.3" u8ascii:"test_exception")
+	(meta.abstract.map #test_exception))
 
-(meta.structure meta.name:"test" (remote.interface))
+(library.entry 
+	(library.definition u8ascii:"test" u8ascii:"1.3")
+	(remote.interface))
 
-(meta.structure meta.name:"test.doSomething"
-	(remote.method #test u8ascii:"doSomething"
+(library.entry 
+	(library.relation #test u8ascii:"1.3" u8ascii:"doSomething")
+	(remote.method u8ascii:"doSomething"
 		[ (remote.parameter #int32 u8ascii:"param" ) ]
 		[ (remote.parameter #int32 u8ascii:"ret" ) ]
 		[ #int32 ]
@@ -62,8 +70,9 @@
 
 /* public int methodWithException( int x ) throws RemoteException; */
 
-(meta.structure meta.name:"test.methodWithException"
-	(remote.method #test u8ascii:"methodWithException"
+(library.entry 
+	(library.relation #test u8ascii:"1.3" u8ascii:"methodWithException")
+	(remote.method u8ascii:"methodWithException"
 		[ (remote.parameter #int32 u8ascii:"x") ]
 		[ (remote.parameter #int32 u8ascii:"ret") ]
 		[ #remote.exception ]
@@ -72,8 +81,9 @@
 	
 /* public void methodUndeclaredException(); */
 
-(meta.structure meta.name:"test.methodUndeclaredException"
-	(remote.method #test u8ascii:"methodUndeclaredException"
+(library.entry 
+	(library.relation #test u8ascii:"1.3" u8ascii:"methodUndeclaredException")
+	(remote.method u8ascii:"methodUndeclaredException"
 		[  ]
 		[  ]
 		[  ]
@@ -82,8 +92,9 @@
 
 /* public void methodCustomException() throws TestException; */
 
-(meta.structure meta.name:"test.methodCustomException"
-	(remote.method #test u8ascii:"methodCustomException"
+(library.entry 
+	(library.relation #test u8ascii:"1.3" u8ascii:"methodCustomException")
+	(remote.method u8ascii:"methodCustomException"
 		[  ]
 		[  ]
 		[ #test_exception ]
@@ -92,8 +103,9 @@
 
 /* public void methodNoReturn( int x ); */
 
-(meta.structure meta.name:"test.methodNoReturn" 
-	(remote.method #test u8ascii:"methodNoReturn" 
+(library.entry 
+	(library.relation #test u8ascii:"1.3" u8ascii:"methodNoReturn")
+	(remote.method u8ascii:"methodNoReturn" 
 		[ (remote.parameter #int32 u8ascii:"x") ]
 		[ ]
 		[ ]
@@ -102,8 +114,9 @@
 	
 /* public void methodNoParam(); */
 
-(meta.structure meta.name:"test.methodNoParam"
-	(remote.method #test u8ascii:"methodNoParam"
+(library.entry 
+	(library.relation #test u8ascii:"1.3" u8ascii:"methodNoParam")
+	(remote.method u8ascii:"methodNoParam"
 		[] [] []
 	)
 )
@@ -111,8 +124,9 @@
 	
 /* public void methodComplexParam( TestValue value ); */
 
-(meta.structure meta.name:"test.methodComplexParam"
-	(remote.method #test u8ascii:"methodComplexParam"
+(library.entry 
+	(library.relation #test u8ascii:"1.3" u8ascii:"methodComplexParam")
+	(remote.method u8ascii:"methodComplexParam"
 		[ (remote.parameter #testvalue u8ascii:"x" ) ]
 		[ ]
 		[ ]
@@ -121,34 +135,40 @@
 	
 /* public TestValue methodComplexReturn( int x ); */
 
-(meta.structure meta.name:"test.methodComplexReturn"
-	(remote.method #test u8ascii:"methodComplexReturn"
+(library.entry 
+	(library.relation #test u8ascii:"1.3" u8ascii:"methodComplexReturn")
+	(remote.method u8ascii:"methodComplexReturn"
 		[ (remote.parameter #int32 u8ascii:"x" ) ]
 		[ (remote.parameter #testvalue u8ascii:"ret" ) ]
 		[ ]
 	)
 )
 
-(meta.structure meta.name:"test.channel" (remote.interface))
+(library.entry 
+	(library.definition u8ascii:"test.channel" u8ascii:"1.3")
+	(remote.interface))
 
-(meta.structure meta.name:"test.channel.sendInputStream"
-	(remote.method #test.channel u8ascii:"sendInputStream"
+(library.entry 
+	(library.relation #test.channel u8ascii:"1.3" u8ascii:"sendInputStream")
+	(remote.method u8ascii:"sendInputStream"
 		[ (remote.parameter #channel.input u8ascii:"input") ]
 		[ (remote.parameter #u8ascii u8ascii:"result") ]
 		[ ]
 	)
 )
 
-(meta.structure meta.name:"test.channel.receiveInputStream"
-	(remote.method #test.channel u8ascii:"receiveInputStream"
+(library.entry 
+	(library.relation #test.channel u8ascii:"1.3" u8ascii:"receiveInputStream")
+	(remote.method u8ascii:"receiveInputStream"
 		[ (remote.parameter #u8ascii u8ascii:"input") ]
 		[ (remote.parameter #channel.input u8ascii:"result") ]
 		[ ]
 	)
 )
 
-(meta.structure meta.name:"test.channel.sendOutputStream"
-	(remote.method #test.channel u8ascii:"sendOutputStream"
+(library.entry 
+	(library.relation #test.channel u8ascii:"1.3" u8ascii:"sendOutputStream")
+	(remote.method u8ascii:"sendOutputStream"
 		[ (remote.parameter #channel.output u8ascii:"output")
 		  (remote.parameter #u8ascii u8ascii:"input") ]
 		[ ]
@@ -156,24 +176,27 @@
 	)
 )
 
-(meta.structure meta.name:"test.channel.receiveOutputStream"
-	(remote.method #test.channel u8ascii:"receiveOutputStream"
+(library.entry 
+	(library.relation #test.channel u8ascii:"1.3" u8ascii:"receiveOutputStream")
+	(remote.method u8ascii:"receiveOutputStream"
 		[ ]
 		[ (remote.parameter #channel.output u8ascii:"output") ]
 		[ ]
 	)
 )
 
-(meta.structure meta.name:"test.channel.sendEndPoint"
-	(remote.method #test.channel u8ascii:"sendEndPoint"
+(library.entry 
+	(library.relation #test.channel u8ascii:"1.3" u8ascii:"sendEndPoint")
+	(remote.method u8ascii:"sendEndPoint"
 		[ (remote.parameter #channel.pipe u8ascii:"endpoint") ]
 		[ ]
 		[ ]
 	)
 )
 
-(meta.structure meta.name:"test.channel.receiveEndPoint"
-	(remote.method #test.channel u8ascii:"receiveEndPoint"
+(library.entry 
+	(library.relation #test.channel u8ascii:"1.3" u8ascii:"receiveEndPoint")
+	(remote.method u8ascii:"receiveEndPoint"
 		[ ]
 		[ (remote.parameter #channel.pipe u8ascii:"endpoint") ]
 		[ ]
