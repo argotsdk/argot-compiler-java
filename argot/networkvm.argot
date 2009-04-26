@@ -54,7 +54,7 @@
 	(meta.sequence [
 		(meta.array 
 			(meta.reference #uint16)
-			(meta.identified meta.name:"object")
+			(meta.identified u8utf8:"object")
 		)]))
 	
 
