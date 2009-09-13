@@ -55,6 +55,18 @@
 
 (library.entry 
 	(library.relation #remote.location u8ascii:"1.3" u8ascii:"empty")
-	(meta.abstract.map #empty))
+	(meta.abstract_map #empty))
+
+
+(library.entry
+	(library.definition meta.name:"remote.rpc.exception" meta.version:"1.3")
+	(meta.sequence [
+		(meta.reference #remote.exception.basic)
+	]))
+
+(library.entry
+	(library.relation #remote.exception u8ascii:"1.3" u8ascii:"remote.rpc.exception")
+	(meta.abstract_map #remote.rpc.exception))
+
 
 ])

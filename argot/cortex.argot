@@ -1,0 +1,167 @@
+/*
+ * Copyright 2003-2007 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ *
+ * This software is licensed under the Argot Public License 
+ * which may be found in the file LICENSE distributed 
+ * with this software.
+ *
+ * More information about this license can be found at
+ * http://www.einet.com.au/License
+ * 
+ * The Developer of this software is Live Media Pty Ltd,
+ * PO Box 4591, Melbourne 3001, Australia.  The license is subject 
+ * to the law of Victoria, Australia, and subject to exclusive 
+ * jurisdiction of the Victorian courts.
+ */
+
+!load "networkvm.dictionary";
+
+!import uint8;
+!import uint16;
+!import int32;
+!import u8ascii;
+!import remote.location;
+
+!import remote.exception;
+!import remote.exception.basic;
+!import remote.stack_trace_element;
+
+(library.list [
+
+
+
+
+
+
+(library.entry
+	(library.definition meta.name:"zoneException" meta.version:"1.3")
+	(meta.sequence [
+		(meta.tag u8ascii:"exception" (meta.reference #remote.exception.basic))
+	]))
+
+(library.entry
+	(library.relation #remote.exception meta.version:"1.3" u8ascii:"zoneException")
+	(meta.abstract_map #zoneException))
+
+/*
+  an interface to a zone.
+*/
+
+(library.entry
+	(library.definition meta.name:"zone" meta.version:"1.3")
+	(remote.interface [] ))  
+    
+
+/*
+Realm
+*/
+
+(library.entry
+	(library.definition meta.name:"realm" meta.version:"1.3")
+	(remote.interface [ $zone ]))
+
+/*
+Zone methods
+*/
+
+(library.entry 
+	(library.relation #zone meta.version:"1.3" u8ascii:"zone.getrealm")
+	(remote.method u8ascii:"getRealm"
+		[ ] 
+		[ (remote.parameter #realm u8ascii:"realm") ]
+		[ #remote.exception ]
+	))
+
+
+(library.entry 
+	(library.relation #zone meta.version:"1.3" u8ascii:"zone.getlocation")
+	(remote.method u8ascii:"getLocation"
+		[ ] 
+		[ (remote.parameter #crl u8ascii:"path") ]
+		[ #remote.exception ]
+	))
+
+(library.entry 
+	(library.relation #zone meta.version:"1.3" u8ascii:"zone.getname")
+	(remote.method u8ascii:"getName"
+		[ ] 
+		[ (remote.parameter #u8ascii u8ascii:"name") ]
+		[ #remote.exception ]
+	))
+
+
+(library.entry 
+	(library.relation #zone meta.version:"1.3" u8ascii:"zone.put")
+	(remote.method u8ascii:"put"
+		[ (remote.parameter #u8ascii u8ascii:"name")
+		  (remote.parameter #any u8ascii:"object") ]
+		[ ]
+		[ #remote.exception ]
+	))
+
+(library.entry 
+	(library.relation #zone meta.version:"1.3" u8ascii:"zone.get")
+	(remote.method u8ascii:"get"
+		[ (remote.parameter #u8ascii u8ascii:"name") ] 
+		[ (remote.parameter #any u8ascii:"object") ]
+		[ #remote.exception ]
+	))
+
+
+(library.entry 
+	(library.relation #zone meta.version:"1.3" u8ascii:"zone.remove")
+	(remote.method u8ascii:"remove"
+		[ (remote.parameter #u8ascii u8ascii:"name") ] 
+		[ (remote.parameter #any u8ascii:"object") ]
+		[ #remote.exception ]
+	))
+
+
+(library.entry 
+	(library.relation #zone meta.version:"1.3" u8ascii:"zone.rename")
+	(remote.method u8ascii:"rename"
+		[ (remote.parameter #u8ascii u8ascii:"name")  
+		  (remote.parameter #u8ascii u8ascii:"name") ]
+		[ ]
+		[ #remote.exception ]
+	))
+
+(library.entry 
+	(library.relation #zone meta.version:"1.3" u8ascii:"zone.find")
+	(remote.method u8ascii:"find"
+		[ (remote.parameter #crl u8ascii:"location") ] 
+		[ (remote.parameter #any u8ascii:"object") ]
+		[ #remote.exception ]
+	))
+  
+/*
+realm methods
+*/
+
+
+(library.entry 
+	(library.relation #realm meta.version:"1.3" u8ascii:"send")
+	(remote.method u8ascii:"send"
+		[ (remote.parameter #crl u8ascii:"location")
+		  (remote.parameter #any u8ascii:"message") ]
+		[ ]
+		[ #remote.exception ]
+	))
+	
+/*
+node object
+*/
+
+
+(library.entry
+	(library.definition meta.name:"node" meta.version:"1.3")
+	(remote.interface [] ))  
+   
+(library.entry 
+	(library.relation #node meta.version:"1.3" u8ascii:"node.send")
+	(remote.method u8ascii:"send"
+		[ (remote.parameter #any u8ascii:"message") ] 
+		[  ]
+		[ #remote.exception #zoneException ]
+	))
+])

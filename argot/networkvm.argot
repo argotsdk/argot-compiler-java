@@ -98,15 +98,15 @@
 	(meta.sequence []))
 
 (library.entry 
-	(library.definition u8ascii:"nvm.instruction" u8ascii:"1.3")
+	(library.definition u8ascii:"nvm.instruction.base" u8ascii:"1.3")
 	(meta.abstract [ 
-		(meta.abstract.map #nvm.instruction.load_crl_host)
-		(meta.abstract.map #nvm.instruction.to_host)
-		(meta.abstract.map #nvm.instruction.load_crl_object)
-		(meta.abstract.map #nvm.instruction.load_heap_object)
-		(meta.abstract.map #nvm.instruction.named_method_call)
-		(meta.abstract.map #nvm.instruction.return)
-		(meta.abstract.map #nvm.instruction.store_heap_object)
+		(meta.abstract_map #nvm.instruction.load_crl_host)
+		(meta.abstract_map #nvm.instruction.to_host)
+		(meta.abstract_map #nvm.instruction.load_crl_object)
+		(meta.abstract_map #nvm.instruction.load_heap_object)
+		(meta.abstract_map #nvm.instruction.named_method_call)
+		(meta.abstract_map #nvm.instruction.return)
+		(meta.abstract_map #nvm.instruction.store_heap_object)
 	]))
 
 (library.entry 
@@ -114,7 +114,7 @@
 	(meta.sequence [
 		(meta.array
 			(meta.reference #uint16)
-			(meta.reference #nvm.instruction))
+			(meta.reference #nvm.instruction.base))
 	]))
 
 /*

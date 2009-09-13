@@ -13,8 +13,7 @@
  * to the law of Victoria, Australia, and subject to exclusive 
  * jurisdiction of the Victorian courts.
  */
- 
- /*!import meta.fixed_width.attribute.size;*/
+
  
  /*
  * The meta dictionary.
@@ -80,7 +79,7 @@
  */
 			
 (library.entry 
-	(library.definition meta.name:"meta.abstract.map" meta.version:"1.3") 
+	(library.definition meta.name:"meta.abstract_map" meta.version:"1.3") 
 	(meta.sequence [
 		(meta.tag u8utf8:"id" (meta.reference #meta.id))
 	]))
@@ -95,7 +94,7 @@
 	(meta.sequence [
 		(meta.array 
 			(meta.reference #uint8)
-			(meta.reference #meta.abstract.map))]))
+			(meta.reference #meta.abstract_map))]))
 
 
 /*
@@ -138,11 +137,11 @@
 (library.entry
 	(library.definition meta.name:"meta.definition" meta.version:"1.3")
 	(meta.abstract [
-		(meta.abstract.map #meta.fixed_width)
-		(meta.abstract.map #meta.abstract)
-		(meta.abstract.map #meta.abstract.map)
-		(meta.abstract.map #meta.expression)
-		(meta.abstract.map #meta.identity)
+		(meta.abstract_map #meta.fixed_width)
+		(meta.abstract_map #meta.abstract)
+		(meta.abstract_map #meta.abstract_map)
+		(meta.abstract_map #meta.expression)
+		(meta.abstract_map #meta.identity)
 	]))
 
 (library.entry
@@ -162,12 +161,12 @@
 (library.entry 
 	(library.definition meta.name:"meta.expression" meta.version:"1.3")
 	(meta.abstract [
-		(meta.abstract.map #meta.reference)
-		(meta.abstract.map #meta.tag)
-		(meta.abstract.map #meta.sequence)
-		(meta.abstract.map #meta.array)
-		(meta.abstract.map #meta.envelop)
-		(meta.abstract.map #meta.encoding)
+		(meta.abstract_map #meta.reference)
+		(meta.abstract_map #meta.tag)
+		(meta.abstract_map #meta.sequence)
+		(meta.abstract_map #meta.array)
+		(meta.abstract_map #meta.envelop)
+		(meta.abstract_map #meta.encoding)
 	]))
 
 /*
@@ -269,10 +268,10 @@
 (library.entry
 	(library.definition meta.name:"meta.fixed_width.attribute" meta.version:"1.3")
 	(meta.abstract [
-		(meta.abstract.map #meta.fixed_width.attribute.size)
-		(meta.abstract.map #meta.fixed_width.attribute.integer)
-		(meta.abstract.map #meta.fixed_width.attribute.unsigned)
-		(meta.abstract.map #meta.fixed_width.attribute.bigendian)
+		(meta.abstract_map #meta.fixed_width.attribute.size)
+		(meta.abstract_map #meta.fixed_width.attribute.integer)
+		(meta.abstract_map #meta.fixed_width.attribute.unsigned)
+		(meta.abstract_map #meta.fixed_width.attribute.bigendian)
 	]))
 
 
@@ -328,9 +327,9 @@
 (library.entry
 	(library.definition meta.name:"dictionary.location" meta.version:"1.3")
 	(meta.abstract [
-		(meta.abstract.map #dictionary.name)
-		(meta.abstract.map #dictionary.definition)
-		(meta.abstract.map #dictionary.relation)
+		(meta.abstract_map #dictionary.name)
+		(meta.abstract_map #dictionary.definition)
+		(meta.abstract_map #dictionary.relation)
 	]))
 
 

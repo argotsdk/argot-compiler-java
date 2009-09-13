@@ -56,11 +56,11 @@
 
 (library.entry 
 	(library.relation #meta.definition u8ascii:"1.3" u8ascii:"remote.interface")
-	(meta.abstract.map #remote.interface))
+	(meta.abstract_map #remote.interface))
 	
 (library.entry 
 	(library.relation #meta.definition u8ascii:"1.3" u8ascii:"remote.method")
-	(meta.abstract.map #remote.method))
+	(meta.abstract_map #remote.method))
 
 (library.entry 
 	(library.definition u8ascii:"remote.location" u8ascii:"1.3")
@@ -76,7 +76,7 @@
 (library.entry 
 	(library.definition u8ascii:"remote.exception" u8ascii:"1.3")
 	(meta.abstract [
-		(meta.abstract.map #empty)  /* allow exceptions to be null */
+		(meta.abstract_map #empty)  /* allow exceptions to be null */
 	]))
 
 
@@ -116,7 +116,7 @@
 
 (library.entry 
 	(library.relation #remote.exception u8ascii:"1.3" u8ascii:"remote.exception.wrapped")
-	(meta.abstract.map #remote.exception.wrapped))
+	(meta.abstract_map #remote.exception.wrapped))
 
 ])
  

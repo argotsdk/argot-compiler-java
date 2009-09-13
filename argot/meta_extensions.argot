@@ -29,7 +29,7 @@
 
 (library.entry
 	(library.relation #meta.fixed_width.attribute u8ascii:"1.3" u8ascii:"signed")
-	(meta.abstract.map #meta.fixed_width.attribute.signed))
+	(meta.abstract_map #meta.fixed_width.attribute.signed))
 
 	
 (library.entry
@@ -38,6 +38,6 @@
 	
 (library.entry
 	(library.relation #meta.fixed_width.attribute u8ascii:"1.3" u8ascii:"IEEE756")
-	(meta.abstract.map #meta.fixed_width.attribute.IEEE756))
+	(meta.abstract_map #meta.fixed_width.attribute.IEEE756))
 
 ])
