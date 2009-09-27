@@ -19,7 +19,7 @@
 
 !import remote.location;
 !import remote.exception;
-!import remote.exception.basic;
+!import remote.exception_basic;
 !import remote.stack_trace_element;
 
 !import uint16;
@@ -38,7 +38,7 @@
 (library.list [
 
 (library.entry 
-	(library.definition u8ascii:"testvalue" u8ascii:"1.3")
+	(library.definition meta.name:"testvalue" meta.version:"1.3")
 	(meta.sequence [
 		(meta.tag u8ascii:"x" (meta.reference #uint8))
 		(meta.tag u8ascii:"str" (meta.reference #u8ascii))
@@ -46,9 +46,9 @@
 )
 
 (library.entry 
-	(library.definition u8ascii:"test_exception" u8ascii:"1.3")
+	(library.definition meta.name:"test_exception" meta.version:"1.3")
 	(meta.sequence [
-		(meta.reference #remote.exception.basic)
+		(meta.reference #remote.exception_basic)
 	]))
 
 (library.entry 
@@ -56,7 +56,7 @@
 	(meta.abstract_map #test_exception))
 
 (library.entry 
-	(library.definition u8ascii:"test" u8ascii:"1.3")
+	(library.definition meta.name:"test" meta.version:"1.3")
 	(remote.interface))
 
 (library.entry 
@@ -145,11 +145,11 @@
 )
 
 (library.entry 
-	(library.definition u8ascii:"test.channel" u8ascii:"1.3")
+	(library.definition meta.name:"test_channel" meta.version:"1.3")
 	(remote.interface))
 
 (library.entry 
-	(library.relation #test.channel u8ascii:"1.3" u8ascii:"sendInputStream")
+	(library.relation #test_channel u8ascii:"1.3" u8ascii:"sendInputStream")
 	(remote.method u8ascii:"sendInputStream"
 		[ (remote.parameter #channel.input u8ascii:"input") ]
 		[ (remote.parameter #u8ascii u8ascii:"result") ]
@@ -158,7 +158,7 @@
 )
 
 (library.entry 
-	(library.relation #test.channel u8ascii:"1.3" u8ascii:"receiveInputStream")
+	(library.relation #test_channel u8ascii:"1.3" u8ascii:"receiveInputStream")
 	(remote.method u8ascii:"receiveInputStream"
 		[ (remote.parameter #u8ascii u8ascii:"input") ]
 		[ (remote.parameter #channel.input u8ascii:"result") ]
@@ -167,7 +167,7 @@
 )
 
 (library.entry 
-	(library.relation #test.channel u8ascii:"1.3" u8ascii:"sendOutputStream")
+	(library.relation #test_channel u8ascii:"1.3" u8ascii:"sendOutputStream")
 	(remote.method u8ascii:"sendOutputStream"
 		[ (remote.parameter #channel.output u8ascii:"output")
 		  (remote.parameter #u8ascii u8ascii:"input") ]
@@ -177,7 +177,7 @@
 )
 
 (library.entry 
-	(library.relation #test.channel u8ascii:"1.3" u8ascii:"receiveOutputStream")
+	(library.relation #test_channel u8ascii:"1.3" u8ascii:"receiveOutputStream")
 	(remote.method u8ascii:"receiveOutputStream"
 		[ ]
 		[ (remote.parameter #channel.output u8ascii:"output") ]
@@ -186,7 +186,7 @@
 )
 
 (library.entry 
-	(library.relation #test.channel u8ascii:"1.3" u8ascii:"sendEndPoint")
+	(library.relation #test_channel u8ascii:"1.3" u8ascii:"sendEndPoint")
 	(remote.method u8ascii:"sendEndPoint"
 		[ (remote.parameter #channel.pipe u8ascii:"endpoint") ]
 		[ ]
@@ -195,7 +195,7 @@
 )
 
 (library.entry 
-	(library.relation #test.channel u8ascii:"1.3" u8ascii:"receiveEndPoint")
+	(library.relation #test_channel u8ascii:"1.3" u8ascii:"receiveEndPoint")
 	(remote.method u8ascii:"receiveEndPoint"
 		[ ]
 		[ (remote.parameter #channel.pipe u8ascii:"endpoint") ]

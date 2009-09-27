@@ -14,30 +14,32 @@
  * jurisdiction of the Victorian courts.
  */
 
-!import meta.fixed_width.attribute;
+!import meta.atom_attribute;
 
 (library.list [
 
 /*
- *  Define signed and IEEE756 fixed_width attribute types.
+ *  Define signed and IEEE756 atom attribute types.
  */
 
 
 (library.entry
-	(library.definition u8ascii:"meta.fixed_width.attribute.signed" u8ascii:"1.3")
+	(library.definition meta.name:"meta.attribute.signed" meta.version:"1.3")
 	(meta.sequence []))
 
 (library.entry
-	(library.relation #meta.fixed_width.attribute u8ascii:"1.3" u8ascii:"signed")
-	(meta.abstract_map #meta.fixed_width.attribute.signed))
+	(library.relation #meta.atom_attribute u8ascii:"1.3" u8ascii:"signed")
+	(meta.abstract_map #meta.attribute.signed))
 
 	
 (library.entry
-	(library.definition u8ascii:"meta.fixed_width.attribute.IEEE756" u8ascii:"1.3")
+	(library.definition meta.name:"meta.attribute.IEEE756" meta.version:"1.3")
 	(meta.sequence []))
 	
 (library.entry
-	(library.relation #meta.fixed_width.attribute u8ascii:"1.3" u8ascii:"IEEE756")
-	(meta.abstract_map #meta.fixed_width.attribute.IEEE756))
+	(library.relation #meta.atom_attribute u8ascii:"1.3" u8ascii:"IEEE756")
+	(meta.abstract_map #meta.attribute.IEEE756))
+
+
 
 ])

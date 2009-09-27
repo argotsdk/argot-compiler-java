@@ -21,6 +21,10 @@
 
 (library.list [
 
+(library.entry
+	(library.name meta.name:"netargot")
+	(meta.cluster))
+
 /*
  * net argot uses a particular reader which creates an expandable
  * data buffer.
@@ -28,7 +32,7 @@
 
 
 (library.entry 
-	(library.definition u8ascii:"netargot.u32binary" u8ascii:"1.3")
+	(library.definition meta.name:"netargot.u32binary" meta.version:"1.3")
 	(meta.sequence [
 		(meta.tag u8ascii:"data" (meta.reference #u32binary))
 	]))
@@ -39,7 +43,7 @@
  */
 
 (library.entry 
-	(library.definition u8ascii:"netargot.request" u8ascii:"1.3")
+	(library.definition meta.name:"netargot.request" meta.version:"1.3")
 	(meta.sequence [
 		(meta.tag u8ascii:"type" (meta.reference #uint32))
 		(meta.tag u8ascii:"data" (meta.reference #netargot.u32binary))

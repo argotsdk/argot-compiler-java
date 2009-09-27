@@ -16,22 +16,22 @@
  
 !import uint8;
 !import u8ascii;
-!import dictionary.entry.list;
+!import dictionary.entry_list;
 
 (library.list [
 
 		
 (library.entry
-	(library.definition u8ascii:"dictionary.file" u8ascii:"1.3")
+	(library.definition meta.name:"dictionary.file" meta.version:"1.3")
 	(meta.sequence [
 		(meta.tag u8ascii:"core" 
 			(meta.array
 				(meta.reference #uint8)
-				(meta.reference #dictionary.entry.list)))
+				(meta.reference #dictionary.entry_list)))
 		(meta.tag u8ascii:"meta"
 			(meta.array
 				(meta.reference #uint8)
-				(meta.reference #dictionary.entry.list)))
+				(meta.reference #dictionary.entry_list)))
 		(meta.tag u8ascii:"message"
 			(meta.identified u8ascii:"message"))
 	]))

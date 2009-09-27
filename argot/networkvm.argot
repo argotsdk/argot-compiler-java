@@ -49,31 +49,38 @@
  * actually understanding what the item is.
  */
 
+(library.entry
+	(library.name meta.name:"nvm")
+	(meta.cluster))
+
 (library.entry 
-	(library.definition u8ascii:"nvm.heap" u8ascii:"1.3")
+	(library.definition meta.name:"nvm.heap" meta.version:"1.3")
 	(meta.sequence [
 		(meta.array 
 			(meta.reference #uint16)
 			(meta.identified u8utf8:"object")
 		)]))
-	
+
+(library.entry
+	(library.name meta.name:"nvm.instruction")
+	(meta.cluster))
 
 (library.entry 
-	(library.definition u8ascii:"nvm.instruction.load_crl_host" u8ascii:"1.3")
+	(library.definition meta.name:"nvm.instruction.load_crl_host" meta.version:"1.3")
 	(meta.sequence []))
 
 (library.entry 
-	(library.definition u8ascii:"nvm.instruction.load_crl_object" u8ascii:"1.3")
+	(library.definition meta.name:"nvm.instruction.load_crl_object" meta.version:"1.3")
 	(meta.sequence []))
 
 (library.entry 
-	(library.definition u8ascii:"nvm.instruction.load_heap_object" u8ascii:"1.3")
+	(library.definition meta.name:"nvm.instruction.load_heap_object" meta.version:"1.3")
 	(meta.sequence [
 		(meta.tag u8ascii:"heapIndex" (meta.reference #uint16))
 	]))
 
 (library.entry 
-	(library.definition u8ascii:"nvm.instruction.named_method_call" u8ascii:"1.3")
+	(library.definition meta.name:"nvm.instruction.named_method_call" meta.version:"1.3")
 	(meta.sequence [
 		(meta.tag u8ascii:"methodName" (meta.reference #u8ascii))
 		(meta.tag u8ascii:"typeId"
@@ -84,21 +91,21 @@
 		)]))
 
 (library.entry 
-	(library.definition u8ascii:"nvm.instruction.return" u8ascii:"1.3")
+	(library.definition meta.name:"nvm.instruction.return" meta.version:"1.3")
 	(meta.sequence []))
 
 (library.entry 
-	(library.definition u8ascii:"nvm.instruction.store_heap_object" u8ascii:"1.3")
+	(library.definition meta.name:"nvm.instruction.store_heap_object" meta.version:"1.3")
 	(meta.sequence [
 		(meta.tag u8ascii:"heapIndex" (meta.reference #uint16))
 	]))
 
 (library.entry 
-	(library.definition u8ascii:"nvm.instruction.to_host" u8ascii:"1.3")
+	(library.definition meta.name:"nvm.instruction.to_host" meta.version:"1.3")
 	(meta.sequence []))
 
 (library.entry 
-	(library.definition u8ascii:"nvm.instruction.base" u8ascii:"1.3")
+	(library.definition meta.name:"nvm.instruction.base" meta.version:"1.3")
 	(meta.abstract [ 
 		(meta.abstract_map #nvm.instruction.load_crl_host)
 		(meta.abstract_map #nvm.instruction.to_host)
@@ -110,7 +117,7 @@
 	]))
 
 (library.entry 
-	(library.definition u8ascii:"nvm.instructions" u8ascii:"1.3")
+	(library.definition meta.name:"nvm.instructions" meta.version:"1.3")
 	(meta.sequence [
 		(meta.array
 			(meta.reference #uint16)
@@ -123,7 +130,7 @@
  */
 
 (library.entry 
-	(library.definition u8ascii:"nvm.state" u8ascii:"1.3")
+	(library.definition meta.name:"nvm.state" meta.version:"1.3")
 	(meta.sequence [
 		(meta.tag u8ascii:"programCounter" (meta.reference #uint16))
 		(meta.tag u8ascii:"instructions" (meta.reference #nvm.instructions))
@@ -133,7 +140,7 @@
 
 
 (library.entry 
-	(library.definition u8ascii:"nvm.host" u8ascii:"1.3")
+	(library.definition meta.name:"nvm.host" meta.version:"1.3")
 	(remote.interface [ ]))
 
 (library.entry 

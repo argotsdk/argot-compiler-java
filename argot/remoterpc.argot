@@ -28,8 +28,12 @@
 
 (library.list [
 
+(library.entry
+	(library.name meta.name:"remote.rpc")
+	(meta.cluster))
+
 (library.entry 
-	(library.definition u8ascii:"remote.rpc.request" u8ascii:"1.3")
+	(library.definition meta.name:"remote.rpc.request" meta.version:"1.3")
 	(meta.sequence [
 		(meta.tag u8ascii:"location" (meta.reference #remote.location))
 		(meta.tag u8ascii:"method" (meta.reference #uint16))
@@ -42,7 +46,7 @@
 	]))
 
 (library.entry 
-	(library.definition u8ascii:"remote.rpc.response" u8ascii:"1.3")
+	(library.definition meta.name:"remote.rpc.response" meta.version:"1.3")
 	(meta.sequence [
 		(meta.tag u8ascii:"inError" (meta.reference #bool))
 		(meta.tag u8ascii:"data"
@@ -61,7 +65,7 @@
 (library.entry
 	(library.definition meta.name:"remote.rpc.exception" meta.version:"1.3")
 	(meta.sequence [
-		(meta.reference #remote.exception.basic)
+		(meta.reference #remote.exception_basic)
 	]))
 
 (library.entry
