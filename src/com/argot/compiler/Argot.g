@@ -41,7 +41,6 @@ import com.argot.TypeElement;
 import com.argot.TypeException;
 import com.argot.auto.TypeConstructorAuto;
 import com.argot.meta.MetaDefinition;
-import com.argot.meta.MetaFixedWidth;
 import com.argot.meta.MetaExpression;
 import com.argot.meta.MetaReference;
 import com.argot.meta.MetaSequence;
@@ -98,6 +97,7 @@ primary: expression
 	| '['^ ( primary)*  ']'!
 	| '#'^ IDENTIFIER
 	| IDENTIFIER^ ':'! value
+	| '$'^ IDENTIFIER
 	;
 	
 value: INT^

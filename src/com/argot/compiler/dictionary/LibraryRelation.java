@@ -26,6 +26,14 @@ implements TypeLocation
 	private int id;
 	private MetaVersion version;
 	private String tag;
+
+	public LibraryRelation(int id, MetaVersion version, String tag)
+	throws TypeException
+	{
+		this.setId(id);
+		this.version = version;
+		this.setTag(tag);
+	}	
 	
 	public LibraryRelation(int id, String version, String tag)
 	throws TypeException

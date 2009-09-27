@@ -16,16 +16,23 @@
 package com.argot.compiler.primitive;
 
 import com.argot.TypeException;
+import com.argot.TypeLibrary;
 import com.argot.meta.MetaName;
 
 public class MetaNameParser 
 implements ArgotPrimitiveParser
 {
+	private TypeLibrary _library;
+	
+	public MetaNameParser(TypeLibrary library)
+	{
+		_library = library;
+	}
 
 	public Object parse(String data) 
 	throws TypeException 
 	{
-		return MetaName.parseName(data);
+		return MetaName.parseName(_library, data);
 	}
 
 }

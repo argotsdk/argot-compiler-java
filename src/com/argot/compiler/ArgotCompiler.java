@@ -40,7 +40,7 @@ import com.argot.TypeMap;
 import com.argot.TypeLibrary;
 import com.argot.TypeMapperCore;
 import com.argot.TypeMapperDynamic;
-import com.argot.TypeMapperLibrary;
+import com.argot.TypeMapperError;
 import com.argot.common.CommonLoader;
 import com.argot.compiler.dictionary.LibraryLoader;
 import com.argot.compiler.primitive.ArgotPrimitiveParser;
@@ -51,6 +51,7 @@ import com.argot.compiler.primitive.UInt16PrimitiveParser;
 import com.argot.compiler.primitive.UInt8PrimitiveParser;
 import com.argot.dictionary.Dictionary;
 import com.argot.dictionary.DictionaryLoader;
+import com.argot.meta.MetaExtensionLoader;
 import com.argot.meta.MetaLoader;
 import com.argot.remote.RemoteLoader;
 
@@ -67,6 +68,7 @@ public class ArgotCompiler
 	private File _outputFile;
 	private URL[] _paths;
 	private ClassLoader _classLoader;
+	private boolean _loadExtensions;
 	private boolean _loadCommon;
 	private boolean _loadRemote;
 	private boolean _compileDictionary;
@@ -80,17 +82,25 @@ public class ArgotCompiler
 		_inputFile = inputFile;
 		_outputFile = outputFile;
 		_paths = paths;
+		_loadExtensions = true;
 		_loadCommon = true;
 		_loadRemote = true;
 		_compileDictionary = true;
 		_primitiveParsers = new HashMap();
+
+		_library = new TypeLibrary();
+		_library.loadLibrary( new MetaLoader() );
+		_library.loadLibrary( new DictionaryLoader() );
+		_library.loadLibrary( new LibraryLoader() );
+		
 		setPrimitiveParser( "meta.name", new StringPrimitiveParser() );
 		setPrimitiveParser( "u8ascii", new StringPrimitiveParser() );
 		setPrimitiveParser( "u8utf8", new StringPrimitiveParser() );
 		setPrimitiveParser( "uint8", new UInt8PrimitiveParser() );
 		setPrimitiveParser( "uint16", new UInt16PrimitiveParser() );
+		setPrimitiveParser( "uvint28", new UInt16PrimitiveParser() );
 		setPrimitiveParser( "meta.version", new MetaVersionParser() );
-		setPrimitiveParser( "meta.name", new MetaNameParser() );
+		setPrimitiveParser( "meta.name", new MetaNameParser(_library) );
 
 		if (paths==null)
 		{
@@ -102,10 +112,11 @@ public class ArgotCompiler
 		}
 		printHeader();
 		
-		_library = new TypeLibrary();
-		_library.loadLibrary( new MetaLoader() );
-		_library.loadLibrary( new DictionaryLoader() );
-		_library.loadLibrary( new LibraryLoader() );
+	}
+	
+	public void setLoadExtensions(boolean load)
+	{
+		_loadExtensions = load;
 	}
 	
 	public void setLoadCommon(boolean load)
@@ -190,7 +201,18 @@ public class ArgotCompiler
 		{
 			inStream = new FileInputStream(loadFile);
 		}
-        Dictionary.readDictionary( _library, inStream );
+		try
+		{
+			Dictionary.readDictionary( _library, inStream );
+		}
+		catch( IOException ex )
+		{
+			throw new TypeException("Failed to load dictionary: " + fileName, ex );
+		}
+		catch( Throwable ex )
+		{			
+			throw new TypeException("Failed to load dictionary: " + fileName, ex );
+		}
 	}
 	
 	public void loadOptionalDictionary( TypeLibrary library, TypeLibraryLoader loader )
@@ -212,12 +234,17 @@ public class ArgotCompiler
 	public void doCompile() 
 	throws TypeException, IOException
 	{
-		if (_loadCommon)
+		if (_loadExtensions)
+		{
+			loadOptionalDictionary( _library, new MetaExtensionLoader() );
+		}
+		
+		if (_loadExtensions && _loadCommon)
 		{
 			loadOptionalDictionary( _library, new CommonLoader() );
 		}
 		
-		if (_loadCommon && _loadRemote)
+		if (_loadExtensions && _loadCommon && _loadRemote)
 		{
 			loadOptionalDictionary( _library, new RemoteLoader() );
 		}
@@ -231,9 +258,9 @@ public class ArgotCompiler
 
 		System.out.println("Compling: " + _inputFile.getName() );
 		
-		TypeMap readMap = new TypeMap( _library, new TypeMapperDynamic(new TypeMapperCore(new TypeMapperLibrary())));
+		TypeMap readMap = new TypeMap( _library, new TypeMapperDynamic(new TypeMapperCore(new TypeMapperError())));
 
-		TypeMap map = new TypeMap( _library, new TypeMapperDynamic( new TypeMapperLibrary() ) );
+		TypeMap map = new TypeMap( _library, new TypeMapperDynamic( new TypeMapperError() ) );
 		Object o = parse( readMap, map, _inputFile );
 		if (_compileDictionary)
 		{

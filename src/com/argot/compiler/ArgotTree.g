@@ -40,6 +40,7 @@ import com.argot.auto.TypeConstructorAuto;
 import com.argot.meta.MetaIdentity;
 import com.argot.meta.MetaDefinition;
 import com.argot.meta.MetaAbstractMap;
+import com.argot.meta.DictionaryBase;
 import com.argot.meta.DictionaryName;
 import com.argot.meta.DictionaryDefinition;
 import com.argot.meta.DictionaryRelation;
@@ -47,6 +48,8 @@ import com.argot.meta.MetaName;
 import com.argot.meta.MetaSequence;
 import com.argot.meta.MetaVersion;
 
+import com.argot.compiler.dictionary.LibraryBase;
+import com.argot.compiler.dictionary.LibraryName;
 import com.argot.compiler.dictionary.LibraryEntry;
 import com.argot.compiler.dictionary.LibraryDefinition;
 import com.argot.compiler.dictionary.LibraryRelation;
@@ -147,6 +150,17 @@ import com.argot.compiler.primitive.ArgotPrimitiveParser;
 	     
 	     location = new DictionaryRelation( libRelId, libRel.getTag() );
 	    }
+	    else if (location instanceof LibraryName)
+	    {
+	      LibraryName libName = (LibraryName) location;
+	      
+	      location = new DictionaryName( libName.getName() );
+	    }
+	    else if (location instanceof LibraryBase)
+	    {
+	      LibraryBase libBase = (LibraryBase) location;
+	      location = new DictionaryBase();
+	    }
 
 
 			int state = _library.getTypeState( _library.getTypeId(location) );
@@ -173,7 +187,7 @@ import com.argot.compiler.primitive.ArgotPrimitiveParser;
 				}
 				catch( TypeException ex )
 				{
-					System.out.println( "import into map failed" );
+					System.out.println( "import into map failed - " + ex.getMessage() );
 				}
 			
 			}
@@ -312,6 +326,9 @@ primary returns [Object p]
   {
      $p = l.toArray();
   }
+  /*
+    #name references the identity type identifier.
+  */
   | ^(HASH argotType=IDENTIFIER)
   {
     try
@@ -321,6 +338,30 @@ primary returns [Object p]
       {
         _map.map( _lastType++, id );
       }*/
+      //int id = _map.getStreamId( argotType.getText() );
+      //id = _map.getDefinitionId(id);
+      $p = new Integer(id);
+    }
+    catch( TypeException ex )
+    {
+      ex.printStackTrace();
+      throw new ArgotParserException("No type found for #" + argotType.getText(), input );
+    }
+   }
+   /*
+      $name refereces the specific version of a type.
+   */
+  | ^(DOLLAR argotType=IDENTIFIER)
+  {
+    try
+    {
+     /* int id =  _library.getTypeId( argotType.getText() ); */
+     /* if (!_map.isMapped(id))
+      {
+        _map.map( _lastType++, id );
+      }*/
+      int id = _map.getStreamId( argotType.getText() );
+      id = _map.getDefinitionId(id);
       $p = new Integer(id);
     }
     catch( TypeException ex )

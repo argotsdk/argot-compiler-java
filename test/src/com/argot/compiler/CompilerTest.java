@@ -18,6 +18,8 @@ package com.argot.compiler;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.Iterator;
+import java.util.List;
 
 
 import com.argot.TypeLibrary;
@@ -26,6 +28,7 @@ import com.argot.TypeMap;
 import com.argot.common.CommonLoader;
 import com.argot.dictionary.Dictionary;
 import com.argot.dictionary.DictionaryLoader;
+import com.argot.meta.MetaExtensionLoader;
 import com.argot.meta.MetaLoader;
 import com.argot.remote.RemoteLoader;
 
@@ -38,6 +41,7 @@ extends TestCase
 	private TypeLibraryLoader libraryLoaders[] = {
 		new MetaLoader(),
 		new DictionaryLoader(),
+		new MetaExtensionLoader(),			
 		new CommonLoader(),
 		new RemoteLoader()
 	};
@@ -45,13 +49,20 @@ extends TestCase
 	private TypeLibraryLoader baseCommonLoaders[] = {
 			new MetaLoader(),
 			new DictionaryLoader(),
+			new MetaExtensionLoader(),			
 			new CommonLoader(),
 		};
 	
 	private TypeLibraryLoader baselibraryLoaders[] = {
 		new MetaLoader(),
-		new DictionaryLoader()
+		new DictionaryLoader(),
+		new MetaExtensionLoader()
 	};
+	
+	private TypeLibraryLoader coreLibraryLoaders[] = {
+		new MetaLoader(),
+		new DictionaryLoader()
+	};	
 	
 	protected void setUp() 
 	throws Exception 
@@ -69,10 +80,10 @@ extends TestCase
 		args[0] = "argot/meta.argot";
 
 		ArgotCompiler ac = new ArgotCompiler( new File( args[0] ), new File( "argot/meta.dictionary" ), null);
-		ac.setLoadCommon(false);
+		ac.setLoadExtensions(false);
 		ac.doCompile();
 		
-		TypeLibrary library = new TypeLibrary( baselibraryLoaders );
+		TypeLibrary library = new TypeLibrary( coreLibraryLoaders );
 		Dictionary.readDictionary( library, new FileInputStream( "argot/meta.dictionary" ));		
 	}
 
@@ -85,11 +96,18 @@ extends TestCase
 
 		ArgotCompiler ac = new ArgotCompiler( new File( args[0] ), new File( "argot/meta_extensions.dictionary" ), null);
 		ac.setLoadCommon(false);
+		ac.setLoadExtensions(false);
 		ac.doCompile();
 		
-		TypeLibrary library = new TypeLibrary( baselibraryLoaders );
+		TypeLibrary library = new TypeLibrary( coreLibraryLoaders );
 		TypeMap map = Dictionary.readDictionary( library, new FileInputStream( "argot/meta_extensions.dictionary" ));
-		assertEquals( 5, map.size() );
+		Iterator ids = map.getIdList().iterator();
+		while(ids.hasNext())
+		{
+			Integer id = (Integer) ids.next();
+			System.out.println(map.getName(id.intValue()).getFullName());
+		}
+		assertEquals( 13, map.size() );
 	}
 
 	public void testCompileDictionaryArgot()
@@ -105,7 +123,7 @@ extends TestCase
 		
 		TypeLibrary library = new TypeLibrary( baseCommonLoaders );
 		TypeMap map = Dictionary.readDictionary( library, new FileInputStream( "argot/dictionary.dictionary" ));
-		assertEquals( 8, map.size() );
+		assertEquals( 36, map.size() );
 	}	
 	
 	public void testCompileCommonArgot()
@@ -121,7 +139,13 @@ extends TestCase
 		
 		TypeLibrary library = new TypeLibrary( baselibraryLoaders );
 		TypeMap map = Dictionary.readDictionary( library, new FileInputStream( "argot/common.dictionary" ));
-		assertEquals( 23, map.size() );
+		Iterator ids = map.getIdList().iterator();
+		while(ids.hasNext())
+		{
+			Integer id = (Integer) ids.next();
+			System.out.println(map.getName(id.intValue()).getFullName());
+		}
+		assertEquals( 33, map.size() );
 	}
 
 	public void testCompileChannelArgot()
@@ -217,6 +241,40 @@ extends TestCase
 		TypeLibrary library = new TypeLibrary( libraryLoaders );
 		Dictionary.readDictionary( library, new FileInputStream( "argot/nettest.dictionary" ));		
 	}
+	
+	public void testSimpleArgot()
+	throws Exception
+	{
+		Thread.sleep( 1000 );
+		System.out.println("COMPILE NETTEST" );
+		
+		String[] args = new String[1];
+		args[0] = "argot/simple.argot";
+		
+		ArgotCompiler.argotCompile( args );
+
+		Thread.sleep( 1000 );
+		
+		TypeLibrary library = new TypeLibrary( libraryLoaders );
+		Dictionary.readDictionary( library, new FileInputStream( "argot/simple.dictionary" ));		
+	}	
+	
+	public void testZoneArgot()
+	throws Exception
+	{
+		Thread.sleep( 1000 );
+		System.out.println("COMPILE ZONE" );
+		
+		String[] args = new String[1];
+		args[0] = "argot/zone.argot";
+		
+		ArgotCompiler.argotCompile( args );
+
+		Thread.sleep( 1000 );
+		
+		TypeLibrary library = new TypeLibrary( libraryLoaders );
+		Dictionary.readDictionary( library, new FileInputStream( "argot/zone.dictionary" ));		
+	}	
 /*
 	public void testCompileTestKBArgot()
 	throws Exception

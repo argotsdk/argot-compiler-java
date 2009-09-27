@@ -33,12 +33,6 @@ implements TypeLocation
 		this.version = version;
 	}
 
-	public LibraryDefinition(String name, String version)
-	throws TypeException
-	{
-		this( MetaName.parseName(name), MetaVersion.parseVersion(version));
-	}
-
 	
 	public void setName(MetaName name) 
 	{
