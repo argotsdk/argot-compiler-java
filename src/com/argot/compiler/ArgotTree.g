@@ -1,17 +1,27 @@
 /*
- * Copyright 2003-2009 (c) Live Media Pty Ltd. <argot@einet.com.au> 
+ * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * All rights reserved.
  *
- * This software is licensed under the Argot Public License 
- * which may be found in the file LICENSE distributed 
- * with this software.
+ * Redistribution and use in source and binary forms, with or without modification, are permitted
+ * provided that the following conditions are met:
  *
- * More information about this license can be found at
- * http://www.einet.com.au/License
- * 
- * The Developer of this software is Live Media Pty Ltd,
- * PO Box 4591, Melbourne 3001, Australia.  The license is subject 
- * to the law of Victoria, Australia, and subject to exclusive 
- * jurisdiction of the Victorian courts.
+ *  1. Redistributions of source code must retain the above copyright notice, this list of
+ *     conditions and the following disclaimer.
+ *  2. Redistributions in binary form must reproduce the above copyright notice, this list of
+ *     conditions and the following disclaimer in the documentation and/or other materials
+ *     provided with the distribution.
+ *  3. Neither the name of Live Media nor the names of its contributors may be used to endorse
+ *     or promote products derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+ * AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER
+ * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 tree grammar ArgotTree;
@@ -36,6 +46,10 @@ import com.argot.TypeMap;
 import com.argot.TypeLocation;
 import com.argot.TypeElement;
 import com.argot.TypeException;
+import com.argot.TypeLocationBase;
+import com.argot.TypeLocationName;
+import com.argot.TypeLocationDefinition;
+import com.argot.TypeLocationRelation;
 import com.argot.auto.TypeConstructorAuto;
 import com.argot.meta.MetaIdentity;
 import com.argot.meta.MetaDefinition;
@@ -61,6 +75,43 @@ import com.argot.compiler.primitive.ArgotPrimitiveParser;
 
 @members
 {
+  public String getErrorMessage(RecognitionException e, String[] tokenNames) 
+  {
+    if ( e instanceof ArgotParserException )
+    {
+      ArgotParserException ex = (ArgotParserException) e;
+      return ex.getReason();
+    }
+    else
+    {
+      return super.getErrorMessage( e, tokenNames );
+    }
+  }
+  
+  public void displayRecognitionError(String[] tokenNames,
+                                        RecognitionException e) {
+        //System.err.println("ArgotTree: " + getErrorMessage( e, tokenNames ));
+        String hdr = getErrorHeader(e);
+        String msg = getErrorMessage(e, tokenNames);
+        _errors.add(hdr + " " + msg);
+        // Now do something with hdr and msg...
+    }
+    
+    public String getErrorHeader(RecognitionException e) {
+       return "ERROR(" + (e.approximateLineInfo?"after ":"")+e.line+":"+e.charPositionInLine + ")";
+    }
+      
+    public void emitErrorMessage(String msg) {
+        System.err.println("ArgotTree error: " + msg);
+    }
+    
+    private List<String> _errors = new ArrayList<String>();
+    
+    public List<String> getErrors() {
+        return _errors;
+    }
+    
+
 	private TypeLibrary _library;
 	private TypeMap _map;
 	private ArgotCompiler _compiler;
@@ -162,8 +213,8 @@ import com.argot.compiler.primitive.ArgotPrimitiveParser;
 	      location = new DictionaryBase();
 	    }
 
-
-			int state = _library.getTypeState( _library.getTypeId(location) );
+      int id = _library.getTypeId(location);
+			int state = _library.getTypeState( id );
 			if ( state == TypeLibrary.TYPE_NOT_DEFINED || state == TypeLibrary.TYPE_RESERVED )
 			{
 				//if  ( _library.isReserved( typename.getText() ) )
@@ -179,7 +230,33 @@ import com.argot.compiler.primitive.ArgotPrimitiveParser;
 			}
 			else
 			{
-				System.out.println( "warning: can't redefine '" +"'.  Definition ignored." );
+			   if (location instanceof TypeLocationDefinition)
+			   {
+			      TypeLocationDefinition libDef = (TypeLocationDefinition) location;
+			      String name = libDef.getName().getFullName() + ":" + libDef.getVersion().toString();
+          System.out.println( "WARNING: can't redefine '"+name +"'.  Definition ignored." );
+			   }
+			   else if (location instanceof TypeLocationRelation)
+			   {
+			      TypeLocationRelation libRel = (TypeLocationRelation) location;
+			      String name = _library.getName( libRel.getId() ).getFullName() + ":" + libRel.getTag();
+            System.out.println( "WARNING: can't redefine '"+ name +"'.  Definition ignored." );
+			   }
+			   else if (location instanceof TypeLocationName)
+			   {
+			      TypeLocationName libName = (TypeLocationName) location;
+			      String name = libName.getName().getFullName();
+            System.out.println( "WARNING: can't redefine '"+ name +"'.  Definition ignored." );
+			   }
+			   else if (location instanceof TypeLocationBase)
+			   {
+           System.out.println( "WARNING: can't redefine library base." );
+			   }
+			   else
+			   {
+			     System.out.println( "WARNING: can't redefine library type of unknown location type: "+location.getClass().getName() );
+			   }
+			
 			
 				try
 				{
@@ -194,7 +271,6 @@ import com.argot.compiler.primitive.ArgotPrimitiveParser;
 		}
 		catch( TypeException ex )
 		{
-			ex.printStackTrace();
 			throw new ArgotParserException( "failed to map ", input);
 		}
 	
@@ -282,7 +358,6 @@ importl: ^('import' typename=IDENTIFIER ( alias=IDENTIFIER)? )
     }
     catch( TypeException ex )
     {
-      ex.printStackTrace();
       throw new ArgotParserException("failed to import " + typename.getText(), input);
     }
   }
@@ -304,7 +379,6 @@ expression returns [Object e]
     }
     catch( TypeException ex )
     {
-      ex.printStackTrace();
       throw new ArgotParserException("type has no class: " + id.getText(), input );
     }
     if ( "library.entry".equals( id.getText() ) )
@@ -344,7 +418,6 @@ primary returns [Object p]
     }
     catch( TypeException ex )
     {
-      ex.printStackTrace();
       throw new ArgotParserException("No type found for #" + argotType.getText(), input );
     }
    }
@@ -366,7 +439,6 @@ primary returns [Object p]
     }
     catch( TypeException ex )
     {
-      ex.printStackTrace();
       throw new ArgotParserException("No type found for #" + argotType.getText(), input );
     }
    }
