@@ -105,9 +105,9 @@ import com.argot.compiler.primitive.ArgotPrimitiveParser;
         System.err.println("ArgotTree error: " + msg);
     }
     
-    private List<String> _errors = new ArrayList<String>();
+    private List _errors = new ArrayList();
     
-    public List<String> getErrors() {
+    public List getErrors() {
         return _errors;
     }
     
