@@ -61,6 +61,13 @@ Please view the example .argot files to see how argot is specified.
 Version History
 ---------------
 
+1.3.b - 22 February 2010
+
+- Improved error reporting.
+- Updated to match Argot 1.3.b
+- Added ability to optionally load meta_extensions.dictionary
+
+
 1.2.2 - 17 January 2008
 
 - Updated to match Argot version 1.2.2.
