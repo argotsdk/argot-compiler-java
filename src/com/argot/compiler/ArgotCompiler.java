@@ -45,7 +45,6 @@ import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
 
-import com.argot.ReferenceTypeMap;
 import com.argot.TypeException;
 import com.argot.TypeLibraryLoader;
 import com.argot.TypeMap;
