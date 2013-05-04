@@ -89,7 +89,8 @@ extends TestCase
 		String[] args = new String[1];
 		args[0] = "argot/meta.argot";
 
-		ArgotCompiler ac = new ArgotCompiler( new File( args[0] ), new File( "argot/meta.dictionary" ), null);
+		FileInputStream fin = new FileInputStream( args[0] );
+		ArgotCompiler ac = new ArgotCompiler( fin, new File( "argot/meta.dictionary" ), null);
 		ac.setLoadExtensions(false);
 		ac.doCompile();
 		
@@ -104,7 +105,8 @@ extends TestCase
 		String[] args = new String[1];
 		args[0] = "argot/meta_extensions.argot";
 
-		ArgotCompiler ac = new ArgotCompiler( new File( args[0] ), new File( "argot/meta_extensions.dictionary" ), null);
+		FileInputStream fin = new FileInputStream( args[0] );
+		ArgotCompiler ac = new ArgotCompiler( fin, new File( "argot/meta_extensions.dictionary" ), null);
 		ac.setLoadCommon(false);
 		ac.setLoadExtensions(false);
 		ac.doCompile();
@@ -127,7 +129,8 @@ extends TestCase
 		String[] args = new String[1];
 		args[0] = "argot/dictionary.argot";
 
-		ArgotCompiler ac = new ArgotCompiler( new File( args[0] ), new File( "argot/dictionary.dictionary" ), null);
+		FileInputStream fin = new FileInputStream( args[0] );
+		ArgotCompiler ac = new ArgotCompiler( fin, new File( "argot/dictionary.dictionary" ), null);
 		ac.setLoadCommon(true);
 		ac.doCompile();
 		
@@ -143,7 +146,8 @@ extends TestCase
 		String[] args = new String[1];
 		args[0] = "argot/common.argot";
 
-		ArgotCompiler ac = new ArgotCompiler( new File( args[0] ), new File( "argot/common.dictionary" ), null);
+		FileInputStream fin = new FileInputStream( args[0] );
+		ArgotCompiler ac = new ArgotCompiler( fin, new File( "argot/common.dictionary" ), null);
 		ac.setLoadCommon(false);
 		ac.doCompile();
 		
@@ -180,7 +184,8 @@ extends TestCase
 		String[] args = new String[1];
 		args[0] = "argot/remote.argot";
 		
-		ArgotCompiler ac = new ArgotCompiler( new File( args[0] ), new File( "argot/remote.dictionary" ), null);
+		FileInputStream fin = new FileInputStream( args[0] );
+		ArgotCompiler ac = new ArgotCompiler( fin, new File( "argot/remote.dictionary" ), null);
 		ac.setLoadRemote(false);
 		ac.doCompile();
 		
