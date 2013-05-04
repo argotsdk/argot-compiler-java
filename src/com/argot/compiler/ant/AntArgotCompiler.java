@@ -27,6 +27,7 @@
 package com.argot.compiler.ant;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
@@ -121,7 +122,8 @@ extends Task
 				}
 			}
 			
-			ArgotCompiler compiler = new ArgotCompiler( _input, _output, paths );
+			FileInputStream fin = new FileInputStream( _input );
+			ArgotCompiler compiler = new ArgotCompiler( fin, _output, paths );
 			compiler.setLoadExtensions(_loadExtensions);
 			compiler.setLoadCommon(_loadCommon);
 			compiler.setLoadRemote(_loadRemote);

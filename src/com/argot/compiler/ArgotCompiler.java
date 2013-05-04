@@ -75,7 +75,7 @@ import com.argot.remote.RemoteLoader;
 public class ArgotCompiler 
 {
 	private TypeLibrary _library;
-	private File _inputFile;
+	private InputStream _inputFile;
 	private File _outputFile;
 	private URL[] _paths;
 	private ClassLoader _classLoader;
@@ -87,7 +87,7 @@ public class ArgotCompiler
 	private TypeMap _map;
 	private int _lastType;
 	
-	public ArgotCompiler( File inputFile, File outputFile, URL[] paths ) 
+	public ArgotCompiler( InputStream inputFile, File outputFile, URL[] paths ) 
 	throws TypeException 
 	{
 		_inputFile = inputFile;
@@ -162,10 +162,11 @@ public class ArgotCompiler
 		System.out.println("www.einet.com.au\n");		
 	}
 	
-	private Object parse( TypeMap readMap, TypeMap map, File inputFile )
+	private Object parse( TypeMap readMap, TypeMap map, InputStream inputFile )
 	throws TypeException, FileNotFoundException, IOException
 	{
-		FileInputStream fin = new FileInputStream( inputFile );
+		//FileInputStream fin = new FileInputStream( inputFile );
+		InputStream fin = inputFile;
 		ANTLRInputStream input = new ANTLRInputStream(fin);
 		ArgotLexer lexer = new ArgotLexer( input );
 		
@@ -209,18 +210,12 @@ public class ArgotCompiler
 	throws TypeException, FileNotFoundException, IOException
 	{
 		System.out.println("Loading: " + fileName );
-		File loadFile = new File( _inputFile.getParent(), fileName );
 		InputStream inStream = null;
-		if(!loadFile.exists())
-		{
-			inStream = _classLoader.getResourceAsStream( fileName );
-			if (inStream == null)
-				throw new FileNotFoundException("File not found as resource");
-		}
-		else
-		{
-			inStream = new FileInputStream(loadFile);
-		}
+
+		inStream = _classLoader.getResourceAsStream( fileName );
+		if (inStream == null)
+			throw new FileNotFoundException("File not found as resource");
+
 		try
 		{
 			Dictionary.readDictionary( _library, inStream );
@@ -275,7 +270,7 @@ public class ArgotCompiler
 		}		
 		
 
-		System.out.println("Compling: " + _inputFile.getName() );
+		//System.out.println("Compiling: " + _inputFile.getName() );
 		
 		TypeMap readMap = new TypeMap( _library, new TypeMapperDynamic(new TypeMapperCore(new TypeMapperError())));
 
@@ -324,7 +319,8 @@ public class ArgotCompiler
 		}
 		File outputFile = new File(outputFileName);
 		
-		ArgotCompiler compiler = new ArgotCompiler( inputFile, outputFile, null );
+		FileInputStream fin = new FileInputStream( inputFile );
+		ArgotCompiler compiler = new ArgotCompiler( fin, outputFile, null );
 		compiler.doCompile();
 	}
 
