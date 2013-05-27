@@ -18,10 +18,18 @@ implements TypeLibraryLoader
 	private String _resource;
 	private String _output;
 	
-	public ArgotCompilerLoader(String resource, String output )
+	public ArgotCompilerLoader(String resource )
 	{
 		_resource = resource;
-		_output = output;
+		int index = _resource.lastIndexOf(".");
+		if (index>0)
+		{
+			_output = _resource.substring(0, index) + ".dictionary";
+		}
+		else
+		{
+			_output = _resource + ".dictionary";
+		}
 	}
 
 	private InputStream getDictionaryStream( String location )
@@ -39,8 +47,14 @@ implements TypeLibraryLoader
 			}
 		}
 
+		InputStream is = getClass().getResourceAsStream( location );
+		if (is != null)
+		{
+			return is;
+		}
+		
 		ClassLoader cl = this.getClass().getClassLoader();
-		InputStream is = cl.getResourceAsStream( location );
+		is = cl.getResourceAsStream( location );
 		if ( is == null )
 		{
 			return null;

@@ -61,12 +61,14 @@ Please view the example .argot files to see how argot is specified.
 Version History
 ---------------
 
-1.3.b - 22 February 2010
+1.3.b1 - 25 May 2013
 
 - Improved error reporting.
-- Updated to match Argot 1.3.b
+- Updated to match Argot 1.3.b1
 - Added ability to optionally load meta_extensions.dictionary
-
+- Added ArgotCompilerLoader to allow compiling argot files in programs.
+- Added cluster and definition syntax to compiler to make it easier to define definitions.
+- Update website in title.
 
 1.2.2 - 17 January 2008
 

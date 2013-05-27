@@ -61,6 +61,9 @@ import com.argot.meta.DictionaryRelation;
 import com.argot.meta.MetaName;
 import com.argot.meta.MetaSequence;
 import com.argot.meta.MetaVersion;
+import com.argot.meta.MetaReference;
+import com.argot.meta.MetaTag;
+import com.argot.meta.MetaCluster;
 
 import com.argot.compiler.dictionary.LibraryBase;
 import com.argot.compiler.dictionary.LibraryName;
@@ -286,12 +289,62 @@ file returns [Object f]
 	;
 	
 line returns [Object l]
-  : importl | load | reserve | e=expression
+  : importl | load | reserve | cluster | definition | e=expression
 	{
 	   if (e==null) throw new RecognitionException();
 	   l=e;
 	}
 	;
+
+cluster: ^('cluster' clustername=IDENTIFIER )
+  {
+    try
+    {
+      MetaName name = MetaName.parseName( _library, clustername.getText() );
+      registerType( new LibraryName( name ), new MetaCluster() );
+    }
+    catch (TypeException ex)
+    {
+      throw new ArgotParserException("Failed to create cluster:" + clustername.getText(), input );
+    }
+    
+  }
+  ;
+  
+definition: ^('definition' defname=IDENTIFIER major=INT minor=INT 
+  { List l = new ArrayList(); }  (tag=tagged  { l.add(tag); })* )
+  {
+    short ma = Short.parseShort(major.getText());
+    short mi = Short.parseShort(minor.getText());
+  
+    try
+    {
+      MetaSequence sequence = new MetaSequence( l.toArray() );
+      MetaName name = MetaName.parseName( _library, defname.getText() );
+      MetaVersion version = new MetaVersion( ma, mi );
+      registerType( new LibraryDefinition( name, version ), sequence );
+    }
+    catch (TypeException ex)
+    {
+      throw new ArgotParserException("Failed to create name from:" + defname.getText(), input );
+    }
+  }
+  ;
+
+tagged returns [Object e]
+  : ^( '@' name=IDENTIFIER argotType=IDENTIFIER )
+  {
+    try
+    {
+      int id =  _library.getTypeId( argotType.getText() ); 
+      e = new MetaTag( name.getText(), new MetaReference( id ));
+    }
+    catch( TypeException ex )
+    {
+      throw new ArgotParserException("No type found for #" + argotType.getText(), input );
+    }
+  }
+  ;
 
 reserve: ^('reserve' typename=IDENTIFIER )
   {
@@ -358,7 +411,8 @@ importl: ^('import' typename=IDENTIFIER ( alias=IDENTIFIER)? )
     }
     catch( TypeException ex )
     {
-      throw new ArgotParserException("failed to import " + typename.getText(), input);
+      ex.printStackTrace();
+      throw new ArgotParserException("Failed to import " + typename.getText(), input);
     }
   }
   ;
@@ -454,6 +508,7 @@ primary returns [Object p]
     }
     catch( TypeException ex )
     {
+      ex.printStackTrace();
       throw new ArgotParserException("Unable to parse primitive:" + name.getText(), input );
     }
    }

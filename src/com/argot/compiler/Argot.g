@@ -72,7 +72,7 @@ package com.argot.compiler;
 }
 
 
-file : (headers)? expression
+file : (headers)? (expression)?
 	;
 
 
@@ -81,10 +81,22 @@ headers: headerline (headers)?
 	}
 	;
 	
-headerline: importl | load | reserve | COMMENT
+headerline: importl | load | reserve | cluster | definition | COMMENT
 	{
 	}
 	;
+
+cluster: 'cluster'^ IDENTIFIER ';'!
+  ;
+  
+definition: 'definition'^ IDENTIFIER INT '.'! INT ':'! sequence ';'!
+  ;
+
+sequence: '{'! (tag)* '}'!
+  ;
+
+tag: '@'^ IDENTIFIER '#'! IDENTIFIER ';'!
+  ;
 
 reserve: '!'! 'reserve'^ IDENTIFIER ';'!
 	;
@@ -148,9 +160,9 @@ QSTRING:	'"'! ( options {greedy=false;} : . )* '"'!;
 
 COMMENT
   : '/*' {if (input.LA(1)=='*') $type=COMMENT; else $channel=HIDDEN;} .* '*/';
-  
+ 
 INT	:	('0'..'9')+;
 
-IDENTIFIER:	('a'..'z'|'A'..'Z') ('a'..'z'|'A'..'Z'|'0'..'9'|'.'|'_'|'#')*;
+IDENTIFIER:	('a'..'z'|'A'..'Z') ('a'..'z'|'A'..'Z'|'0'..'9'|'.'|'_')*;
 
 

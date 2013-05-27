@@ -28,7 +28,7 @@
 
 	<description>Argot Compiler Package</description>
 
-	<property name="version" value="1.3.b" />
+	<property name="version" value="1.3.b2" />
 
 	<property name="argot.jar" value="lib/argot-${version}.jar" />
 	<property name="antlr.jar" value="lib/antlr-runtime-3.0.1.jar" />
@@ -160,7 +160,7 @@
 
 	</target>
 
-	<target name="package" depends="clean,emma,compile,build-jar,junit-tests" description="generate the distribution release">
+	<target name="package" depends="clean,emma,compile,build-jar" description="generate the distribution release">
 
 		<copy file="LICENSE.TXT" tofile="${release}/LICENSE.TXT" />
 		<copy file="README.TXT" tofile="${release}/README.TXT" />

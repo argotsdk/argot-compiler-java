@@ -99,7 +99,7 @@ public class ArgotCompiler
 		_compileDictionary = true;
 		_primitiveParsers = new HashMap();
 
-		_library = new TypeLibrary();
+		_library = new TypeLibrary(false);
 		_library.loadLibrary( new MetaLoader() );
 		_library.loadLibrary( new DictionaryLoader() );
 		_library.loadLibrary( new LibraryLoader() );
@@ -157,9 +157,9 @@ public class ArgotCompiler
 
 	private void printHeader()
 	{
-		System.out.println("\nArgot Compiler Version 1.3.b");
-		System.out.println("Copyright 2004-2009 (C) Live Media Pty Ltd.");
-		System.out.println("www.einet.com.au\n");		
+		System.out.println("\nArgot Compiler Version 1.3.b2");
+		System.out.println("Copyright 2004-2013 (C) Live Media Pty Ltd.");
+		System.out.println("www.argot-sdk.org\n");		
 	}
 	
 	private Object parse( TypeMap readMap, TypeMap map, InputStream inputFile )
@@ -179,7 +179,7 @@ public class ArgotCompiler
 			ArgotParser.file_return r = parser.file();
 			CommonTree t = (CommonTree)r.getTree(); // get tree from parser
 			CommonTreeNodeStream nodes = new CommonTreeNodeStream(t);
-			
+
 			ArgotTree tree = new ArgotTree(nodes); // create a tree parser
 			tree.setLibrary( _library );
 			tree.setTypeMap( map );
