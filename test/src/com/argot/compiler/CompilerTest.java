@@ -29,8 +29,6 @@ package com.argot.compiler;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.Iterator;
-import java.util.List;
-
 
 import com.argot.TypeLibrary;
 import com.argot.TypeLibraryLoader;
@@ -38,7 +36,6 @@ import com.argot.TypeMap;
 import com.argot.common.CommonLoader;
 import com.argot.dictionary.Dictionary;
 import com.argot.meta.MetaLoader;
-import com.argot.remote.RemoteLoader;
 
 import junit.framework.TestCase;
 
@@ -48,8 +45,7 @@ extends TestCase
 
 	private TypeLibraryLoader libraryLoaders[] = {
 		new MetaLoader(),
-		new CommonLoader(),
-		new RemoteLoader()
+		new CommonLoader()
 	};
 
 	private TypeLibraryLoader baseCommonLoaders[] = {
@@ -61,6 +57,8 @@ extends TestCase
 		new MetaLoader(),
 	};	
 	
+	private TypeLibraryLoader remoteLoader = null;
+	
 	protected void setUp() 
 	throws Exception 
 	{
@@ -68,6 +66,25 @@ extends TestCase
 
 		System.setProperty( "ARGOT_HOME", ".");
 	}	
+	
+	private boolean includeRemote()
+	{
+		try 
+		{
+			remoteLoader = (TypeLibraryLoader) Class.forName("com.argot.remote.RemoteLoader").newInstance();
+			
+			return true;
+		} 
+		catch (ClassNotFoundException e) 
+		{} 
+		catch (InstantiationException e) 
+		{} 
+		catch (IllegalAccessException e) 
+		{}
+		
+		System.out.println("Compiling library requires Argot Remote library");
+		return false;
+	}
 
 	public void testCompileMetaArgot()
 	throws Exception
@@ -131,7 +148,6 @@ extends TestCase
 		
 		FileInputStream fin = new FileInputStream( args[0] );
 		ArgotCompiler ac = new ArgotCompiler( fin, new File( "argot/remote.dictionary" ), null);
-		ac.setLoadRemote(false);
 		ac.doCompile();
 		
 		TypeLibrary library = new TypeLibrary( baseCommonLoaders );
@@ -141,6 +157,8 @@ extends TestCase
 	public void testCompileNetworkVMArgot()
 	throws Exception
 	{
+		if (!includeRemote()) return;
+		
 		Thread.sleep( 1000 );
 		System.out.println("COMPILE NETWORKVM" );
 		
@@ -150,6 +168,7 @@ extends TestCase
 		ArgotCompiler.argotCompile( args );
 		
 		TypeLibrary library = new TypeLibrary( libraryLoaders );
+		library.loadLibrary(remoteLoader);
 		Dictionary.readDictionary( library, new FileInputStream( "argot/networkvm.dictionary" ));		
 	}
 	
@@ -158,6 +177,8 @@ extends TestCase
 	public void testCompileRemoteRpcArgot()
 	throws Exception
 	{
+		if (!includeRemote()) return;
+		
 		Thread.sleep( 1000 );
 		System.out.println("COMPILE REMOTE RPC" );
 		
@@ -167,12 +188,14 @@ extends TestCase
 		ArgotCompiler.argotCompile( args );
 		
 		TypeLibrary library = new TypeLibrary( libraryLoaders );
+		library.loadLibrary(remoteLoader);
 		Dictionary.readDictionary( library, new FileInputStream( "argot/remoterpc.dictionary" ));		
 	}
 	
 	public void testCompileNetArgot()
 	throws Exception
 	{
+		if (!includeRemote()) return;
 		Thread.sleep( 1000 );
 		System.out.println("COMPILE NETARGOT" );
 		
@@ -188,6 +211,7 @@ extends TestCase
 	public void testCompileTestInterfaceArgot()
 	throws Exception
 	{
+		if (!includeRemote()) return;
 		Thread.sleep( 1000 );
 		System.out.println("COMPILE NETTEST" );
 		
@@ -199,12 +223,14 @@ extends TestCase
 		Thread.sleep( 1000 );
 		
 		TypeLibrary library = new TypeLibrary( libraryLoaders );
+		library.loadLibrary(remoteLoader);
 		Dictionary.readDictionary( library, new FileInputStream( "argot/nettest.dictionary" ));		
 	}
 	
 	public void testSimpleArgot()
 	throws Exception
 	{
+		if (!includeRemote()) return;
 		Thread.sleep( 1000 );
 		System.out.println("COMPILE NETTEST" );
 		
@@ -216,12 +242,14 @@ extends TestCase
 		Thread.sleep( 1000 );
 		
 		TypeLibrary library = new TypeLibrary( libraryLoaders );
+		library.loadLibrary(remoteLoader);
 		Dictionary.readDictionary( library, new FileInputStream( "argot/simple.dictionary" ));		
 	}	
 	
 	public void testZoneArgot()
 	throws Exception
 	{
+		if (!includeRemote()) return;
 		Thread.sleep( 1000 );
 		System.out.println("COMPILE ZONE" );
 		
@@ -233,6 +261,7 @@ extends TestCase
 		Thread.sleep( 1000 );
 		
 		TypeLibrary library = new TypeLibrary( libraryLoaders );
+		library.loadLibrary(remoteLoader);
 		Dictionary.readDictionary( library, new FileInputStream( "argot/zone.dictionary" ));		
 	}	
 /*
