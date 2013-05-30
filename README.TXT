@@ -71,6 +71,8 @@ Version History
 - Update website in title.
 - Collapse meta_extension and dictionary dictionaries into meta dictionary.
 - Attempt to load argot files using filename is resource load fails.
+- Remote ability to automatically load remote dictionary. 
+- Added ability to load and perform library bind.
 
 1.2.2 - 17 January 2008
 
