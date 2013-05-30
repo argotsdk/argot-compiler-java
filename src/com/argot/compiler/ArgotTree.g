@@ -370,10 +370,11 @@ reserve: ^('reserve' typename=IDENTIFIER )
   }
   ;
 
-load: ^('load' filenameText=QSTRING )
+load: ^('load' filenameText=QSTRING (classname=IDENTIFIER)? )
   {
       // This will load the file specified.
       String filename = filenameText.getText();
+      String loadername = classname.getText();
 	  if ( "\"".equals( filename.substring(0, 1) ) )
       {
         filename = filename.substring(1, filename.length()-1 );
@@ -381,7 +382,7 @@ load: ^('load' filenameText=QSTRING )
       try
       {
       	  System.out.println("LOADING: " + filename );
-          _compiler.loadDictionary( filename );
+          _compiler.loadDictionary( filename, loadername );
       }
       catch (FileNotFoundException e)
       {

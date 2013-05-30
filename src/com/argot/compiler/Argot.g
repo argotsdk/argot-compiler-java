@@ -101,7 +101,7 @@ tag: '@'^ IDENTIFIER '#'! IDENTIFIER ';'!
 reserve: '!'! 'reserve'^ IDENTIFIER ';'!
 	;
 
-load: '!'! 'load'^ QSTRING ';'!
+load: '!'! 'load'^ QSTRING (','! IDENTIFIER )? ';'!
 	;
 
 importl: '!'! 'import'^ IDENTIFIER ( 'as'! IDENTIFIER)? ';'!

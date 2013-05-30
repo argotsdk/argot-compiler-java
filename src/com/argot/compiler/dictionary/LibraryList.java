@@ -30,7 +30,6 @@ import com.argot.TypeLibrary;
 import com.argot.TypeLocation;
 import com.argot.TypeMap;
 import com.argot.meta.MetaDefinition;
-import com.argot.meta.MetaAbstractMap;
 
 public class LibraryList 
 {

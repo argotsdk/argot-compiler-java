@@ -29,16 +29,13 @@ import com.argot.TypeException;
 import com.argot.TypeLibrary;
 import com.argot.TypeLibraryLoader;
 import com.argot.auto.TypeReaderAuto;
-import com.argot.common.UInt16;
 import com.argot.common.UVInt28;
 import com.argot.meta.DictionaryDefinition;
 import com.argot.meta.DictionaryName;
-import com.argot.meta.MetaAbstract;
 import com.argot.meta.MetaArray;
 import com.argot.meta.MetaCluster;
 import com.argot.meta.MetaDefinition;
 import com.argot.meta.MetaExpression;
-import com.argot.meta.MetaAbstractMap;
 import com.argot.meta.MetaIdentity;
 import com.argot.meta.MetaMarshaller;
 import com.argot.meta.MetaName;
@@ -60,7 +57,7 @@ implements TypeLibraryLoader
 	public void load( TypeLibrary library ) throws TypeException
 	{
 
-		int libraryId = library.register( new DictionaryName(library,"library"),  new MetaCluster() );
+		library.register( new DictionaryName(library,"library"),  new MetaCluster() );
 		
 		/*
 		 * (library.entry

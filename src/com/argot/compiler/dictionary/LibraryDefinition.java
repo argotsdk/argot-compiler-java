@@ -25,7 +25,6 @@
  */
 package com.argot.compiler.dictionary;
 
-import com.argot.TypeException;
 import com.argot.TypeLocation;
 import com.argot.meta.MetaName;
 import com.argot.meta.MetaVersion;

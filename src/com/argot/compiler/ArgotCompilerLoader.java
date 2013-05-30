@@ -77,7 +77,6 @@ implements TypeLibraryLoader
 		{
 			ArgotCompiler compiler = new ArgotCompiler( is, new File( _output ), paths );
 			compiler.setLoadCommon(true);
-			compiler.setLoadRemote(true);
 			
 			compiler.doCompile();
 		} 
