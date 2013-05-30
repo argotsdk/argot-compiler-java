@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2013, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -24,8 +24,8 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-!load "networkvm.dictionary";
-!load "channel.dictionary";
+!load "argot/networkvm.dictionary";
+!load "argot/channel.dictionary";
 
 !import remote.location;
 !import remote.exception;

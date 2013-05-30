@@ -1,5 +1,5 @@
 
-Copyright (c) 2003-2010, Live Media Pty. Ltd.
+Copyright (c) 2003-2013, Live Media Pty. Ltd.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -61,7 +61,7 @@ Please view the example .argot files to see how argot is specified.
 Version History
 ---------------
 
-1.3.b1 - 25 May 2013
+1.3.0 - Unreleased
 
 - Improved error reporting.
 - Updated to match Argot 1.3.b1
@@ -69,6 +69,8 @@ Version History
 - Added ArgotCompilerLoader to allow compiling argot files in programs.
 - Added cluster and definition syntax to compiler to make it easier to define definitions.
 - Update website in title.
+- Collapse meta_extension and dictionary dictionaries into meta dictionary.
+- Attempt to load argot files using filename is resource load fails.
 
 1.2.2 - 17 January 2008
 

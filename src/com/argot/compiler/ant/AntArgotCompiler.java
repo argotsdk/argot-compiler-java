@@ -45,7 +45,6 @@ extends Task
 	private File _input;
 	private File _output;
 	private Path _path;
-	private boolean _loadExtensions = true;
 	private boolean _loadCommon = true;
 	private boolean _loadRemote = true;
 	
@@ -62,11 +61,6 @@ extends Task
 	public void setPath( Path path )
 	{
 		_path = path;
-	}
-	
-	public void setLoadExtensions( boolean load )
-	{
-		_loadExtensions = load;
 	}
 	
 	public void setLoadCommon( boolean load)
@@ -124,7 +118,6 @@ extends Task
 			
 			FileInputStream fin = new FileInputStream( _input );
 			ArgotCompiler compiler = new ArgotCompiler( fin, _output, paths );
-			compiler.setLoadExtensions(_loadExtensions);
 			compiler.setLoadCommon(_loadCommon);
 			compiler.setLoadRemote(_loadRemote);
 			compiler.doCompile();

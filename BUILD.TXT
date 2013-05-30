@@ -1,5 +1,5 @@
 
-Copyright (c) 2003-2010, Live Media Pty. Ltd.
+Copyright (c) 2003-2013, Live Media Pty. Ltd.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -26,48 +26,25 @@ ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ---------------------------------------------------------------------
 
 
-Argot C#
---------
+Argot Compiler
+--------------
 
-This is the C# version of the Argot runtime library.
+This is the Argot Compiler.  It is used to create Argot dictionary files (.dictionary) from argot definition
+files (.argot).
 
 
 
 Requirements
 ------------
 
-The Argot library itself has no dependencies on external libraries
-other than those supplied with C# itself.
+The Argot compiler requires the Argot library with the same version as the compiler.
 
-To build and run the test cases you require Nunit. Nunit is available
-at http://www.nunit.org/
+To build and run the test cases you require JUnit. 
 
-The project includes a Nant script for command line building of the
-source package.  Nant is available from http://nant.sourceforge.net/
-
-
-Building Argot C# on Windows.
------------------------------
-
-To build the C# version of Argot, please use the Argot.sln solution
-file with Microsoft visual Studio.  
-
-To build and test the package from the command line you can NAnt:
-
-nant test
-
-
-To build directly on the command line with only csc you can enter from the 
-csharp directory:
-
-csc /target:library /out:argot.dll /unsafe src\*.cs src\argot\*.cs src\argot\common\*.cs src\argot\meta\*.cs src\argot\util\*.cs src\argot\dictionary\*.cs
+The project includes a Ant script for command line building of the
+source package. 
 
 
 
-Building Argot C# using Mono.
------------------------------
-
-We haven't used mono yet.  Please let us know if you have successfully
-compiled and used Argot with mono.
 
 

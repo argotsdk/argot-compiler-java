@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2013, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -61,8 +61,6 @@ import com.argot.compiler.primitive.StringPrimitiveParser;
 import com.argot.compiler.primitive.UInt16PrimitiveParser;
 import com.argot.compiler.primitive.UInt8PrimitiveParser;
 import com.argot.dictionary.Dictionary;
-import com.argot.dictionary.DictionaryLoader;
-import com.argot.meta.MetaExtensionLoader;
 import com.argot.meta.MetaLoader;
 import com.argot.remote.RemoteLoader;
 
@@ -79,7 +77,6 @@ public class ArgotCompiler
 	private File _outputFile;
 	private URL[] _paths;
 	private ClassLoader _classLoader;
-	private boolean _loadExtensions;
 	private boolean _loadCommon;
 	private boolean _loadRemote;
 	private boolean _compileDictionary;
@@ -93,7 +90,6 @@ public class ArgotCompiler
 		_inputFile = inputFile;
 		_outputFile = outputFile;
 		_paths = paths;
-		_loadExtensions = true;
 		_loadCommon = true;
 		_loadRemote = true;
 		_compileDictionary = true;
@@ -101,7 +97,6 @@ public class ArgotCompiler
 
 		_library = new TypeLibrary(false);
 		_library.loadLibrary( new MetaLoader() );
-		_library.loadLibrary( new DictionaryLoader() );
 		_library.loadLibrary( new LibraryLoader() );
 		
 		setPrimitiveParser( "meta.name", new StringPrimitiveParser() );
@@ -123,11 +118,6 @@ public class ArgotCompiler
 		}
 		printHeader();
 		
-	}
-	
-	public void setLoadExtensions(boolean load)
-	{
-		_loadExtensions = load;
 	}
 	
 	public void setLoadCommon(boolean load)
@@ -214,8 +204,15 @@ public class ArgotCompiler
 
 		inStream = _classLoader.getResourceAsStream( fileName );
 		if (inStream == null)
-			throw new FileNotFoundException("File not found as resource");
-
+		{
+			File file = new File( fileName );
+			if (!file.exists())
+			{
+				throw new FileNotFoundException("File not found as resource");
+			}
+			inStream = new FileInputStream(file);
+		}
+		
 		try
 		{
 			Dictionary.readDictionary( _library, inStream );
@@ -248,17 +245,13 @@ public class ArgotCompiler
 	public void doCompile() 
 	throws TypeException, IOException
 	{
-		if (_loadExtensions)
-		{
-			loadOptionalDictionary( _library, new MetaExtensionLoader() );
-		}
 		
-		if (_loadExtensions && _loadCommon)
+		if (_loadCommon)
 		{
 			loadOptionalDictionary( _library, new CommonLoader() );
 		}
 		
-		if (_loadExtensions && _loadCommon && _loadRemote)
+		if (_loadCommon && _loadRemote)
 		{
 			loadOptionalDictionary( _library, new RemoteLoader() );
 		}
