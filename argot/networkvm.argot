@@ -28,6 +28,8 @@
  * This is the network virtual machine types.
  */
 
+!load "argot/remote.dictionary", com.argot.remote.RemoteLoader;
+
 !import empty;
 !import uint8;
 !import uint16;

@@ -24,6 +24,7 @@
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+!load "argot/remote.dictionary", com.argot.remote.RemoteLoader;
  
 !import uint16;
 !import remote.location;
