@@ -183,7 +183,7 @@
 		</copy>
 
 		<!-- zip up the release -->
-		<zip basedir="${release}" destfile="${build}/ArgotCompiler-${version}.zip" />
+		<zip basedir="${release}" destfile="${build}/argot-compiler-${version}.zip" />
 	</target>
 
 	<target name="clean" description="clean up">
