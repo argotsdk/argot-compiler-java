@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2013, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -53,7 +53,6 @@ import com.argot.TypeLocationRelation;
 import com.argot.auto.TypeConstructorAuto;
 import com.argot.meta.MetaIdentity;
 import com.argot.meta.MetaDefinition;
-import com.argot.meta.MetaAbstractMap;
 import com.argot.meta.DictionaryBase;
 import com.argot.meta.DictionaryName;
 import com.argot.meta.DictionaryDefinition;
@@ -311,23 +310,42 @@ cluster: ^('cluster' clustername=IDENTIFIER )
   }
   ;
   
-definition: ^('definition' defname=IDENTIFIER major=INT minor=INT 
-  { List l = new ArrayList(); }  (tag=tagged  { l.add(tag); })* )
+definition: ^('definition' defname=IDENTIFIER major=INT minor=INT ( seq=sequence | exp=expression ))
   {
     short ma = Short.parseShort(major.getText());
     short mi = Short.parseShort(minor.getText());
   
     try
     {
-      MetaSequence sequence = new MetaSequence( l.toArray() );
+      MetaDefinition expression = null;
+      if (seq != null )
+      {
+        expression = (MetaDefinition) seq;
+      }
+      else if (exp != null) 
+      {
+        if (!(exp instanceof MetaDefinition))
+        {
+          throw new ArgotParserException("Expression not a MetaExpression type", input );
+        }
+        expression = (MetaDefinition) exp;
+      }
+      
       MetaName name = MetaName.parseName( _library, defname.getText() );
       MetaVersion version = new MetaVersion( ma, mi );
-      registerType( new LibraryDefinition( name, version ), sequence );
+      registerType( new LibraryDefinition( name, version ), expression );
     }
     catch (TypeException ex)
     {
       throw new ArgotParserException("Failed to create name from:" + defname.getText(), input );
     }
+  }
+  ;
+
+sequence returns [Object e]: ^(LCBRACE { List l = new ArrayList(); }  (tag=tagged  { l.add(tag); })* )
+  {
+    MetaSequence sequence = new MetaSequence( l.toArray() );
+    e = sequence;
   }
   ;
 
