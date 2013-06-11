@@ -61,7 +61,7 @@ Please view the example .argot files to see how argot is specified.
 Version History
 ---------------
 
-1.3.b4 - Unreleased
+1.3.b4 - 9 June 2013
 
 - Modified simple definition to allow any expression.  Specifically change
   to allow MetaAbstract to be defined.
