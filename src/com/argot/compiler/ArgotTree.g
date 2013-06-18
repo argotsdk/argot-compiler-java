@@ -366,25 +366,18 @@ tagged returns [Object e]
 
 reserve: ^('reserve' typename=IDENTIFIER )
   {
-    System.out.println("reserve not implemented" );
-  /*
+  
     try
     {
-      _library.reserve( typename.getText() );
-      _map.map( _lastType++, _library.getTypeId( typename.getText() ));
+      MetaName name = MetaName.parseName( _library, typename.getText() );
+      _library.register( new DictionaryName( _library, typename.getText() ), new MetaIdentity() );
     }
     catch( TypeException ex )
     {
-      try
-      {
-        _map.map( _lastType++, _library.getId( typename.getText() ));
-      }
-      catch( TypeException ex2 )
-      {
+        ex.printStackTrace();
         throw new ArgotParserException( "failed to reserve " + typename.getText(), input);
-      }
     }
-    */
+
   }
   ;
 
