@@ -28,6 +28,7 @@ package com.argot.compiler;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.Iterator;
 
 import com.argot.TypeLibrary;
@@ -94,8 +95,9 @@ extends TestCase
 		args[0] = "argot/meta.argot";
 
 		FileInputStream fin = new FileInputStream( args[0] );
-		ArgotCompiler ac = new ArgotCompiler( fin, new File( "argot/meta.dictionary" ), null);
-		ac.doCompile();
+		FileOutputStream fout = new FileOutputStream(new File( "argot/meta.dictionary" ));
+		ArgotCompiler ac = new ArgotCompiler( fin, null);
+		ac.compileDictionary(fout);
 		
 		TypeLibrary library = new TypeLibrary( coreLibraryLoaders );
 		Dictionary.readDictionary( library, new FileInputStream( "argot/meta.dictionary" ));		
@@ -109,9 +111,10 @@ extends TestCase
 		args[0] = "argot/common.argot";
 
 		FileInputStream fin = new FileInputStream( args[0] );
-		ArgotCompiler ac = new ArgotCompiler( fin, new File( "argot/common.dictionary" ), null);
+		FileOutputStream fout = new FileOutputStream(new File( "argot/common.dictionary" ));
+		ArgotCompiler ac = new ArgotCompiler( fin, null);
 		ac.setLoadCommon(false);
-		ac.doCompile();
+		ac.compileDictionary(fout);
 		
 		TypeLibrary library = new TypeLibrary( coreLibraryLoaders );
 		TypeMap map = Dictionary.readDictionary( library, new FileInputStream( "argot/common.dictionary" ));
@@ -147,8 +150,9 @@ extends TestCase
 		args[0] = "argot/remote.argot";
 		
 		FileInputStream fin = new FileInputStream( args[0] );
-		ArgotCompiler ac = new ArgotCompiler( fin, new File( "argot/remote.dictionary" ), null);
-		ac.doCompile();
+		FileOutputStream fout = new FileOutputStream(new File( "argot/remote.dictionary" ));
+		ArgotCompiler ac = new ArgotCompiler( fin, null);
+		ac.compileDictionary(fout);
 		
 		TypeLibrary library = new TypeLibrary( baseCommonLoaders );
 		Dictionary.readDictionary( library, new FileInputStream( "argot/remote.dictionary" ));		
