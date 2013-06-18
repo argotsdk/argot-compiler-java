@@ -3,6 +3,7 @@ package com.argot.compiler;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -75,10 +76,12 @@ implements TypeLibraryLoader
 		
 		try 
 		{
-			ArgotCompiler compiler = new ArgotCompiler( is, new File( _output ), paths );
+			ArgotCompiler compiler = new ArgotCompiler( is, paths );
 			compiler.setLoadCommon(true);
 			
-			compiler.doCompile();
+			File outputFile = new File( _output );
+			
+			compiler.compileDictionary(  new FileOutputStream(outputFile));
 		} 
 		catch (IOException e) 
 		{

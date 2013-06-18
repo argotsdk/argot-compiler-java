@@ -32,6 +32,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.HashMap;
@@ -73,18 +74,16 @@ public class ArgotCompiler
 {
 	private TypeLibrary _library;
 	private InputStream _inputFile;
-	private File _outputFile;
 	private URL[] _paths;
 	private ClassLoader _classLoader;
 	private boolean _loadCommon;
 	private boolean _compileDictionary;
 	private Map _primitiveParsers;
 	
-	public ArgotCompiler( InputStream inputFile, File outputFile, URL[] paths ) 
+	public ArgotCompiler( InputStream inputFile, URL[] paths ) 
 	throws TypeException 
 	{
 		_inputFile = inputFile;
-		_outputFile = outputFile;
 		_paths = paths;
 		_loadCommon = true;
 		_compileDictionary = true;
@@ -184,6 +183,61 @@ public class ArgotCompiler
 		}
 	}
 	
+	public Object parseData( InputStream inputFile )
+	throws TypeException, IOException
+	{
+		InputStream fin = inputFile;
+		ANTLRInputStream input = new ANTLRInputStream(fin);
+		ArgotLexer lexer = new ArgotLexer( input );
+		
+		CommonTokenStream tokens = new CommonTokenStream(lexer);
+		
+		ArgotParser parser = new ArgotParser(tokens);
+		
+		try
+		{
+			ArgotParser.file_return r = parser.file();
+			CommonTree t = (CommonTree)r.getTree(); // get tree from parser
+			CommonTreeNodeStream nodes = new CommonTreeNodeStream(t);
+
+			TypeMap readMap = new TypeMap( _library, new TypeMapperDynamic(new TypeMapperCore(new TypeMapperError())));
+
+			ArgotTree tree = new ArgotTree(nodes); // create a tree parser
+			tree.setLibrary( _library );
+			tree.setTypeMap( readMap );
+			tree.setReadTypeMap(readMap);
+			//tree.setValidateReference( false );
+			tree.setArgotCompiler( this );
+			Object data = tree.file();
+			
+			List errors = tree.getErrors();
+			if (errors.isEmpty()) 
+			{
+				// If only one item is in the array return the contents.
+				if (data.getClass().isArray())
+				{
+					Object[] dataArray = (Object[]) data;
+					if (dataArray.length == 1)
+					{
+						return dataArray[0];
+					}
+				}
+				return data;
+			}
+			
+			Iterator errorIterator = errors.iterator();
+			while(errorIterator.hasNext())
+			{
+				String msg = (String) errorIterator.next();
+				System.err.println(msg);
+			}
+			throw new TypeException("Compile failed");
+		}
+		catch (RecognitionException e)
+		{
+			throw new TypeException( "Specification not recognised" + e.toString() );
+		}
+	}
 
 	public void loadDictionary( String fileName, String loaderClass )
 	throws TypeException, FileNotFoundException, IOException
@@ -256,7 +310,7 @@ public class ArgotCompiler
 	}
 
 	
-	public void doCompile() 
+	public void compileDictionary( OutputStream out ) 
 	throws TypeException, IOException
 	{
 		
@@ -281,14 +335,21 @@ public class ArgotCompiler
 		parse( readMap, map, _inputFile );
 		if (_compileDictionary)
 		{
-			FileOutputStream fout = new FileOutputStream( _outputFile );
-			Dictionary.writeDictionary( fout, map );			
+			Dictionary.writeDictionary( out, map );			
 		}
 		else
 		{
 			throw new TypeException("not implemented");
 		}
+	}
+	
+	public static Object compileData( TypeLibrary library, InputStream data ) 
+	throws TypeException, IOException
+	{
+		ArgotCompiler compiler = new ArgotCompiler( data, null );
 
+		compiler._library = library;
+		return compiler.parseData( data );
 	}
 	
 	public static void argotCompile( String[] args ) 
@@ -323,8 +384,9 @@ public class ArgotCompiler
 		File outputFile = new File(outputFileName);
 		
 		FileInputStream fin = new FileInputStream( inputFile );
-		ArgotCompiler compiler = new ArgotCompiler( fin, outputFile, null );
-		compiler.doCompile();
+		FileOutputStream fout = new FileOutputStream( outputFile );
+		ArgotCompiler compiler = new ArgotCompiler( fin,  null );
+		compiler.compileDictionary(fout);
 	}
 
 	public static void main(String[] args)

@@ -29,6 +29,7 @@ package com.argot.compiler.ant;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 
@@ -111,9 +112,9 @@ extends Task
 			}
 			
 			FileInputStream fin = new FileInputStream( _input );
-			ArgotCompiler compiler = new ArgotCompiler( fin, _output, paths );
+			ArgotCompiler compiler = new ArgotCompiler( fin, paths );
 			compiler.setLoadCommon(_loadCommon);
-			compiler.doCompile();
+			compiler.compileDictionary( new FileOutputStream(_output));
 		}
 		catch (FileNotFoundException e)
 		{
