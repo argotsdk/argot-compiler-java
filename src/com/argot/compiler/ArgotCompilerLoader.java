@@ -1,5 +1,6 @@
 package com.argot.compiler;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -18,6 +19,7 @@ implements TypeLibraryLoader
 {
 	private String _resource;
 	private String _output;
+	private byte[] _dictionaryData;
 	
 	public ArgotCompilerLoader(String resource )
 	{
@@ -31,6 +33,7 @@ implements TypeLibraryLoader
 		{
 			_output = _resource + ".dictionary";
 		}
+		_dictionaryData = null;
 	}
 
 	private InputStream getDictionaryStream( String location )
@@ -79,9 +82,11 @@ implements TypeLibraryLoader
 			ArgotCompiler compiler = new ArgotCompiler( is, paths );
 			compiler.setLoadCommon(true);
 			
-			File outputFile = new File( _output );
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			
-			compiler.compileDictionary(  new FileOutputStream(outputFile));
+			compiler.compileDictionary( out );
+			
+			_dictionaryData = out.toByteArray();
 		} 
 		catch (IOException e) 
 		{
@@ -109,6 +114,16 @@ implements TypeLibraryLoader
 		}
 		
 		bind(library);
+	}
+	
+	public byte[] getDictionaryData()
+	throws TypeException
+	{
+		if (_dictionaryData == null)
+		{
+			throw new TypeException("ArgotCompilerLoader - Source not compiled");
+		}
+		return _dictionaryData;
 	}
 	
 	public void bind( TypeLibrary library ) 
