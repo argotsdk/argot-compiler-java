@@ -142,7 +142,7 @@ public class ArgotCompiler
 	}
 	
 	private Object parse( TypeMap readMap, TypeMap map, InputStream inputFile )
-	throws TypeException, FileNotFoundException, IOException
+	throws TypeException, FileNotFoundException, IOException, ArgotCompilerException
 	{
 		InputStream fin = inputFile;
 		ANTLRInputStream input = new ANTLRInputStream(fin);
@@ -166,16 +166,10 @@ public class ArgotCompiler
 			tree.setArgotCompiler( this );
 			tree.file();
 			
-			List errors = tree.getErrors();
+			List<String> errors = tree.getErrors();
 			if (errors.isEmpty()) return map;
 			
-			Iterator errorIterator = errors.iterator();
-			while(errorIterator.hasNext())
-			{
-				String msg = (String) errorIterator.next();
-				System.err.println(msg);
-			}
-			throw new TypeException("Compile failed");
+			throw new ArgotCompilerException(errors);
 		}
 		catch (RecognitionException e)
 		{
@@ -184,7 +178,7 @@ public class ArgotCompiler
 	}
 	
 	public Object parseData( InputStream inputFile )
-	throws TypeException, IOException
+	throws TypeException, IOException, ArgotCompilerException
 	{
 		InputStream fin = inputFile;
 		ANTLRInputStream input = new ANTLRInputStream(fin);
@@ -210,7 +204,7 @@ public class ArgotCompiler
 			tree.setArgotCompiler( this );
 			Object data = tree.file();
 			
-			List errors = tree.getErrors();
+			List<String> errors = tree.getErrors();
 			if (errors.isEmpty()) 
 			{
 				// If only one item is in the array return the contents.
@@ -225,13 +219,7 @@ public class ArgotCompiler
 				return data;
 			}
 			
-			Iterator errorIterator = errors.iterator();
-			while(errorIterator.hasNext())
-			{
-				String msg = (String) errorIterator.next();
-				System.err.println(msg);
-			}
-			throw new TypeException("Compile failed");
+			throw new ArgotCompilerException(errors);
 		}
 		catch (RecognitionException e)
 		{
@@ -311,7 +299,7 @@ public class ArgotCompiler
 
 	
 	public void compileDictionary( OutputStream out ) 
-	throws TypeException, IOException
+	throws TypeException, IOException, ArgotCompilerException
 	{
 		
 		if (_loadCommon)
@@ -344,7 +332,7 @@ public class ArgotCompiler
 	}
 	
 	public static Object compileData( TypeLibrary library, InputStream data ) 
-	throws TypeException, IOException
+	throws TypeException, IOException, ArgotCompilerException
 	{
 		ArgotCompiler compiler = new ArgotCompiler( data, null );
 
@@ -386,7 +374,13 @@ public class ArgotCompiler
 		FileInputStream fin = new FileInputStream( inputFile );
 		FileOutputStream fout = new FileOutputStream( outputFile );
 		ArgotCompiler compiler = new ArgotCompiler( fin,  null );
-		compiler.compileDictionary(fout);
+		try 
+		{
+			compiler.compileDictionary(fout);
+		} catch (ArgotCompilerException e) 
+		{
+			e.printErrors(System.err);
+		}
 	}
 
 	public static void main(String[] args)

@@ -61,10 +61,13 @@ Please view the example .argot files to see how argot is specified.
 Version History
 ---------------
 
-1.3.b4 - 9 June 2013
+1.3.b4 - Unreleased
 
 - Modified simple definition to allow any expression.  Specifically change
   to allow MetaAbstract to be defined.
+- Change compilerLoader to store dictionary file in memory instead of File.
+  Allows this to be used on Google App Engine.
+- Modified how errors are returned and introduced ArgotCompilerException.
 
 1.3.b3 - 1 June 2013
 

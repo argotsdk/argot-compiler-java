@@ -107,9 +107,9 @@ import com.argot.compiler.primitive.ArgotPrimitiveParser;
         System.err.println("ArgotTree error: " + msg);
     }
     
-    private List _errors = new ArrayList();
+    private List<String> _errors = new ArrayList<String>();
     
-    public List getErrors() {
+    public List<String> getErrors() {
         return _errors;
     }
     
@@ -439,13 +439,13 @@ expression returns [Object e]
       Class c = _library.getClass( defId );
       if ( c == null )
       {
-        throw new ArgotParserException( "type has no class: " + id.getText(), input );
+        throw new ArgotParserException( "type has no class bound: " + id.getText(), input );
       }
       e = construct( defId, l.toArray(), c );
     }
     catch( TypeException ex )
     {
-      throw new ArgotParserException("type has no class: " + id.getText(), input );
+      throw new ArgotParserException("Failed to create object for: " + id.getText() + "\n" + ex.getMessage(), input );
     }
     if ( "library.entry".equals( id.getText() ) )
     {

@@ -1,5 +1,6 @@
 package com.argot.compiler;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -92,17 +93,15 @@ implements TypeLibraryLoader
 		{
 			e.printStackTrace();
 			throw new TypeException("Failed to load argot source file: " + _resource, e);
-		}
-		
-		is = getDictionaryStream( _output );
-		if ( is == null )
+		} 
+		catch (ArgotCompilerException e) 
 		{
-			throw new TypeException("Failed to load:" + _resource );
+			e.printErrors(System.err);
 		}
 		
 		try
 		{
-			Dictionary.readDictionary( library, is );
+			Dictionary.readDictionary( library, new ByteArrayInputStream(_dictionaryData) );
 		}
 		catch (TypeException e)
 		{
