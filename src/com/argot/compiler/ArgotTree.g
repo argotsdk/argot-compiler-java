@@ -120,6 +120,8 @@ import com.argot.compiler.primitive.ArgotPrimitiveParser;
 	private ArgotCompiler _compiler;
 	private TypeMap _readMap;
 	
+	private Stack<TypeElement> _expressionStack = new Stack<TypeElement>();
+	
 	public void setLibrary( TypeLibrary lib )
 	{
 		_library = lib;
@@ -347,11 +349,52 @@ importl: ^('import' typename=IDENTIFIER ( alias=IDENTIFIER)? )
   ;
 	
 expression returns [Object e]
-  : ^(LBRACE { List l = new ArrayList(); } id=IDENTIFIER (p=primary { l.add(p); } )* )
+  : ^(LBRACE { List l = new ArrayList(); } id=IDENTIFIER ( major=INT minor=INT )?
   {
+  
     try
     {
-      int nid = _readMap.getStreamId( _library.getTypeId( id.getText() ));
+      int nid;
+      if (major != null & minor != null)
+      {
+         short ma = Short.parseShort(major.getText());
+         short mi = Short.parseShort(minor.getText());
+         MetaName name = MetaName.parseName( _library, id.getText() );
+         MetaVersion version = new MetaVersion( ma, mi );
+         nid = _readMap.getStreamId( _library.getTypeId( id.getText(), version.toString() ));
+         _expressionStack.push( _library.getStructure(_readMap.getDefinitionId(nid)));
+      }
+      else
+      {
+         nid = _readMap.getStreamId( _library.getTypeId( id.getText() ));
+         _expressionStack.push( _library.getStructure(_readMap.getDefinitionId(nid)));
+      }
+ 
+    }
+    catch( TypeException ex )
+    {
+      throw new ArgotParserException("Failed to create object for: " + id.getText() + "\n" + ex.getMessage(), input );
+    }
+  
+  } (p=primary { l.add(p); } )* )
+  {
+    
+  
+    try
+    {
+      int nid;
+      if (major != null & minor != null)
+      {
+         short ma = Short.parseShort(major.getText());
+         short mi = Short.parseShort(minor.getText());
+         MetaName name = MetaName.parseName( _library, id.getText() );
+         MetaVersion version = new MetaVersion( ma, mi );
+         nid = _readMap.getStreamId( _library.getTypeId( id.getText(), version.toString() ));
+      }
+      else
+      {
+          nid = _readMap.getStreamId( _library.getTypeId( id.getText() ));
+      }
       int defId = _readMap.getDefinitionId( nid );
       Class c = _library.getClass( defId );
       if ( c == null )
@@ -359,6 +402,7 @@ expression returns [Object e]
         throw new ArgotParserException( "type has no class bound: " + id.getText(), input );
       }
       e = construct( defId, l.toArray(), c );
+      _expressionStack.pop();
     }
     catch( TypeException ex )
     {
@@ -439,8 +483,33 @@ primary returns [Object p]
     {
       ArgotPrimitiveParser parser = _compiler.getPrimitiveParser( name.getText() );
       if ( parser == null )
-        throw new ArgotParserException("No parser for :" + name.getText(), input);
+      {
+        // See if we can find the type that is defined.
+        TypeElement element = _expressionStack.peek();
+        if (element instanceof MetaSequence)
+        {
+           MetaSequence seq = (MetaSequence) element;
+           for(int x=0; x<seq.size();x++)
+           {
+             TypeElement ele = seq.getElement(x);
+             if (ele instanceof MetaTag)
+             {
+                MetaTag tag = (MetaTag) ele;
+                if (tag.getExpression() instanceof MetaReference)
+                {
+                    MetaReference ref = (MetaReference) tag.getExpression();
+                    parser = _compiler.getPrimitiveParser( _library.getName(ref.getType() ).getFullName() );
+                    break;
+                }
+             }
+           }
+        }
         
+        if (parser == null)
+        {
+          throw new ArgotParserException("No parser for :" + name.getText(), input);
+        }
+      }
       $p= parser.parse( s );
     }
     catch( TypeException ex )
