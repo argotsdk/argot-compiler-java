@@ -8,7 +8,8 @@ extends RecognitionException
 {
 	private String _reason;
 	
-	public ArgotParserException(String reason, IntStream input) {
+	public ArgotParserException(String reason, IntStream input) 
+	{
 		super(input);
 		_reason = reason;
 	}

@@ -81,7 +81,7 @@ headers: headerline (headers)?
 	}
 	;
 	
-headerline: importl | load | reserve | cluster | definition | COMMENT
+headerline: importl | load | reserve | cluster | definition | relation | COMMENT
 	{
 	}
 	;
@@ -90,6 +90,9 @@ cluster: 'cluster'^ IDENTIFIER ';'!
   ;
 
 definition: 'definition'^ IDENTIFIER INT '.'! INT ':'! ( expression | sequence ) ';'!
+  ;
+  
+relation: 'relation'^ IDENTIFIER INT '.'! INT QSTRING ':'! ( expression ) ';'!
   ;
 
 sequence: '{'^ (tag)* '}'!

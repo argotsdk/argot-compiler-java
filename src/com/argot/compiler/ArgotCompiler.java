@@ -48,13 +48,22 @@ import org.antlr.runtime.tree.CommonTreeNodeStream;
 
 import com.argot.TypeException;
 import com.argot.TypeLibraryLoader;
+import com.argot.TypeLocation;
+import com.argot.TypeLocationBase;
+import com.argot.TypeLocationDefinition;
+import com.argot.TypeLocationName;
+import com.argot.TypeLocationRelation;
 import com.argot.TypeMap;
 import com.argot.TypeLibrary;
 import com.argot.TypeMapperCore;
 import com.argot.TypeMapperDynamic;
 import com.argot.TypeMapperError;
 import com.argot.common.CommonLoader;
+import com.argot.compiler.dictionary.LibraryBase;
+import com.argot.compiler.dictionary.LibraryDefinition;
 import com.argot.compiler.dictionary.LibraryLoader;
+import com.argot.compiler.dictionary.LibraryName;
+import com.argot.compiler.dictionary.LibraryRelation;
 import com.argot.compiler.primitive.ArgotPrimitiveParser;
 import com.argot.compiler.primitive.MetaNameParser;
 import com.argot.compiler.primitive.MetaVersionParser;
@@ -62,7 +71,15 @@ import com.argot.compiler.primitive.StringPrimitiveParser;
 import com.argot.compiler.primitive.UInt16PrimitiveParser;
 import com.argot.compiler.primitive.UInt8PrimitiveParser;
 import com.argot.dictionary.Dictionary;
+import com.argot.meta.DictionaryBase;
+import com.argot.meta.DictionaryDefinition;
+import com.argot.meta.DictionaryName;
+import com.argot.meta.DictionaryRelation;
+import com.argot.meta.MetaDefinition;
+import com.argot.meta.MetaIdentity;
 import com.argot.meta.MetaLoader;
+import com.argot.meta.MetaName;
+import com.argot.meta.MetaVersion;
 
 
 /**
@@ -297,6 +314,122 @@ public class ArgotCompiler
 		}		
 	}
 
+	
+	public void registerLibraryType(TypeMap map, TypeLocation location, MetaDefinition tds) 
+	throws TypeException 
+	{
+
+		if (location instanceof LibraryDefinition) 
+		{
+			LibraryDefinition libDef = (LibraryDefinition) location;
+			MetaName name = libDef.getName();
+			MetaVersion version = libDef.getVersion();
+
+			DictionaryName libName = new DictionaryName(name);
+			int nameState = _library.getTypeState(_library.getTypeId(libName));
+			int nameId = -1;
+			if (nameState == TypeLibrary.TYPE_NOT_DEFINED) 
+			{
+				nameId = _library.register(libName, new MetaIdentity());
+			} 
+			else 
+			{
+				nameId = _library.getTypeId(libName);
+			}
+
+			location = new DictionaryDefinition(nameId, name, version);
+
+			if (!map.isMapped(nameId)) 
+			{
+				// _map.map( _lastType++, nameId );
+				// _map.getStreamId( nameId );
+			}
+		} 
+		else if (location instanceof LibraryRelation) 
+		{
+			LibraryRelation libRel = (LibraryRelation) location;
+			MetaName name = _library.getName(libRel.getId());
+			System.out.println("name =" + name.getFullName());
+			DictionaryDefinition dictDef = new DictionaryDefinition(libRel.getId(), name, libRel.getVersion());
+
+			int libRelId = _library.getTypeId(dictDef);
+			if (!map.isMapped(libRelId)) 
+			{
+				// _map.map( _lastType++, libRelId );
+				map.getStreamId(libRelId);
+			}
+
+			location = new DictionaryRelation(libRelId, libRel.getTag());
+		} 
+		else if (location instanceof LibraryName) 
+		{
+			LibraryName libName = (LibraryName) location;
+
+			location = new DictionaryName(libName.getName());
+		} 
+		else if (location instanceof LibraryBase) 
+		{
+			// LibraryBase libBase = (LibraryBase) location;
+			location = new DictionaryBase();
+		}
+
+		int id = _library.getTypeId(location);
+		int state = _library.getTypeState(id);
+		if (state == TypeLibrary.TYPE_NOT_DEFINED || state == TypeLibrary.TYPE_RESERVED) 
+		{
+			// if ( _library.isReserved( typename.getText() ) )
+			if (state == TypeLibrary.TYPE_RESERVED) 
+			{
+				_library.register(location, tds);
+			} 
+			else 
+			{
+				int nId = _library.register(location, tds);
+				map.getStreamId(nId);
+			}
+		} 
+		else 
+		{
+			if (location instanceof TypeLocationDefinition) 
+			{
+				TypeLocationDefinition libDef = (TypeLocationDefinition) location;
+				String name = libDef.getName().getFullName() + ":" + libDef.getVersion().toString();
+				System.out.println("WARNING: can't redefine '" + name + "'.  Definition ignored.");
+			} 
+			else if (location instanceof TypeLocationRelation) 
+			{
+				TypeLocationRelation libRel = (TypeLocationRelation) location;
+				String name = _library.getName(libRel.getId()).getFullName() + ":" + libRel.getTag();
+				System.out.println("WARNING: can't redefine '" + name + "'.  Definition ignored.");
+			} 
+			else if (location instanceof TypeLocationName) 
+			{
+				TypeLocationName libName = (TypeLocationName) location;
+				String name = libName.getName().getFullName();
+				System.out.println("WARNING: can't redefine '" + name	+ "'.  Definition ignored.");
+			} 
+			else if (location instanceof TypeLocationBase) 
+			{
+				System.out.println("WARNING: can't redefine library base.");
+			} 
+			else 
+			{
+				System.out.println("WARNING: can't redefine library type of unknown location type: " + location.getClass().getName());
+			}
+
+			try 
+			{
+				map.getStreamId(_library.getTypeId(location));
+			} 
+			catch (TypeException ex) 
+			{
+				System.out.println("import into map failed - " + ex.getMessage());
+			}
+
+		}
+
+
+	}
 	
 	public void compileDictionary( OutputStream out ) 
 	throws TypeException, IOException, ArgotCompilerException
