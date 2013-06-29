@@ -349,7 +349,6 @@ public class ArgotCompiler
 		{
 			LibraryRelation libRel = (LibraryRelation) location;
 			MetaName name = _library.getName(libRel.getId());
-			System.out.println("name =" + name.getFullName());
 			DictionaryDefinition dictDef = new DictionaryDefinition(libRel.getId(), name, libRel.getVersion());
 
 			int libRelId = _library.getTypeId(dictDef);
