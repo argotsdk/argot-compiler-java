@@ -110,7 +110,7 @@ load: '!'! 'load'^ QSTRING (','! IDENTIFIER )? ';'!
 importl: '!'! 'import'^ IDENTIFIER ( 'as'! IDENTIFIER)? ';'!
 	;
 	
-expression: '('^ IDENTIFIER (primary)* ')'!
+expression: '('^ IDENTIFIER ('/'! INT '.'! INT )? (primary)* ')'!
 	/*{ #expression = #([EXPR], id, p); }*/
 
 	/*| LCBRACE (primary) RCBRACE*/
