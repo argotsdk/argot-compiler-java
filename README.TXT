@@ -69,6 +69,8 @@ Version History
   Allows this to be used on Google App Engine.
 - Modified how errors are returned and introduced ArgotCompilerException.
 - Added simple relation definition.
+- Added ability to specify specific version in expression.
+- Allow using tag names for parsed values.
 
 1.3.b3 - 1 June 2013
 
