@@ -68,6 +68,7 @@ Version History
 - Change compilerLoader to store dictionary file in memory instead of File.
   Allows this to be used on Google App Engine.
 - Modified how errors are returned and introduced ArgotCompilerException.
+- Added simple relation definition.
 
 1.3.b3 - 1 June 2013
 
