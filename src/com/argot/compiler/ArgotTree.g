@@ -495,7 +495,7 @@ primary returns [Object p]
              if (ele instanceof MetaTag)
              {
                 MetaTag tag = (MetaTag) ele;
-                if (tag.getExpression() instanceof MetaReference)
+                if (tag.getDescription().equals(name.getText()) && tag.getExpression() instanceof MetaReference)
                 {
                     MetaReference ref = (MetaReference) tag.getExpression();
                     parser = _compiler.getPrimitiveParser( _library.getName(ref.getType() ).getFullName() );
