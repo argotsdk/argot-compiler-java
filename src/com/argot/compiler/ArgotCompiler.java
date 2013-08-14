@@ -95,7 +95,7 @@ public class ArgotCompiler
 	private ClassLoader _classLoader;
 	private boolean _loadCommon;
 	private boolean _compileDictionary;
-	private Map _primitiveParsers;
+	private Map<String,ArgotPrimitiveParser> _primitiveParsers;
 	
 	public ArgotCompiler( InputStream inputFile, URL[] paths ) 
 	throws TypeException 
@@ -104,7 +104,7 @@ public class ArgotCompiler
 		_paths = paths;
 		_loadCommon = true;
 		_compileDictionary = true;
-		_primitiveParsers = new HashMap();
+		_primitiveParsers = new HashMap<String,ArgotPrimitiveParser>();
 
 		_library = new TypeLibrary(false);
 		_library.loadLibrary( new MetaLoader() );
