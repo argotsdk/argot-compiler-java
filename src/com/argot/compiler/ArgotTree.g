@@ -304,7 +304,12 @@ load: ^('load' filenameText=QSTRING (classname=IDENTIFIER)? )
   {
       // This will load the file specified.
       String filename = filenameText.getText();
-      String loadername = classname.getText();
+      
+      String loadername = null;
+      
+      if (classname != null)
+        loadername = classname.getText();
+        
 	  if ( "\"".equals( filename.substring(0, 1) ) )
       {
         filename = filename.substring(1, filename.length()-1 );
