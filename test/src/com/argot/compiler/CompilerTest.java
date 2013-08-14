@@ -124,7 +124,7 @@ extends TestCase
 			Integer id = (Integer) ids.next();
 			System.out.println(map.getName(id.intValue()).getFullName());
 		}
-		assertEquals( 21, map.size() );
+		assertEquals( 22, map.size() );
 	}
 
 	public void testCompileChannelArgot()
