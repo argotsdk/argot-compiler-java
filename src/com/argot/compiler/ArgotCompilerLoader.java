@@ -14,28 +14,42 @@ import com.argot.TypeLibrary;
 import com.argot.TypeLibraryLoader;
 import com.argot.dictionary.Dictionary;
 
-public class ArgotCompilerLoader 
+public class ArgotCompilerLoader
 implements TypeLibraryLoader
 {
-	private String _resource;
+    private final InputStream _input;
+	private final String _resource;
 	private byte[] _dictionaryData;
-	
-	public ArgotCompilerLoader(String resource )
+
+	public ArgotCompilerLoader(final String resource )
 	{
 		_resource = resource;
+		_input = null;
 		_dictionaryData = null;
 	}
 
-	private InputStream getDictionaryStream( String location )
+	public ArgotCompilerLoader(final String resource, final InputStream input )
 	{
-		File dictionaryFile = new File( location );
+	    _resource = resource;
+	    _input = input;
+	    _dictionaryData = null;
+	}
+
+	private InputStream getDictionaryStream( final String location )
+	{
+	    if (_input != null)
+	    {
+	        return _input;
+	    }
+
+		final File dictionaryFile = new File( location );
 		if ( dictionaryFile.exists())
 		{
 			try
 			{
 				return new FileInputStream( dictionaryFile );
 			}
-			catch (FileNotFoundException e)
+			catch (final FileNotFoundException e)
 			{
 				// ignore and drop through.
 			}
@@ -46,65 +60,66 @@ implements TypeLibraryLoader
 		{
 			return is;
 		}
-		
-		ClassLoader cl = this.getClass().getClassLoader();
+
+		final ClassLoader cl = this.getClass().getClassLoader();
 		is = cl.getResourceAsStream( location );
 		if ( is == null )
 		{
 			return null;
-		}				
+		}
 		return is;
 	}
-	
-	public void load(TypeLibrary library) 
-	throws TypeException 
+
+	@Override
+    public void load(final TypeLibrary library)
+	throws TypeException
 	{
-		URL[] paths = null;
-		
-		InputStream is = getDictionaryStream( _resource );
+		final URL[] paths = null;
+
+		final InputStream is = getDictionaryStream( _resource );
 		if ( is == null )
 		{
 			throw new TypeException("Failed to load:" + _resource );
 		}
-		
-		try 
+
+		try
 		{
-			ArgotCompiler compiler = new ArgotCompiler( is, paths );
+			final ArgotCompiler compiler = new ArgotCompiler( is, paths );
 			compiler.setLoadCommon(true);
-			
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
-			
+
+			final ByteArrayOutputStream out = new ByteArrayOutputStream();
+
 			compiler.compileDictionary( out );
-			
+
 			_dictionaryData = out.toByteArray();
-		} 
-		catch (IOException e) 
+		}
+		catch (final IOException e)
 		{
 			e.printStackTrace();
 			throw new TypeException("Failed to load argot source file: " + _resource, e);
-		} 
-		catch (ArgotCompilerException e) 
+		}
+		catch (final ArgotCompilerException e)
 		{
 			e.printErrors(System.err);
 			throw new TypeException("Failed to load argot source file: " + _resource, e);
 		}
-		
+
 		try
 		{
 			Dictionary.readDictionary( library, new ByteArrayInputStream(_dictionaryData) );
 		}
-		catch (TypeException e)
+		catch (final TypeException e)
 		{
 			throw new TypeException("Error loading dictionary: " + _resource, e );
 		}
-		catch (IOException e)
+		catch (final IOException e)
 		{
 			throw new TypeException("Error loading dictionary: " + _resource, e );
 		}
-		
+
 		bind(library);
 	}
-	
+
 	public byte[] getDictionaryData()
 	throws TypeException
 	{
@@ -114,14 +129,15 @@ implements TypeLibraryLoader
 		}
 		return _dictionaryData;
 	}
-	
-	public void bind( TypeLibrary library ) 
+
+	public void bind( final TypeLibrary library )
 	throws TypeException
 	{
-				
+
 	}
 
-	public String getName() 
+	@Override
+    public String getName()
 	{
 		return _resource;
 	}
