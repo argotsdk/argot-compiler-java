@@ -1,10 +1,9 @@
 apply plugin: 'java'
 apply plugin: 'maven'
+apply plugin: 'nexus'
 
 group = 'org.argot-sdk'
 version = '1.3.7-SNAPSHOT'
-
-description = """argot-compiler"""
 
 sourceCompatibility = 1.5
 targetCompatibility = 1.5
@@ -12,8 +11,8 @@ targetCompatibility = 1.5
 
 
 repositories {
-    mavenLocal()
-    maven { url "http://repo.maven.apache.org/maven2" }
+    mavenCentral()
+    maven { url "https://oss.sonatype.org/content/groups/public" }
 }
 
 configurations {
@@ -29,7 +28,7 @@ dependencies {
 }
 
 
-// ANTLR STAT
+// ANTLR START
 // The official antlr plugin doesn't support antlr 3 grammers, the following
 // is taken from http://tapestryjava.blogspot.co.uk/2011/03/combining-gradle-with-antlr3.html
 // where the author has already worked out a solution
@@ -72,3 +71,45 @@ task generateGrammarSource {
 compileJava.dependsOn generateGrammarSource
 
 // ANTLR END
+
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'org.gradle.api.plugins:gradle-nexus-plugin:0.7'
+    }
+}
+
+modifyPom {
+    project {
+        name 'Argot Compiler'
+        description 'Argot dictionary compiler.'
+        url 'http://www.argot-sdk.org/'
+        packaging 'jar'
+        licenses {
+            license {
+                url 'https://github.com/argotsdk/argot-java/blob/master/LICENSE.TXT'
+            }
+        }
+        scm {
+            url 'https://github.com/argotsdk/argot-compiler-java'
+            connection 'scm:git:https://github.com/argotsdk/argot-compiler-java.git'
+            developerConnection 'scm:git@github.com:argotsdk/argot-compiler-java.git'
+        }
+        developers {
+            developer {
+                id 'oobles'
+                name 'David Ryan'
+            }
+            developer {
+                id 'danmidwood'
+                name 'Dan Midwood'
+            }
+        }
+
+    }
+}
+
