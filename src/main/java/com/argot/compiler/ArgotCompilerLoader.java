@@ -70,7 +70,6 @@ implements TypeLibraryLoader
 		return is;
 	}
 
-	@Override
     public void load(final TypeLibrary library)
 	throws TypeException
 	{
@@ -136,7 +135,6 @@ implements TypeLibraryLoader
 
 	}
 
-	@Override
     public String getName()
 	{
 		return _resource;
