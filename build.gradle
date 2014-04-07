@@ -2,6 +2,15 @@ apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'nexus'
 
+// Development environments
+apply plugin: 'idea'
+apply plugin: 'eclipse'
+eclipse {
+     classpath {
+        defaultOutputDir = new File("$buildDir/eclipse");
+     }
+}
+
 group = 'org.argot-sdk'
 version = '1.3.7-SNAPSHOT'
 
