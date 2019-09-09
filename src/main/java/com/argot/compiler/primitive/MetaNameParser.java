@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -29,20 +29,21 @@ import com.argot.TypeException;
 import com.argot.TypeLibrary;
 import com.argot.meta.MetaName;
 
-public class MetaNameParser 
-implements ArgotPrimitiveParser
-{
-	private TypeLibrary _library;
-	
-	public MetaNameParser(TypeLibrary library)
-	{
-		_library = library;
-	}
+public class MetaNameParser implements ArgotPrimitiveParser {
+    private TypeLibrary _library;
 
-	public Object parse(String data) 
-	throws TypeException 
-	{
-		return MetaName.parseName(_library, data);
-	}
+    public MetaNameParser(TypeLibrary library) {
+        _library = library;
+    }
+
+    @Override
+    public Object parse(String data) throws TypeException {
+
+        try {
+            return MetaName.parseName(_library, data);
+        } catch (TypeException ex) {
+            throw new TypeException("Failed to parse name " + data, ex);
+        }
+    }
 
 }

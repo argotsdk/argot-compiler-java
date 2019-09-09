@@ -1,85 +1,122 @@
 apply plugin: 'java'
 apply plugin: 'maven'
-apply plugin: 'nexus'
+apply plugin: 'com.bmuschko.nexus'
+
+buildscript {
+  repositories {
+    maven {
+      jcenter()
+      url "https://plugins.gradle.org/m2/"
+    }
+  }
+  dependencies {
+    classpath "org.javamodularity:moduleplugin:1.5.0"
+    classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
+  }
+}
 
 // Development environments
 apply plugin: 'idea'
 apply plugin: 'eclipse'
 eclipse {
-     classpath {
+
+    classpath {
         defaultOutputDir = new File("$buildDir/eclipse");
-     }
+        file {
+            whenMerged {
+                entries.findAll { isModule(it) }.each {
+                    it.entryAttributes['module'] = 'true'
+                }
+
+                entries.findAll { isSource(it) && isTestScope(it) }.each {
+                    it.entryAttributes['test'] = 'true'
+                }
+
+                entries.findAll { isLibrary(it) && isTestScope(it) }.each {
+                    it.entryAttributes['test'] = 'true'
+                }
+            }
+        }
+    }
+
 }
 
 group = 'org.argot-sdk'
-version = '1.3.7-SNAPSHOT'
+version = '1.4.0-rc1'
 
-sourceCompatibility = 1.5
-targetCompatibility = 1.5
+sourceCompatibility = 11
+targetCompatibility = 11
 
 
 
 repositories {
-    mavenCentral()
-    maven { url "https://oss.sonatype.org/content/groups/public" }
+    maven { url "http://repo.maven.apache.org/maven2" }
 }
+
+
+apply plugin: 'antlr'
+
+
 
 configurations {
-    antlr3
-}
-
-dependencies {
-    compile group: 'org.antlr', name: 'antlr-runtime', version:'3.0.1'
-    compile group: 'org.apache.ant', name: 'ant', version:'1.8.2'
-    compile group: 'org.argot-sdk', name: 'argot', version:'1.3.7-SNAPSHOT'
-    testCompile group: 'junit', name: 'junit', version:'4.11'
-    antlr3 "org.antlr:antlr:3.0.1"
-}
-
-
-// ANTLR START
-// The official antlr plugin doesn't support antlr 3 grammers, the following
-// is taken from http://tapestryjava.blogspot.co.uk/2011/03/combining-gradle-with-antlr3.html
-// where the author has already worked out a solution
-//
-// There is a pull request adding antlr 3 support to the gradle antlr plugin
-// available at https://github.com/gradle/gradle/pull/69, however it has been
-// languishing unmerged for almost two years. There was a discussion shortly
-// after the request arguing whether there should be one antlr plugin for all
-// versions or a plugin for each version, that discussion seems to have stalled
-// and be the reason this PR is in limbo.
-//
-// Anyway, if the PR is accepted, we can remove this block and the "antlr3"
-// configuration and dependency.
-
-antlrSource = "src/main/antlr"
-antlrOutput = "$buildDir/generated-sources/antlr"
-
-
-sourceSets.main.java.srcDir antlrOutput
-
-// This may spin out as a plugin once we've got the details down pat
-
-task generateGrammarSource {
-    description = "Generates Java sources from Antlr3 grammars."
-    inputs.dir file(antlrSource)
-    outputs.dir file(antlrOutput)
-} << {
-    mkdir(antlrOutput)
-
-    // Might have a problem here if the current directory has a space in its name
-
-    def grammars = fileTree(antlrSource).include("**/*.g")
-
-    ant.java(classname: 'org.antlr.Tool', fork: true, classpath: "${configurations.antlr3.asPath}") {
-        arg(line: "-o ${antlrOutput}/com/argot/compiler")
-        arg(line: grammars.files.join(" "))
+    compile {
+        extendsFrom = extendsFrom.findAll { it != configurations.antlr }
     }
 }
 
-compileJava.dependsOn generateGrammarSource
+dependencies {
 
-// ANTLR END
+    // https://mvnrepository.com/artifact/org.argot-sdk/argot
+    compile group: 'org.argot-sdk', name: 'argot', version: '1.4.0-rc1'
+   
+    
+    // https://mvnrepository.com/artifact/org.antlr/antlr4
+    antlr group: 'org.antlr', name: 'antlr4', version: '4.7.2'
+    
+    // https://mvnrepository.com/artifact/org.antlr/antlr4-runtime
+    compile group: 'org.antlr', name: 'antlr4-runtime', version: '4.7.2'
+    
+}
+
+test {
+	useJUnitPlatform()
+}
+
+
+generateGrammarSource {
+    maxHeapSize = "64m"
+    arguments += ["-visitor", "-long-messages"]
+
+    // Keep a copy of generated sources
+    doLast {
+        println "Copying generated grammar lexer/parser files to main directory."
+        copy {
+            from "${buildDir}/generated-src/antlr/main"
+            into "src/main/antlr"
+        }
+    }
+}
+
+clean.doLast {
+    file('generated-src').deleteDir()
+}
+
+compileJava {
+    //inputs.property("moduleName", moduleName)
+    doFirst {
+        options.compilerArgs = [
+            '--module-path', classpath.asPath,
+        ]
+        classpath = files()
+    }
+}
+
+javadoc {
+  //inputs.property("moduleName", moduleName)
+  doFirst {
+    options.addStringOption('-module-path', classpath.asPath)
+  }
+}
 
 
 buildscript {
@@ -88,7 +125,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'org.gradle.api.plugins:gradle-nexus-plugin:0.7'
+        classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
     }
 }
 
@@ -121,4 +158,14 @@ modifyPom {
 
     }
 }
+
+
+boolean isLibrary(entry) {
+  return entry.properties.kind.equals('lib') || entry.properties.kind.equals('src')
+}
+boolean isTestScope(entry) {
+  return entry.entryAttributes.get('gradle_used_by_scope').equals('test'); }
+boolean isModule(entry) {
+  return isLibrary(entry) && !isTestScope(entry); }
+boolean isSource(entry) { return entry.properties.kind.equals('src'); }
 

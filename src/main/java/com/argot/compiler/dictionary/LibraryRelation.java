@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -29,68 +29,51 @@ import com.argot.TypeException;
 import com.argot.TypeLocation;
 import com.argot.meta.MetaVersion;
 
-public class LibraryRelation 
-implements TypeLocation
-{
+public class LibraryRelation implements TypeLocation {
 
-	private int id;
-	private MetaVersion version;
-	private String tag;
+    private int id;
+    private MetaVersion version;
+    private String tag;
 
-	public LibraryRelation(int id, MetaVersion version, String tag)
-	throws TypeException
-	{
-		this.setId(id);
-		this.version = version;
-		this.setTag(tag);
-	}	
-	
-	public LibraryRelation(int id, String version, String tag)
-	throws TypeException
-	{
-		this.setId(id);
-		this.version = MetaVersion.parseVersion(version);
-		this.setTag(tag);
-	}
-	
-	
-	public void setVersion(MetaVersion version) 
-	{
-		this.version = version;
-	}
-	
-	public MetaVersion getVersion() 
-	{
-		return version;
-	}
+    public LibraryRelation(int id, MetaVersion version, String tag) throws TypeException {
+        this.setId(id);
+        this.version = version;
+        this.setTag(tag);
+    }
 
-	public int getType() 
-	{
-		return -1;
-	}
+    public LibraryRelation(int id, String version, String tag) throws TypeException {
+        this.setId(id);
+        this.version = MetaVersion.parseVersion(version);
+        this.setTag(tag);
+    }
 
+    public void setVersion(MetaVersion version) {
+        this.version = version;
+    }
 
-	public void setTag(String tag) 
-	{
-		this.tag = tag;
-	}
+    public MetaVersion getVersion() {
+        return version;
+    }
 
+    @Override
+    public int getType() {
+        return -1;
+    }
 
-	public String getTag() 
-	{
-		return tag;
-	}
+    public void setTag(String tag) {
+        this.tag = tag;
+    }
 
+    public String getTag() {
+        return tag;
+    }
 
-	public void setId(int id) 
-	{
-		this.id = id;
-	}
+    public void setId(int id) {
+        this.id = id;
+    }
 
+    public int getId() {
+        return id;
+    }
 
-	public int getId() 
-	{
-		return id;
-	}
-	
 }

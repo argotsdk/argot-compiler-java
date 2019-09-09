@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -28,15 +28,12 @@ package com.argot.compiler.primitive;
 
 import com.argot.TypeException;
 
-public class StringPrimitiveParser 
-implements ArgotPrimitiveParser
-{
+public class StringPrimitiveParser implements ArgotPrimitiveParser {
 
-	public Object parse(String data) 
-	throws TypeException 
-	{
-		// nothing to do but parse back data.
-		return data;
-	}
+    @Override
+    public Object parse(String data) throws TypeException {
+        // nothing to do but parse back data.
+        return data;
+    }
 
 }

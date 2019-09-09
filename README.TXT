@@ -1,5 +1,5 @@
 
-Copyright (c) 2003-2013, Live Media Pty. Ltd.
+Copyright (c) 2003-2019, Live Media Pty. Ltd.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -60,6 +60,11 @@ Please view the example .argot files to see how argot is specified.
 
 Version History
 ---------------
+
+1.4.0 - August 2019
+
+- Upgraded to Java 11
+- Upgraded Antlr to 4.7
 
 1.3.b5 - 4 July 2013
 

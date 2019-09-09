@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -28,24 +28,20 @@ package com.argot.compiler.dictionary;
 import com.argot.TypeLocation;
 import com.argot.meta.MetaDefinition;
 
-public class LibraryEntry 
-{
-	private TypeLocation _location;
-	private MetaDefinition _definition;
-	
-	public LibraryEntry( TypeLocation location, MetaDefinition definition )
-	{
-		_location = location;
-		_definition = definition;
-	}
-	
-	public TypeLocation getLocation()
-	{
-		return _location;
-	}
-	
-	public MetaDefinition getDefinition()
-	{
-		return _definition;
-	}
+public class LibraryEntry {
+    private TypeLocation _location;
+    private MetaDefinition _definition;
+
+    public LibraryEntry(TypeLocation location, MetaDefinition definition) {
+        _location = location;
+        _definition = definition;
+    }
+
+    public TypeLocation getLocation() {
+        return _location;
+    }
+
+    public MetaDefinition getDefinition() {
+        return _definition;
+    }
 }

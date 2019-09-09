@@ -76,3 +76,11 @@ tramp
 ### Gradle ###
 .gradle
 build/
+
+# eclipse
+.classpath
+.project
+.settings/
+bin/
+gradle.properties
+

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2013, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -26,10 +26,16 @@
 
 package com.argot.compiler;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Iterator;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.argot.TypeLibrary;
 import com.argot.TypeLibraryLoader;
@@ -38,268 +44,242 @@ import com.argot.common.CommonLoader;
 import com.argot.dictionary.Dictionary;
 import com.argot.meta.MetaLoader;
 
-import junit.framework.TestCase;
+public class CompilerTest {
 
-public class CompilerTest 
-extends TestCase
-{
+    private TypeLibraryLoader libraryLoaders[] = { new MetaLoader(), new CommonLoader() };
 
-	private TypeLibraryLoader libraryLoaders[] = {
-		new MetaLoader(),
-		new CommonLoader()
-	};
+    private TypeLibraryLoader baseCommonLoaders[] = { new MetaLoader(), new CommonLoader(), };
 
-	private TypeLibraryLoader baseCommonLoaders[] = {
-			new MetaLoader(),	
-			new CommonLoader(),
-		};
-	
-	private TypeLibraryLoader coreLibraryLoaders[] = {
-		new MetaLoader(),
-	};	
-	
-	private TypeLibraryLoader remoteLoader = null;
-	
-	protected void setUp() 
-	throws Exception 
-	{
-		super.setUp();
+    private TypeLibraryLoader coreLibraryLoaders[] = { new MetaLoader(), };
 
-		System.setProperty( "ARGOT_HOME", ".");
-	}	
-	
-	private boolean includeRemote()
-	{
-		try 
-		{
-			remoteLoader = (TypeLibraryLoader) Class.forName("com.argot.remote.RemoteLoader").newInstance();
-			
-			return true;
-		} 
-		catch (ClassNotFoundException e) 
-		{} 
-		catch (InstantiationException e) 
-		{} 
-		catch (IllegalAccessException e) 
-		{}
-		
-		System.out.println("Compiling library requires Argot Remote library");
-		return false;
-	}
+    private TypeLibraryLoader remoteLoader = null;
 
-	public void testCompileMetaArgot()
-	throws Exception
-	{
-		System.out.println("COMPILE ARGOT META" );		
-		String[] args = new String[1];
-		args[0] = "argot/meta.argot";
+    @BeforeEach
+    protected void setUp() throws Exception {
+        System.setProperty("ARGOT_HOME", ".");
+    }
 
-		FileInputStream fin = new FileInputStream( args[0] );
-		FileOutputStream fout = new FileOutputStream(new File( "argot/meta.dictionary" ));
-		ArgotCompiler ac = new ArgotCompiler( fin, null);
-		ac.compileDictionary(fout);
-		
-		TypeLibrary library = new TypeLibrary( coreLibraryLoaders );
-		Dictionary.readDictionary( library, new FileInputStream( "argot/meta.dictionary" ));		
-	}
-	
-	public void testCompileCommonArgot()
-	throws Exception
-	{
-		System.out.println("COMPILE ARGOT COMMON" );		
-		String[] args = new String[1];
-		args[0] = "argot/common.argot";
+    private boolean includeRemote() {
 
-		FileInputStream fin = new FileInputStream( args[0] );
-		FileOutputStream fout = new FileOutputStream(new File( "argot/common.dictionary" ));
-		ArgotCompiler ac = new ArgotCompiler( fin, null);
-		ac.setLoadCommon(false);
-		ac.compileDictionary(fout);
-		
-		TypeLibrary library = new TypeLibrary( coreLibraryLoaders );
-		TypeMap map = Dictionary.readDictionary( library, new FileInputStream( "argot/common.dictionary" ));
-		Iterator ids = map.getIdList().iterator();
-		while(ids.hasNext())
-		{
-			Integer id = (Integer) ids.next();
-			System.out.println(map.getName(id.intValue()).getFullName());
-		}
-		assertEquals( 22, map.size() );
-	}
+        try {
+            Class<?> clss = Class.forName("com.argot.remote.RemoteLoader");
 
-	public void testCompileChannelArgot()
-	throws Exception
-	{
-		System.out.println("COMPILE CHANNEL" );		
-		String[] args = new String[1];
-		args[0] = "argot/channel.argot";
-		
-		ArgotCompiler.argotCompile( args );
-		
-		TypeLibrary library = new TypeLibrary( libraryLoaders );
-		Dictionary.readDictionary( library, new FileInputStream( "argot/channel.dictionary" ));		
-	}
+            remoteLoader = (TypeLibraryLoader) clss.getConstructor().newInstance();
+            return true;
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
 
-	public void testCompileRemoteArgot()
-	throws Exception
-	{
-		Thread.sleep( 1000 );
-		System.out.println("COMPILE REMOTE" );
+        }
 
-		String[] args = new String[1];
-		args[0] = "argot/remote.argot";
-		
-		FileInputStream fin = new FileInputStream( args[0] );
-		FileOutputStream fout = new FileOutputStream(new File( "argot/remote.dictionary" ));
-		ArgotCompiler ac = new ArgotCompiler( fin, null);
-		ac.compileDictionary(fout);
-		
-		TypeLibrary library = new TypeLibrary( baseCommonLoaders );
-		Dictionary.readDictionary( library, new FileInputStream( "argot/remote.dictionary" ));		
-	}
-	
-	public void testCompileNetworkVMArgot()
-	throws Exception
-	{
-		if (!includeRemote()) return;
-		
-		Thread.sleep( 1000 );
-		System.out.println("COMPILE NETWORKVM" );
-		
-		String[] args = new String[1];
-		args[0] = "argot/networkvm.argot";
-		
-		ArgotCompiler.argotCompile( args );
-		
-		TypeLibrary library = new TypeLibrary( libraryLoaders );
-		library.loadLibrary(remoteLoader);
-		Dictionary.readDictionary( library, new FileInputStream( "argot/networkvm.dictionary" ));		
-	}
-	
+        System.out.println("Compiling library requires Argot Remote library");
+        return false;
+    }
 
+    @Test
+    public void testCompileMetaArgot() throws Exception {
+        System.out.println("COMPILE ARGOT META");
+        String[] args = new String[1];
+        args[0] = "argot/meta.argot";
 
-	public void testCompileRemoteRpcArgot()
-	throws Exception
-	{
-		if (!includeRemote()) return;
-		
-		Thread.sleep( 1000 );
-		System.out.println("COMPILE REMOTE RPC" );
-		
-		String[] args = new String[1];
-		args[0] = "argot/remoterpc.argot";
-		
-		ArgotCompiler.argotCompile( args );
-		
-		TypeLibrary library = new TypeLibrary( libraryLoaders );
-		library.loadLibrary(remoteLoader);
-		Dictionary.readDictionary( library, new FileInputStream( "argot/remoterpc.dictionary" ));		
-	}
-	
-	public void testCompileNetArgot()
-	throws Exception
-	{
-		if (!includeRemote()) return;
-		Thread.sleep( 1000 );
-		System.out.println("COMPILE NETARGOT" );
-		
-		String[] args = new String[1];
-		args[0] = "argot/netargot.argot";
-		
-		ArgotCompiler.argotCompile( args );
-		
-		TypeLibrary library = new TypeLibrary( libraryLoaders );
-		Dictionary.readDictionary( library, new FileInputStream( "argot/netargot.dictionary" ));		
-	}
+        FileInputStream fin = new FileInputStream(args[0]);
+        FileOutputStream fout = new FileOutputStream(new File("argot/meta.dictionary"));
+        ArgotCompiler ac = new ArgotCompiler(fin, null);
+        ac.compileDictionary(fout);
 
-	public void testCompileTestInterfaceArgot()
-	throws Exception
-	{
-		if (!includeRemote()) return;
-		Thread.sleep( 1000 );
-		System.out.println("COMPILE NETTEST" );
-		
-		String[] args = new String[1];
-		args[0] = "argot/nettest.argot";
-		
-		ArgotCompiler.argotCompile( args );
+        TypeLibrary library = new TypeLibrary(coreLibraryLoaders);
+        Dictionary.readDictionary(library, new FileInputStream("argot/meta.dictionary"));
+    }
 
-		Thread.sleep( 1000 );
-		
-		TypeLibrary library = new TypeLibrary( libraryLoaders );
-		library.loadLibrary(remoteLoader);
-		Dictionary.readDictionary( library, new FileInputStream( "argot/nettest.dictionary" ));		
-	}
-	
-	public void testSimpleArgot()
-	throws Exception
-	{
-		if (!includeRemote()) return;
-		Thread.sleep( 1000 );
-		System.out.println("COMPILE NETTEST" );
-		
-		String[] args = new String[1];
-		args[0] = "argot/simple.argot";
-		
-		ArgotCompiler.argotCompile( args );
+    @Test
+    public void testCompileCommonArgot() throws Exception {
+        System.out.println("COMPILE ARGOT COMMON");
+        String[] args = new String[1];
+        args[0] = "argot/common.argot";
 
-		Thread.sleep( 1000 );
-		
-		TypeLibrary library = new TypeLibrary( libraryLoaders );
-		library.loadLibrary(remoteLoader);
-		Dictionary.readDictionary( library, new FileInputStream( "argot/simple.dictionary" ));		
-	}	
-	
-	public void testZoneArgot()
-	throws Exception
-	{
-		if (!includeRemote()) return;
-		Thread.sleep( 1000 );
-		System.out.println("COMPILE ZONE" );
-		
-		String[] args = new String[1];
-		args[0] = "argot/zone.argot";
-		
-		ArgotCompiler.argotCompile( args );
+        FileInputStream fin = new FileInputStream(args[0]);
+        FileOutputStream fout = new FileOutputStream(new File("argot/common.dictionary"));
+        ArgotCompiler ac = new ArgotCompiler(fin, null);
+        ac.setLoadCommon(false);
+        ac.compileDictionary(fout);
 
-		Thread.sleep( 1000 );
-		
-		TypeLibrary library = new TypeLibrary( libraryLoaders );
-		library.loadLibrary(remoteLoader);
-		Dictionary.readDictionary( library, new FileInputStream( "argot/zone.dictionary" ));		
-	}	
-/*
-	public void testCompileTestKBArgot()
-	throws Exception
-	{
-		System.out.println("COMPILE KB" );
-		
-		String[] args = new String[1];
-		args[0] = "argot/kb.argot";
-		
-		ArgotCompiler compiler = new ArgotCompiler();
-		compiler.argotCompile( args );
-		
-		TypeLibrary library = new TypeLibrary( libraryLoaders );
-		Dictionary.readDictionary( library, new FileInputStream( "argot/networkvm.dictionary" ));
-		Dictionary.readDictionary( library, new FileInputStream( "argot/kb.dictionary" ));
-	}	
-	
-	public void testCompileTestKnowledgeBaseArgot()
-	throws Exception
-	{
-		System.out.println("COMPILE KNOWLEDGE" );
-		
-		String[] args = new String[1];
-		args[0] = "argot/knowledgebase.argot";
-		
-		ArgotCompiler compiler = new ArgotCompiler();
-		compiler.argotCompile( args );
-		
-		TypeLibrary library = new TypeLibrary( libraryLoaders );
-		Dictionary.readDictionary( library, new FileInputStream( "argot/networkvm.dictionary" ));
-		Dictionary.readDictionary( library, new FileInputStream( "argot/kb.dictionary" ));
-		Dictionary.readDictionary( library, new FileInputStream( "argot/knowledgebase.dictionary" ));
-	}	
-*/
+        TypeLibrary library = new TypeLibrary(coreLibraryLoaders);
+        TypeMap map = Dictionary.readDictionary(library, new FileInputStream("argot/common.dictionary"));
+        Iterator<Integer> ids = map.getIdList().iterator();
+        while (ids.hasNext()) {
+            Integer id = ids.next();
+            System.out.println(map.getName(id.intValue()).getFullName());
+        }
+        assertEquals(22, map.size());
+    }
+
+    @Test
+    public void testCompileChannelArgot() throws Exception {
+        System.out.println("COMPILE CHANNEL");
+        String[] args = new String[1];
+        args[0] = "argot/channel.argot";
+
+        ArgotCompiler.argotCompile(args);
+
+        TypeLibrary library = new TypeLibrary(libraryLoaders);
+        Dictionary.readDictionary(library, new FileInputStream("argot/channel.dictionary"));
+    }
+
+    @Test
+    public void testCompileRemoteArgot() throws Exception {
+        Thread.sleep(1000);
+        System.out.println("COMPILE REMOTE");
+
+        String[] args = new String[1];
+        args[0] = "argot/remote.argot";
+
+        FileInputStream fin = new FileInputStream(args[0]);
+        FileOutputStream fout = new FileOutputStream(new File("argot/remote.dictionary"));
+        ArgotCompiler ac = new ArgotCompiler(fin, null);
+        ac.compileDictionary(fout);
+
+        TypeLibrary library = new TypeLibrary(baseCommonLoaders);
+        Dictionary.readDictionary(library, new FileInputStream("argot/remote.dictionary"));
+    }
+
+    @Test
+    public void testCompileNetworkVMArgot() throws Exception {
+        if (!includeRemote())
+            return;
+
+        Thread.sleep(1000);
+        System.out.println("COMPILE NETWORKVM");
+
+        String[] args = new String[1];
+        args[0] = "argot/networkvm.argot";
+
+        ArgotCompiler.argotCompile(args);
+
+        TypeLibrary library = new TypeLibrary(libraryLoaders);
+        library.loadLibrary(remoteLoader);
+        Dictionary.readDictionary(library, new FileInputStream("argot/networkvm.dictionary"));
+    }
+
+    @Test
+    public void testCompileRemoteRpcArgot() throws Exception {
+        if (!includeRemote())
+            return;
+
+        Thread.sleep(1000);
+        System.out.println("COMPILE REMOTE RPC");
+
+        String[] args = new String[1];
+        args[0] = "argot/remoterpc.argot";
+
+        ArgotCompiler.argotCompile(args);
+
+        TypeLibrary library = new TypeLibrary(libraryLoaders);
+        library.loadLibrary(remoteLoader);
+        Dictionary.readDictionary(library, new FileInputStream("argot/remoterpc.dictionary"));
+    }
+
+    @Test
+    public void testCompileNetArgot() throws Exception {
+        if (!includeRemote())
+            return;
+        Thread.sleep(1000);
+        System.out.println("COMPILE NETARGOT");
+
+        String[] args = new String[1];
+        args[0] = "argot/netargot.argot";
+
+        ArgotCompiler.argotCompile(args);
+
+        TypeLibrary library = new TypeLibrary(libraryLoaders);
+        Dictionary.readDictionary(library, new FileInputStream("argot/netargot.dictionary"));
+    }
+
+    @Test
+    public void testCompileTestInterfaceArgot() throws Exception {
+        if (!includeRemote())
+            return;
+        Thread.sleep(1000);
+        System.out.println("COMPILE NETTEST");
+
+        String[] args = new String[1];
+        args[0] = "argot/nettest.argot";
+
+        ArgotCompiler.argotCompile(args);
+
+        Thread.sleep(1000);
+
+        TypeLibrary library = new TypeLibrary(libraryLoaders);
+        library.loadLibrary(remoteLoader);
+        Dictionary.readDictionary(library, new FileInputStream("argot/nettest.dictionary"));
+    }
+
+    @Test
+    public void testSimpleArgot() throws Exception {
+        if (!includeRemote())
+            return;
+        Thread.sleep(1000);
+        System.out.println("COMPILE NETTEST");
+
+        String[] args = new String[1];
+        args[0] = "argot/simple.argot";
+
+        ArgotCompiler.argotCompile(args);
+
+        Thread.sleep(1000);
+
+        TypeLibrary library = new TypeLibrary(libraryLoaders);
+        library.loadLibrary(remoteLoader);
+        Dictionary.readDictionary(library, new FileInputStream("argot/simple.dictionary"));
+    }
+
+    @Test
+    public void testZoneArgot() throws Exception {
+        if (!includeRemote())
+            return;
+        Thread.sleep(1000);
+        System.out.println("COMPILE ZONE");
+
+        String[] args = new String[1];
+        args[0] = "argot/zone.argot";
+
+        ArgotCompiler.argotCompile(args);
+
+        Thread.sleep(1000);
+
+        TypeLibrary library = new TypeLibrary(libraryLoaders);
+        library.loadLibrary(remoteLoader);
+        Dictionary.readDictionary(library, new FileInputStream("argot/zone.dictionary"));
+    }
+    /*
+    	public void testCompileTestKBArgot()
+    	throws Exception
+    	{
+    		System.out.println("COMPILE KB" );
+    		
+    		String[] args = new String[1];
+    		args[0] = "argot/kb.argot";
+    		
+    		ArgotCompiler compiler = new ArgotCompiler();
+    		compiler.argotCompile( args );
+    		
+    		TypeLibrary library = new TypeLibrary( libraryLoaders );
+    		Dictionary.readDictionary( library, new FileInputStream( "argot/networkvm.dictionary" ));
+    		Dictionary.readDictionary( library, new FileInputStream( "argot/kb.dictionary" ));
+    	}	
+    	
+    	public void testCompileTestKnowledgeBaseArgot()
+    	throws Exception
+    	{
+    		System.out.println("COMPILE KNOWLEDGE" );
+    		
+    		String[] args = new String[1];
+    		args[0] = "argot/knowledgebase.argot";
+    		
+    		ArgotCompiler compiler = new ArgotCompiler();
+    		compiler.argotCompile( args );
+    		
+    		TypeLibrary library = new TypeLibrary( libraryLoaders );
+    		Dictionary.readDictionary( library, new FileInputStream( "argot/networkvm.dictionary" ));
+    		Dictionary.readDictionary( library, new FileInputStream( "argot/kb.dictionary" ));
+    		Dictionary.readDictionary( library, new FileInputStream( "argot/knowledgebase.dictionary" ));
+    	}	
+    */
 }

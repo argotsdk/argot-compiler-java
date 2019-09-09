@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -29,29 +29,24 @@ package com.argot.compiler.dictionary;
 import com.argot.TypeLocation;
 import com.argot.meta.MetaName;
 
-public class LibraryName
-implements TypeLocation
-{
-	private MetaName name;
-	
-	public LibraryName(MetaName name)
-	{
-		this.name = name;
-	}
+public class LibraryName implements TypeLocation {
+    private MetaName name;
 
-	public void setName(MetaName name) 
-	{
-		this.name = name;
-	}
-	
-	public MetaName getName() 
-	{
-		return name;
-	}
-	
-	public int getType() 
-	{
-		return -1;
-	}
-	
+    public LibraryName(MetaName name) {
+        this.name = name;
+    }
+
+    public void setName(MetaName name) {
+        this.name = name;
+    }
+
+    public MetaName getName() {
+        return name;
+    }
+
+    @Override
+    public int getType() {
+        return -1;
+    }
+
 }

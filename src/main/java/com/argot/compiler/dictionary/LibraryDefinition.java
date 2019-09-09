@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2010, Live Media Pty. Ltd.
+ * Copyright (c) 2003-2019, Live Media Pty. Ltd.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted
@@ -29,43 +29,34 @@ import com.argot.TypeLocation;
 import com.argot.meta.MetaName;
 import com.argot.meta.MetaVersion;
 
-public class LibraryDefinition 
-implements TypeLocation
-{
-	private MetaName name;
-	private MetaVersion version;
-	
-	
-	public LibraryDefinition(MetaName name, MetaVersion version)
-	{
-		this.name = name;
-		this.version = version;
-	}
+public class LibraryDefinition implements TypeLocation {
+    private MetaName name;
+    private MetaVersion version;
 
-	
-	public void setName(MetaName name) 
-	{
-		this.name = name;
-	}
-	
-	public MetaName getName() 
-	{
-		return name;
-	}
-	
-	public void setVersion(MetaVersion version) 
-	{
-		this.version = version;
-	}
-	
-	public MetaVersion getVersion() 
-	{
-		return version;
-	}
+    public LibraryDefinition(MetaName name, MetaVersion version) {
+        this.name = name;
+        this.version = version;
+    }
 
-	public int getType() 
-	{
-		return -1;
-	}
-	
+    public void setName(MetaName name) {
+        this.name = name;
+    }
+
+    public MetaName getName() {
+        return name;
+    }
+
+    public void setVersion(MetaVersion version) {
+        this.version = version;
+    }
+
+    public MetaVersion getVersion() {
+        return version;
+    }
+
+    @Override
+    public int getType() {
+        return -1;
+    }
+
 }

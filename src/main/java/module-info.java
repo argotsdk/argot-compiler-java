@@ -23,16 +23,16 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.argot.compiler.primitive;
+module com.argot.compiler {
 
-import com.argot.TypeException;
-import com.argot.meta.MetaVersion;
+    exports com.argot.compiler;
+    exports com.argot.compiler.dictionary;
+    exports com.argot.compiler.primitive;
 
-public class MetaVersionParser implements ArgotPrimitiveParser {
+    requires java.logging;
 
-    @Override
-    public Object parse(String data) throws TypeException {
-        return MetaVersion.parseVersion(data);
-    }
+    requires transitive com.argot;
+
+    requires transitive org.antlr.antlr4.runtime;
 
 }
