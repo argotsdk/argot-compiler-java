@@ -1,0 +1,55 @@
+/*
+ * 
+ * test for cluster, definitions and relations
+ */
+cluster test;
+
+
+cluster java;
+cluster java.util;
+
+definition java.util.UUID 1.0: {
+    @id #int64;
+};
+
+
+definition test.Object 1.0:
+  (meta.abstract []);
+
+
+cluster test.model;
+
+
+definition test.model.List 1.0:
+(meta.sequence [
+    (meta.array
+        (meta.reference #uvint28)
+        (meta.reference #test.Object))]);
+
+
+
+definition test.model.Key 1.0: {
+    @Id #java.util.UUID;
+};
+
+definition test.model.Key_array 1.0: 
+(meta.sequence [
+    (meta.array
+        (meta.reference #uint8)
+        (meta.reference #test.model.Key))]);
+
+
+
+definition test.model.TimeKey 1.0: {
+    @Key #test.model.Key;
+    @Timestamp #int64;
+};
+
+/* required for time based lookups */
+relation test.Object 1.0 "test.model.TimeKey":
+   (meta.abstract_map #test.model.TimeKey);
+
+
+
+
+

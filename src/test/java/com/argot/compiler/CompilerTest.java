@@ -112,6 +112,28 @@ public class CompilerTest {
     }
 
     @Test
+    public void testCompilePlatformArgot() throws Exception {
+        System.out.println("COMPILE ARGOT COMMON");
+        String[] args = new String[1];
+        args[0] = "argot/definition.argot";
+
+        FileInputStream fin = new FileInputStream(args[0]);
+        FileOutputStream fout = new FileOutputStream(new File("argot/definition.dictionary"));
+        ArgotCompiler ac = new ArgotCompiler(fin, null);
+        ac.setLoadCommon(true);
+        ac.compileDictionary(fout);
+
+        TypeLibrary library = new TypeLibrary(coreLibraryLoaders);
+        TypeMap map = Dictionary.readDictionary(library, new FileInputStream("argot/definition.dictionary"));
+        Iterator<Integer> ids = map.getIdList().iterator();
+        while (ids.hasNext()) {
+            Integer id = ids.next();
+            System.out.println(map.getName(id.intValue()).getFullName());
+        }
+        // assertEquals(22, map.size());
+    }
+
+    @Test
     public void testCompileChannelArgot() throws Exception {
         System.out.println("COMPILE CHANNEL");
         String[] args = new String[1];

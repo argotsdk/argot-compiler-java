@@ -137,6 +137,7 @@ public class ArgotCompilerListener extends ArgotBaseListener {
 
     @Override
     public void exitHeaderline(HeaderlineContext ctx) {
+
         super.exitHeaderline(ctx);
     }
 
@@ -158,6 +159,7 @@ public class ArgotCompilerListener extends ArgotBaseListener {
     @Override
     public void exitCluster(ClusterContext ctx) {
         String clustername = ctx.identifier().getText();
+
         try {
 
             MetaName name = MetaName.parseName(_library, clustername);
@@ -171,6 +173,7 @@ public class ArgotCompilerListener extends ArgotBaseListener {
 
     @Override
     public void exitDefinition(DefinitionContext ctx) {
+
         short ma = Short.parseShort(ctx.Int(0).getText());
         short mi = Short.parseShort(ctx.Int(1).getText());
         String defname = ctx.identifier().getText();
@@ -182,7 +185,7 @@ public class ArgotCompilerListener extends ArgotBaseListener {
                 @SuppressWarnings("rawtypes")
                 List list = (List) seq;
                 if (list.size() == 1 && list.get(0) instanceof MetaDefinition) {
-                    expression = (MetaDefinition) seq;
+                    expression = (MetaDefinition) list.get(0);
                 } else {
                     throw new ArgotParserException("Expression not a MetaExpression type", null, null, ctx);
                 }
@@ -204,26 +207,43 @@ public class ArgotCompilerListener extends ArgotBaseListener {
     }
 
     @Override
+    public void enterRelation(RelationContext ctx) {
+        valueStack.push(new ArrayList<Object>());
+        super.enterRelation(ctx);
+    }
+
+    @Override
     public void exitRelation(RelationContext ctx) {
 
         short ma = Short.parseShort(ctx.Int(0).getText());
         short mi = Short.parseShort(ctx.Int(1).getText());
         String defname = ctx.identifier().getText();
         String tag = ctx.QSTRING().getText();
-        ExpressionContext exp = ctx.expression();
 
         try {
             MetaName name = MetaName.parseName(_library, defname);
             MetaVersion version = new MetaVersion(ma, mi);
             int id = _library.getTypeId(name);
 
-            //MetaExpression metaExp = (MetaExpression) _library.getStructure(id);
+            MetaDefinition expression = null;
 
-            if (!(exp instanceof MetaDefinition)) {
+            Object top = this.valueStack.pop();
+            if (top instanceof List) {
+                @SuppressWarnings("rawtypes")
+                List list = (List) top;
+                if (list.size() == 1 && list.get(0) instanceof MetaDefinition) {
+                    expression = (MetaDefinition) list.get(0);
+                } else {
+                    throw new ArgotParserException("Expression not a MetaExpression type", null, null, ctx);
+                }
+
+            } else if (top instanceof MetaDefinition) {
+                expression = (MetaDefinition) top;
+            } else {
                 throw new ArgotParserException("Expression not a MetaExpression type", null, null, ctx);
             }
 
-            _compiler.registerLibraryType(_map, new LibraryRelation(id, version, tag), (MetaDefinition) exp);
+            _compiler.registerLibraryType(_map, new LibraryRelation(id, version, tag), expression);
         } catch (TypeException ex) {
             ex.printStackTrace();
             throw new ArgotParserException("Failed to create name from:" + defname, null, null, ctx);
@@ -240,8 +260,17 @@ public class ArgotCompilerListener extends ArgotBaseListener {
 
     @Override
     public void exitSequence(SequenceContext ctx) {
+
         try {
-            MetaSequence sequence = new MetaSequence(null); // l.toArray
+            Object top = valueStack.pop();
+            if (!(top instanceof ArrayList)) {
+                throw new ArgotParserException("Sequence did not find values on stack", null, null, ctx);
+            }
+
+            @SuppressWarnings("unchecked")
+            ArrayList<Object> list = (ArrayList<Object>) top;
+
+            MetaSequence sequence = new MetaSequence(list.toArray());
             valueStack.push(sequence);
         } catch (IllegalArgumentException ex) {
             throw new ArgotParserException("Failed to create sequence", null, null, ctx);
@@ -257,7 +286,16 @@ public class ArgotCompilerListener extends ArgotBaseListener {
         try {
 
             int id = _library.getTypeId(argotType);
-            valueStack.push(new MetaTag(name, new MetaReference(id)));
+
+            Object top = valueStack.peek();
+            if (!(top instanceof ArrayList)) {
+                throw new ArgotParserException("Tag did not find values on stack", null, null, ctx);
+            }
+
+            @SuppressWarnings("unchecked")
+            ArrayList<Object> list = (ArrayList<Object>) top;
+
+            list.add(new MetaTag(name, new MetaReference(id)));
         } catch (TypeException ex) {
             throw new ArgotParserException("No type found for #" + argotType, null, null, ctx);
         }
@@ -266,7 +304,9 @@ public class ArgotCompilerListener extends ArgotBaseListener {
 
     @Override
     public void exitReserve(ReserveContext ctx) {
+
         String typename = ctx.identifier().getText();
+
         try {
 
             //MetaName name = MetaName.parseName(_library, typename);
@@ -404,6 +444,9 @@ public class ArgotCompilerListener extends ArgotBaseListener {
                     ArrayList<Object> topList = (ArrayList<Object>) topValueStack;
                     topList.add(expressionValue);
                 }
+            } else {
+                // this is for a definition. so push it on the value stack.
+                valueStack.push(expressionValue);
             }
 
         } catch (TypeException ex) {
@@ -426,7 +469,6 @@ public class ArgotCompilerListener extends ArgotBaseListener {
 
     @Override
     public void enterArray(ArrayContext ctx) {
-
         valueStack.push(new ArrayList<Object>());
         super.enterArray(ctx);
     }
