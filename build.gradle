@@ -42,7 +42,7 @@ eclipse {
 }
 
 group = 'org.argot-sdk'
-version = '1.4.0-rc2'
+version = '1.4.0'
 
 sourceCompatibility = 11
 targetCompatibility = 11
