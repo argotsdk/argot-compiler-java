@@ -50,7 +50,7 @@ targetCompatibility = 11
 
 
 repositories {
-    maven { url "http://repo.maven.apache.org/maven2" }
+    maven { url "https://repo.maven.apache.org/maven2" }
 }
 
 
@@ -67,7 +67,7 @@ configurations {
 dependencies {
 
     // https://mvnrepository.com/artifact/org.argot-sdk/argot
-    compile group: 'org.argot-sdk', name: 'argot', version: '1.4.0-rc1'
+    compile group: 'org.argot-sdk', name: 'argot', version: '1.4.0'
    
     
     // https://mvnrepository.com/artifact/org.antlr/antlr4
